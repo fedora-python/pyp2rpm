@@ -1,0 +1,14 @@
+*.mo
+*.pyc
+*.swo
+*.swp
+*.swn
+*~
+mcc-test
+local_settings.py
+var/
+tmp/
+.project
+.pydevproject
+.settings
+docs/build/
