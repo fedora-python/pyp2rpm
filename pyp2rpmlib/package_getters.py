@@ -8,13 +8,12 @@ class PackageGetter(object):
         raise NotImplementedError('Whoops, get method not implemented by %s.' % self.__class__)
 
 class Downloader(PackageGetter):
-    def __init__(name, version = None, save_dir = None, server = 'http://pypi.python.org/pypi'):
+    def __init__(client, name, version = None, save_dir = None):
+        self.client = client
         self.name = name
         self.version = version
         self.save_dir = save_dir or os.path.expanduser('~/rpmbuild/SOURCES/')
-        self.server = server
-        self.client = xmlrpmlib.ServerProxy(self.server)
-        # TODO: verify that server is ok and package exists
+        # TODO: verify that package exists
 
     @property
     def url(self):
