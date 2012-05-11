@@ -5,8 +5,8 @@ import argparse
 parser = argparse.ArgumentParser(description = 'Convert PyPI package to RPM specfile.')
 parser.add_argument('-p',
                     required = True,
-                    help = 'Either name of the package or url of the archive',
-                    metavar = 'PYPI_NAME_OR_URL'
+                    help = 'Name of the package on PyPI',
+                    metavar = 'PYPI_NAME'
                    )
 
 args = parser.parse_args()
