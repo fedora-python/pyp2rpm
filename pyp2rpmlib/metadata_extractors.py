@@ -1,3 +1,4 @@
+import os
 import xmlrpclib
 
 from pyp2rpmlib.package_data import PypiData, LocalData
@@ -12,8 +13,37 @@ class MetadataExtractor(object):
     def extract_data(self):
         raise NotImplementedError('Whoops, do_extraction method not implemented by %s.', % self.class)
 
+    def get_extractor_cls(self, suffix):
+        file_cls = None
+
+        if suffix in ['.tar', '.gz', '.bz2']:
+            from tarfile import TarFile
+            file_cls = TarFile
+        elif suffix in ['.zip']:
+            from zipfile import ZipFile
+            file_cls = ZipFile
+        else:
+            pass
+            # TODO: log that file has unextractable archive suffix and we can't look for extensions
+
+        return file_cls
+
     def has_extension(self):
-        pass
+        # only catches ".gz", even from ".tar.gz"
+        name, suffix = os.path.splitext(self.local_file)
+        extractor = self.get_extractor_cls(suffix)
+        # return True by default
+        has_extension = True
+        found_extension = False
+
+        if extractor:
+            opened_file = extractor.open(name = self.local_file)
+            for member in opened_file.getmembers():
+                if os.path.splitext(member.name)[1] in settings.EXTENSION_SUFFIXES:
+                    found_extension = True
+            has_extension = found_extension
+
+        return has_extension
 
 class PypiMetadataExtractor(MetadataExtractor):
     def __init__(self, client, local_file, name, version):

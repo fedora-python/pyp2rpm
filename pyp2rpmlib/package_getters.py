@@ -45,10 +45,11 @@ class LocalFileGetter(PackageGetter):
 
     @property
     def _stripped_name_version(self):
+        # we don't use splitext, because on "a.tar.gz" it returns ("a.tar", "gz")
         filename = os.path.basename(self.local_file)
-        for archive_format in settings.ARCHIVE_SUFFIXES:
-            if filename.endswith(archive_format):
-                return filename.rstrip(".%s" % archive_format)
+        for archive_suffix in settings.ARCHIVE_SUFFIXES:
+            if filename.endswith(archive_suffix):
+                return filename.rstrip("%s" % archive_suffix)
 
         raise exceptions.UnknownArchiveFormatException('Unkown archive format of file %s.' % filename)
 
