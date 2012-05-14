@@ -46,7 +46,7 @@ class LocalFileGetter(PackageGetter):
     @property
     def _stripped_name_version(self):
         filename = os.path.basename(self.local_file)
-        for archive_format in settings.ARCHIVE_FORMATS:
+        for archive_format in settings.ARCHIVE_SUFFIXES:
             if filename.endswith(archive_format):
                 return filename.rstrip(".%s" % archive_format)
 

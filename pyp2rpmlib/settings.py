@@ -1,4 +1,5 @@
-ARCHIVE_FORMATS = ['tar', 'tgz', 'zip', 'tar.gz']
+ARCHIVE_SUFFIXES = ['tar', 'tgz', 'zip', 'tar.gz']
+EXTENSION_SUFFIXES = ['c', 'cpp']
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'release_url', 'requires']
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
                   'License :: OSI Approved :: Apache Software License': 'ASL %(version)s',

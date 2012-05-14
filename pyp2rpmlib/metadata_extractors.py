@@ -12,6 +12,9 @@ class MetadataExtractor(object):
     def extract_data(self):
         raise NotImplementedError('Whoops, do_extraction method not implemented by %s.', % self.class)
 
+    def has_extension(self):
+        pass
+
 class PypiMetadataExtractor(MetadataExtractor):
     def __init__(self, client, local_file, name, version):
         super(MetadataExtractor, self).__init__(local_file, name, version)
