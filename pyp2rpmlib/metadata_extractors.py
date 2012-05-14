@@ -16,6 +16,7 @@ class MetadataExtractor(object):
     def get_extractor_cls(self, suffix):
         file_cls = None
 
+        # only catches ".gz", even from ".tar.gz"
         if suffix in ['.tar', '.gz', '.bz2']:
             from tarfile import TarFile
             file_cls = TarFile
@@ -28,23 +29,23 @@ class MetadataExtractor(object):
 
         return file_cls
 
-    def has_extension(self):
-        # only catches ".gz", even from ".tar.gz"
+    def has_file_with_suffix(self, suffixes):
         name, suffix = os.path.splitext(self.local_file)
         extractor = self.get_extractor_cls(suffix)
         # return True by default
-        has_extension = True
-        found_extension = False
+        has_file = False
 
         if extractor:
             with extractor.open(name = self.local_file) as opened_file:
                 for member in opened_file.getmembers():
-                    if os.path.splitext(member.name)[1] in settings.EXTENSION_SUFFIXES:
-                        found_extension = True
+                    if os.path.splitext(member.name)[1] in suffixes:
+                        has_file = True
 
-               has_extension = found_extension
+    def has_bundled_egg_info(self):
+        return self.has_file_with_suffix('.egg-info')
 
-        return has_extension
+    def has_extension(self):
+        return self.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
 class PypiMetadataExtractor(MetadataExtractor):
     def __init__(self, client, local_file, name, version):
@@ -68,6 +69,7 @@ class PypiMetadataExtractor(MetadataExtractor):
             data.license = ' AND '.join(data.license)
 
         data.has_extension = self.has_extension
+        data.has_bundled_egg_info = self.has_bundled_egg_info
 
         return data
 
