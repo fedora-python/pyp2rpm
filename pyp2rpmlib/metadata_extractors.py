@@ -4,7 +4,8 @@ from pyp2rpmlib.package_data import PypiData, LocalData
 from pyp2rpmlib import settings
 
 class MetadataExtractor(object):
-    def __init__(self, name, version):
+    def __init__(self, local_file, name, version):
+        self.local_file = local_file
         self.name = name
         self.version = version
 
@@ -12,8 +13,8 @@ class MetadataExtractor(object):
         raise NotImplementedError('Whoops, do_extraction method not implemented by %s.', % self.class)
 
 class PypiMetadataExtractor(MetadataExtractor):
-    def __init__(self, client, name, version):
-        super(MetadataExtractor, self).__init__(name, version)
+    def __init__(self, client, local_file, name, version):
+        super(MetadataExtractor, self).__init__(local_file, name, version)
         self.client = client
 
     def extract_data(self):
@@ -36,5 +37,4 @@ class PypiMetadataExtractor(MetadataExtractor):
 
 class LocalMetadataExtractor(MetadataExtractor):
     def __init__(self, local_file, name, version):
-        super(MetadataExtractor, self).__init__(name, version)
-        self.local_file = local_file
+        super(MetadataExtractor, self).__init__(name, version, local_file)
