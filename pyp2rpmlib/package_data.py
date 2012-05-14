@@ -1,3 +1,6 @@
+import subprocess
+import time
+
 class PackageData(object):
     def __init__(self, local_file, name, version):
         self.local_file = local_file
@@ -16,6 +19,12 @@ class PackageData(object):
             return self.name
         else:
             return 'python-%s'
+
+    @property
+    def changelog_date_packager(self):
+        packager = subprocess.Popen('rpmdev-packager', stdout = subprocess.PIPE).communicate()[0].strip()
+        date_str = time.strftime('%a %b %d %Y', time.gmtime())
+        return "%s %s" % (date_str, packager)
 
 class PypiData(PackageData):
     def __init__(self, local_file, name, version, md5, url):
