@@ -11,7 +11,7 @@ class MetadataExtractor(object):
         self.version = version
 
     def extract_data(self):
-        raise NotImplementedError('Whoops, do_extraction method not implemented by %s.', % self.class)
+        raise NotImplementedError('Whoops, do_extraction method not implemented by %s.' % self.__class__)
 
     def get_extractor_cls(self, suffix):
         file_cls = None
