@@ -9,9 +9,9 @@ License:        {{ data.license }}
 URL:            {{ data.release_url }}
 Source0:        {{ data.url }}
 
-{% if not data.has_extension %}
+{%- if not data.has_extension %}
 BuildArch:      noarch
-{% endif %}
+{%- endif %}
 BuildRequires:  python-devel
 
 %description
@@ -20,9 +20,10 @@ BuildRequires:  python-devel
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
-{% if data.has_bundled_egg_info %}
+{%- if data.has_bundled_egg_info %}
+# Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
-{% endif %}
+{%- endif %}
 
 
 %build
@@ -37,9 +38,9 @@ rm -rf %{pypi_name}.egg-info
 %doc
 %{python_sitelib}/%{pypi_name}
 %{python_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
-{% if data.has_extension %}
+{%- if data.has_extension %}
 %{python_sitearch}/%{pypi_name}
-{% endif %}
+{%- endif %}
 
 
 %changelog
