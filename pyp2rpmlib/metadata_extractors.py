@@ -31,7 +31,6 @@ class MetadataExtractor(object):
     def has_file_with_suffix(self, suffixes):
         name, suffix = os.path.splitext(self.local_file)
         extractor = self.get_extractor_cls(suffix)
-        # return True by default
         has_file = False
 
         if extractor:
@@ -67,8 +66,8 @@ class PypiMetadataExtractor(MetadataExtractor):
 
             data.license = ' AND '.join(data.license)
 
-        data.has_extension = self.has_extension
-        data.has_bundled_egg_info = self.has_bundled_egg_info
+        data.has_extension = self.has_extension()
+        data.has_bundled_egg_info = self.has_bundled_egg_info()
 
         return data
 
