@@ -67,6 +67,8 @@ class PypiMetadataExtractor(MetadataExtractor):
 
             data.license = ' AND '.join(data.license)
 
+        data.has_extension = self.has_extension
+
         return data
 
 class LocalMetadataExtractor(MetadataExtractor):
