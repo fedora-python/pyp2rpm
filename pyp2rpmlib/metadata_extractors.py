@@ -37,11 +37,12 @@ class MetadataExtractor(object):
         found_extension = False
 
         if extractor:
-            opened_file = extractor.open(name = self.local_file)
-            for member in opened_file.getmembers():
-                if os.path.splitext(member.name)[1] in settings.EXTENSION_SUFFIXES:
-                    found_extension = True
-            has_extension = found_extension
+            with extractor.open(name = self.local_file) as opened_file:
+                for member in opened_file.getmembers():
+                    if os.path.splitext(member.name)[1] in settings.EXTENSION_SUFFIXES:
+                        found_extension = True
+
+               has_extension = found_extension
 
         return has_extension
 
