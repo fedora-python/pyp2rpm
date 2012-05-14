@@ -8,7 +8,14 @@ class PackageData(object):
         if name in self.__dict__:
             return self.__dict__[name]
 
-        return None
+        return 'TODO:'
+
+    @property
+    def pkg_name(self, name):
+        if self.name.lower().find('py') != -1:
+            return self.name
+        else:
+            return 'python-%s'
 
 class PypiData(PackageData):
     def __init__(self, local_file, name, version, md5, url):
