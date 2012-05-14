@@ -1,5 +1,6 @@
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2', '.gz', '.bz2', '.zip']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
+PYPI_URL = 'http://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'release_url', 'requires']
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
                   'License :: OSI Approved :: Apache Software License': 'ASL %(version)s',

@@ -1,5 +1,4 @@
 import os
-import xmlrpclib
 
 from pyp2rpmlib.package_data import PypiData, LocalData
 from pyp2rpmlib import settings
@@ -48,16 +47,16 @@ class MetadataExtractor(object):
         return self.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
 class PypiMetadataExtractor(MetadataExtractor):
-    def __init__(self, client, local_file, name, version):
-        super(MetadataExtractor, self).__init__(local_file, name, version)
+    def __init__(self, local_file, name, version, client):
+        super(PypiMetadataExtractor, self).__init__(local_file, name, version)
         self.client = client
 
     def extract_data(self):
         release_urls = self.client.release_urls(self.name, self.version)[0]
         release_data = self.client.release_data(self.name, self.version)
-        data = PypiData(self.name, self.version, release_urls['md5_digest'], release_urls['url'])
+        data = PypiData(self.local_file, self.name, self.version, release_urls['md5_digest'], release_urls['url'])
         for data_field in settings.PYPI_USABLE_DATA:
-            setattr(data, data_field, release_data[data_field])
+            setattr(data, data_field, release_data.get(data_field, None))
 
         # if license is not known, try to extract if from trove classifiers
         if data.license in [None, 'UNKNOWN']:
@@ -75,4 +74,4 @@ class PypiMetadataExtractor(MetadataExtractor):
 
 class LocalMetadataExtractor(MetadataExtractor):
     def __init__(self, local_file, name, version):
-        super(MetadataExtractor, self).__init__(name, version, local_file)
+        super(LocalMetadataExtractor, self).__init__(local_file, name, version)

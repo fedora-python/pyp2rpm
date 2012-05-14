@@ -14,7 +14,7 @@ class PackageData(object):
         return 'TODO:'
 
     @property
-    def pkg_name(self, name):
+    def pkg_name(self):
         if self.name.lower().find('py') != -1:
             return self.name
         else:
@@ -28,10 +28,10 @@ class PackageData(object):
 
 class PypiData(PackageData):
     def __init__(self, local_file, name, version, md5, url):
-        super(PackageData, self).__init__(local_file, name, version)
+        super(PypiData, self).__init__(local_file, name, version)
         self.md5 = md5
         self.url = url
 
 class LocalData(PackageData):
     def __init__(self, local_file, name, version):
-        super(PackageData, self).__init__(local_file, name, version)
+        super(LocalData, self).__init__(local_file, name, version)

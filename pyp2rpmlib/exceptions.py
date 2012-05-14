@@ -3,3 +3,6 @@ class UnknownArchiveFormatException(BaseException):
 
 class BadFilenameException(BaseException):
     pass
+
+class NameNotSpecifiedException(BaseException):
+    pass
