@@ -1,7 +1,22 @@
+import functools
 import os
 
 from pyp2rpmlib.package_data import PypiData, LocalData
 from pyp2rpmlib import settings
+
+def memoize_by_args(func):
+    memory = {}
+
+    @functools.wraps(func)
+    def memoized(*args):
+        if not args in memory.keys():
+            value = func(*args)
+            memory[args] = value
+
+        return memory[args]
+
+    return memoized
+
 
 class MetadataExtractor(object):
     def __init__(self, local_file, name, version):
@@ -24,9 +39,32 @@ class MetadataExtractor(object):
             file_cls = ZipFile
         else:
             pass
-            # TODO: log that file has unextractable archive suffix and we can't look for extensions
+            # TODO: log that file has unextractable archive suffix and we can't look inside the archive
 
         return file_cls
+
+    @memoize_by_args
+    def get_content_of_file_from_archive(self, name): # TODO: extend to be able to match whole path in archive
+        suffix = os.path.splitext(self.local_file)[1]
+        extractor = self.get_extractor_cls(suffix)
+
+        if extractor:
+            with extractor.open(name = self.local_file) as opened_file:
+                for member in opened_file.getmembers():
+                    if os.path.basename(member) == name:
+                        extracted = extractor.extract(member)
+                        return extracted.read()
+
+        return None
+
+    def find_setup_argument(self, setup_argument):
+        pass
+
+    def requires_from_setup_py(self): # install_requires
+        pass
+
+    def build_requires_from_setup_py(self): # setup_requires
+        pass
 
     def has_file_with_suffix(self, suffixes):
         name, suffix = os.path.splitext(self.local_file)
