@@ -1,22 +1,11 @@
-import functools
 import os
 import re
 
+from pkg_resources import Requirement
+
 from pyp2rpmlib.package_data import PypiData, LocalData
 from pyp2rpmlib import settings
-
-def memoize_by_args(func):
-    memory = {}
-
-    @functools.wraps(func)
-    def memoized(*args):
-        if not args in memory.keys():
-            value = func(*args)
-            memory[args] = value
-
-        return memory[args]
-
-    return memoized
+from pyp2rpmlib import utils
 
 
 class MetadataExtractor(object):
@@ -44,7 +33,7 @@ class MetadataExtractor(object):
 
         return file_cls
 
-    @memoize_by_args
+    @utils.memoize_by_args
     def get_content_of_file_from_archive(self, name): # TODO: extend to be able to match whole path in archive
         suffix = os.path.splitext(self.local_file)[1]
         extractor = self.get_extractor_cls(suffix)
@@ -80,10 +69,10 @@ class MetadataExtractor(object):
         return ' '.join(argument).strip()
 
 
-    def requires_from_setup_py(self): # install_requires
+    def runtime_deps_from_setup_py(self): # install_requires
         pass
 
-    def build_requires_from_setup_py(self): # setup_requires
+    def build_deps_from_setup_py(self): # setup_requires
         pass
 
     def has_file_with_suffix(self, suffixes):

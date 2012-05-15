@@ -1,6 +1,8 @@
 import subprocess
 import time
 
+from pyp2rpmlib import utils
+
 class PackageData(object):
     def __init__(self, local_file, name, version):
         self.local_file = local_file
@@ -15,10 +17,7 @@ class PackageData(object):
 
     @property
     def pkg_name(self):
-        if self.name.lower().find('py') != -1:
-            return self.name
-        else:
-            return 'python-%s'
+        utils.rpm_name(self.name)
 
     @property
     def changelog_date_packager(self):
