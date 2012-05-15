@@ -1,4 +1,3 @@
-import functools
 import os
 import xmlrpclib
 
