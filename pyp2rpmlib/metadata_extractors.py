@@ -51,8 +51,8 @@ class MetadataExtractor(object):
         if extractor:
             with extractor.open(name = self.local_file) as opened_file:
                 for member in opened_file.getmembers():
-                    if os.path.basename(member) == name:
-                        extracted = extractor.extract(member)
+                    if os.path.basename(member.name) == name:
+                        extracted = opened_file.extractfile(member)
                         return extracted.read()
 
         return None
