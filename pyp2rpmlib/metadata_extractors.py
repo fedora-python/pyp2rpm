@@ -77,7 +77,7 @@ class MetadataExtractor(object):
                     break
 
         argument[-1] = argument[-1].rstrip().rstrip(',')
-        return ' '.join(argument)
+        return ' '.join(argument).strip()
 
 
     def requires_from_setup_py(self): # install_requires
