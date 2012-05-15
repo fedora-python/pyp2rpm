@@ -58,7 +58,7 @@ class MetadataExtractor(object):
 
         return None
 
-    def find_setup_requires_argument(self, setup_argument): # very stupid method to find one of *_requires arguments
+    def find_array_argument(self, setup_argument): # very stupid method to find an array argument of setup()
         setup_py = self.get_content_of_file_from_archive('setup.py')
         if not setup_py: return ""
 
