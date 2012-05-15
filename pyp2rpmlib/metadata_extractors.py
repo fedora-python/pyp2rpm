@@ -1,5 +1,6 @@
 import functools
 import os
+import re
 
 from pyp2rpmlib.package_data import PypiData, LocalData
 from pyp2rpmlib import settings
@@ -57,8 +58,27 @@ class MetadataExtractor(object):
 
         return None
 
-    def find_setup_argument(self, setup_argument):
-        pass
+    def find_setup_requires_argument(self, setup_argument): # very stupid method to find one of *_requires arguments
+        setup_py = self.get_content_of_file_from_archive('setup.py')
+        if not setup_py: return ""
+
+        argument = []
+        start_braces = end_braces = 0
+        cont = False
+
+        for line in setup_py.splitlines():
+            if line.find(setup_argument) != -1 or cont:
+                start_braces += line.count('[')
+                end_braces += line.count(']')
+
+                cont = True
+                argument.append(line)
+                if start_braces == end_braces:
+                    break
+
+        argument[-1] = argument[-1].rstrip().rstrip(',')
+        return ' '.join(argument)
+
 
     def requires_from_setup_py(self): # install_requires
         pass
