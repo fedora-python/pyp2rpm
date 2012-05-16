@@ -16,6 +16,14 @@ class PackageData(object):
         return 'TODO:'
 
     @property
+    def summary(self):
+        return self._summary
+
+    @summary.setter
+    def summary(self, value):
+        self._summary = value.rstrip('.')
+
+    @property
     def pkg_name(self):
         utils.rpm_name(self.name)
 
