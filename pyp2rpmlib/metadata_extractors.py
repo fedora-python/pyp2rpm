@@ -65,9 +65,12 @@ class MetadataExtractor(object):
                 if start_braces == end_braces:
                     break
 
-        argument[0] = argument[0][argument[0].find('['):]
-        argument[-1] = argument[-1].rstrip().rstrip(',')
-        return ' '.join(argument).strip()
+        if not argument:
+            return '[]'
+        else:
+            argument[0] = argument[0][argument[0].find('['):]
+            argument[-1] = argument[-1].rstrip().rstrip(',')
+            return ' '.join(argument).strip()
 
     def dependency_to_rpm(self, dep, runtime):
         converted = []
