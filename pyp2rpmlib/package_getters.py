@@ -13,7 +13,7 @@ class PackageGetter(object):
     def get_name_version(self):
         raise NotImplementedError('Whoops, get method not implemented by %s.' % self.__class__)
 
-class Downloader(PackageGetter):
+class PypiDownloader(PackageGetter):
     def __init__(self, client, name, version = None, save_dir = None):
         self.client = client
         self.name = name

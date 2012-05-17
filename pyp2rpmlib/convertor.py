@@ -49,9 +49,9 @@ class Convertor(object):
         if not self._getter:
             if self.source_from == 'pypi':
                 if self.name == None: raise exceptions.NameNotSpecifiedException('Must specify package when getting from PyPI.')
-                self._getter = package_getters.Downloader(self.client, self.name, self.version, self.save_dir)
+                self._getter = package_getters.PypiDownloader(self.client, self.name, self.version, self.save_dir)
             elif os.path.exists(source_from):
-                self._getter = package_getters.LocalData(self.source_from, self.save_dir)
+                self._getter = package_getters.LocalFileGetter(self.source_from, self.save_dir)
             else:
                 raise OSError('"%s" is neither one of preset sources nor a file.' % self.source_from)
 
