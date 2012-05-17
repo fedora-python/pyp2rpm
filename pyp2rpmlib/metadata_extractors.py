@@ -64,6 +64,15 @@ class MetadataExtractor(object):
         return None
 
     def find_list_argument(self, setup_argument):
+        """A simple method that gets setup() function from setup.py list argument like install_requires.
+
+        Will not work in all cases and might need a smarter approach.
+
+        Args:
+            setup_argument: name of the argument of setup() function to get value of
+        Returns:
+            The requested setup() argument or empty list, if setup.py can't be open.
+        """
         setup_py = self.get_content_of_file_from_archive('setup.py')
         if not setup_py: return []
 
@@ -90,13 +99,33 @@ class MetadataExtractor(object):
 
     @property
     def runtime_deps_from_setup_py(self): # install_requires
+        """ Returns list of runtime dependencies of the package specified in setup.py.
+
+        Dependencies are in RPM SPECFILE format.
+        For example: [['Requires', 'python-jinja2'], ['Conflicts', 'python-jinja2', '=', '2.0.1']]
+
+        Returns:
+            list of runtime dependencies of the package
+        """
         return RequirementsParser.deps_from_setup_py(self.find_list_argument('install_requires'), runtime = True)
 
     @property
     def build_deps_from_setup_py(self): # setup_requires
+        """Same as runtime_deps_from_setup_py, but build dependencies.
+
+        Returns:
+            list of build dependencies of the package
+        """
         return RequirementsParser.deps_from_setup_py(self.find_list_argument('setup_requires'), runtime = False)
 
     def has_file_with_suffix(self, suffixes):
+        """Finds out if there is a file with one of suffixes in the archive.
+        Args:
+            suffixes: list of suffixes to look for
+        Returns:
+            True if there is at least one file with at least one given suffix in the archive, False otherwise
+        """
+
         name, suffix = os.path.splitext(self.local_file)
         extractor = self.get_extractor_cls(suffix)
         has_file = False
@@ -109,14 +138,26 @@ class MetadataExtractor(object):
 
     @property
     def has_bundled_egg_info(self):
+        """Finds out if there is a bundled .egg-info dir in the archive.
+        Returns:
+            True if the archive contains bundled .egg-info directory, False otherwise
+        """
         return self.has_file_with_suffix('.egg-info')
 
     @property
     def has_extension(self):
+        """Finds out whether the packages has binary extension.
+        Returns:
+            True if the package has a binary extension, False otherwise
+        """
         return self.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
     @property
     def data_from_archive(self):
+        """Returns all metadata extractable from the archive.
+        Returns:
+            dictionary containing metadata extracted from the archive
+        """
         archive_data = {}
         archive_data['has_extension'] = self.has_extension
         archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
@@ -131,6 +172,10 @@ class PypiMetadataExtractor(MetadataExtractor):
         self.client = client
 
     def extract_data(self):
+        """Extracts data from PyPI and archive.
+        Returns:
+            PypiData object containing data extracted from PyPI and archive.
+        """
         release_urls = self.client.release_urls(self.name, self.version)[0]
         release_data = self.client.release_data(self.name, self.version)
         data = PypiData(self.local_file, self.name, self.version, release_urls['md5_digest'], release_urls['url'])
