@@ -10,6 +10,7 @@ from pyp2rpmlib import package_getters
 from pyp2rpmlib import settings
 
 class Convertor(object):
+    """Object that takes care of the actual process of converting the package."""
     def __init__(self, name = None, version = None, save_dir = None, source_from = 'pypi', metadata_from = 'pypi', template = 'fedora'):
         self.name = name
         self.version = version
@@ -24,6 +25,10 @@ class Convertor(object):
         self._client_set = False
 
     def convert(self):
+        """Returns RPM SPECFILE.
+        Returns:
+            Rendered RPM SPECFILE.
+        """
         # move file into position
         local_file = self.getter().get()
 
@@ -37,6 +42,10 @@ class Convertor(object):
         return jinja_template.render(data = data)
 
     def getter(self):
+        """Returns the proper PackageGetter subclass.
+        Returns:
+            The proper PackageGetter subclass according to self.source_from.
+        """
         if not self._getter:
             if self.source_from == 'pypi':
                 if self.name == None: raise exceptions.NameNotSpecifiedException('Must specify package when getting from PyPI.')
@@ -49,6 +58,10 @@ class Convertor(object):
         return self._getter
 
     def metadata_extractor(self, local_file):
+        """Returns the proper MetadataExtractor subclass.
+        Returns:
+            The proper MetadataExtractor subclass according to self.metadata_from.
+        """
         if not self._metadata_extractor:
             if self.metadata_from == 'pypi':
                 self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(local_file, self.name, self.version, self.client)
@@ -59,6 +72,10 @@ class Convertor(object):
 
     @property
     def client(self):
+        """Returns the XMLRPC client for PyPI.
+        Returns:
+            XMLRPC client for PyPI.
+        """
         # cannot use "if self._client"...
         if not self._client_set:
             self._client = xmlrpclib.ServerProxy(settings.PYPI_URL)
