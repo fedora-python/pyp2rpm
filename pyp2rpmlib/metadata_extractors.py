@@ -63,7 +63,7 @@ class MetadataExtractor(object):
 
         return None
 
-    def find_array_argument(self, setup_argument):
+    def find_list_argument(self, setup_argument):
         setup_py = self.get_content_of_file_from_archive('setup.py')
         if not setup_py: return []
 
@@ -90,11 +90,11 @@ class MetadataExtractor(object):
 
     @property
     def runtime_deps_from_setup_py(self): # install_requires
-        return RequirementsParser.deps_from_setup_py(self.find_array_argument('install_requires'), runtime = True)
+        return RequirementsParser.deps_from_setup_py(self.find_list_argument('install_requires'), runtime = True)
 
     @property
     def build_deps_from_setup_py(self): # setup_requires
-        return RequirementsParser.deps_from_setup_py(self.find_array_argument('setup_requires'), runtime = False)
+        return RequirementsParser.deps_from_setup_py(self.find_list_argument('setup_requires'), runtime = False)
 
     def has_file_with_suffix(self, suffixes):
         name, suffix = os.path.splitext(self.local_file)
