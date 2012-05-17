@@ -31,8 +31,11 @@ class MetadataExtractor(object):
             from tarfile import TarFile
             file_cls = TarFile
         elif suffix in ['.zip']:
-            from zipfile import ZipFile
+            from zipfile import ZipFile, ZipInfo
             file_cls = ZipFile
+            ZipFile.getmembers = ZipFile.infolist
+            ZipFile.extractfile = ZipFile.open
+            ZipInfo.name = ZipInfo.filename
         else:
             pass
             # TODO: log that file has unextractable archive suffix and we can't look inside the archive
@@ -55,7 +58,7 @@ class MetadataExtractor(object):
         extractor = self.get_extractor_cls(suffix)
 
         if extractor:
-            with extractor.open(name = self.local_file) as opened_file:
+            with extractor(self.local_file) as opened_file:
                 for member in opened_file.getmembers():
                     if os.path.basename(member.name) == name:
                         extracted = opened_file.extractfile(member)
@@ -130,7 +133,7 @@ class MetadataExtractor(object):
         has_file = False
 
         if extractor:
-            with extractor.open(name = self.local_file) as opened_file:
+            with extractor(self.local_file) as opened_file:
                 for member in opened_file.getmembers():
                     if os.path.splitext(member.name)[1] in suffixes:
                         has_file = True
