@@ -5,6 +5,8 @@ from zipfile import ZipFile
 
 import pytest
 
+from flexmock import flexmock
+
 from pyp2rpmlib.metadata_extractors import *
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -40,3 +42,23 @@ class TestMetadataExtractor(object):
     ])
     def test_get_content_of_file_from_archive(self, i, n, expected):
         assert self.e[i].get_content_of_file_from_archive(n) == expected
+
+    def test_find_list_argument_not_present(self):
+        flexmock(self.e[4]).should_receive('get_content_of_file_from_archive').with_args('setup.py').and_return('install_requires=["spam",\n"eggs"]')
+        assert self.e[4].find_list_argument('setup_requires') == []
+
+    def test_find_list_argument_present(self):
+        flexmock(self.e[4]).should_receive('get_content_of_file_from_archive').with_args('setup.py').and_return('install_requires=["beans",\n"spam"]\nsetup_requires=["spam"]')
+        assert self.e[4].find_list_argument('install_requires') == ['beans', 'spam']
+
+    def test_find_list_argument_unopenable_file(self):
+        flexmock(self.e[4]).should_receive('get_content_of_file_from_archive').with_args('setup.py').and_return(None)
+        assert self.e[4].find_list_argument('install_requires') == []
+
+    def test_runtime_deps_from_egg_info_no_deps(self):
+        flexmock(self.e[3]).should_receive('get_content_of_file_from_archive').with_args('requires.txt').and_return('')
+        assert self.e[3].runtime_deps_from_egg_info == []
+
+    def test_runtime_deps_from_egg_info_some_deps(self):
+        flexmock(self.e[3]).should_receive('get_content_of_file_from_archive').with_args('requires.txt').and_return('spam>1.0\n\n')
+        assert len(self.e[3].runtime_deps_from_egg_info) == 1

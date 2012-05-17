@@ -134,7 +134,7 @@ class MetadataExtractor(object):
         Returns:
             list of runtime dependencies of the package
         """
-        requires_txt = self.get_content_of_file_from_archive('requires.txt') or []
+        requires_txt = self.get_content_of_file_from_archive('requires.txt') or ''
         return DependencyParser.deps_from_pyp_format(requires_txt.splitlines())
 
     @property

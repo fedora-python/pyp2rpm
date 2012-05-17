@@ -43,7 +43,10 @@ class DependencyParser(object):
         parsed = []
 
         for req in requires:
-            parsed.append(Requirement.parse(req))
+            try:
+                parsed.append(Requirement.parse(req))
+            except ValueError as e: # TODO: log unparsable dependency
+                pass
         in_rpm_format = []
         for dep in parsed:
             in_rpm_format.extend(DependencyParser.dependency_to_rpm(dep, runtime))
