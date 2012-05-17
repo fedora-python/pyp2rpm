@@ -1,9 +1,8 @@
 import os
 import re
 
-from pkg_resources import Requirement
-
 from pyp2rpmlib.package_data import PypiData, LocalData
+from pyp2rpmlib.requirements_parser import RequirementsParser
 from pyp2rpmlib import settings
 from pyp2rpmlib import utils
 
@@ -66,52 +65,17 @@ class MetadataExtractor(object):
                     break
 
         if not argument:
-            return '[]'
+            return []
         else:
             argument[0] = argument[0][argument[0].find('['):]
             argument[-1] = argument[-1].rstrip().rstrip(',')
-            return ' '.join(argument).strip()
-
-    def dependency_to_rpm(self, dep, runtime):
-        converted = []
-        if len(dep.specs) == 0:
-            converted.append(['Requires', utils.rpm_name(dep.project_name)])
-        else:
-            for ver_spec in dep.specs:
-                if ver_spec[0] == '!=':
-                    converted.append(['Conflicts', utils.rpm_name(dep.project_name), '=', ver_spec[1]])
-                elif ver_spec[0] == '==':
-                    converted.append(['Requires', utils.rpm_name(dep.project_name), '=', ver_spec[1]])
-                else:
-                    converted.append(['Requires', utils.rpm_name(dep.project_name), ver_spec[0], ver_spec[1]])
-
-        if not runtime:
-            for conv in converted:
-                conv[0] = "Build" + conv[0]
-
-        return converted
-
-    def deps_from_setup_py(self, runtime = True):
-        if runtime:
-            requires = eval(self.find_array_argument('install_requires'))
-        else:
-            requires = eval(self.find_array_argument('setup_requires'))
-
-        parsed = []
-
-        for req in requires:
-            parsed.append(Requirement.parse(req))
-        in_rpm_format = []
-        for dep in parsed:
-            in_rpm_format.extend(self.dependency_to_rpm(dep, runtime))
-
-        return in_rpm_format
+            return eval(' '.join(argument).strip())
 
     def runtime_deps_from_setup_py(self): # install_requires
-        return self.deps_from_setup_py(True)
+        return RequirementsParser.deps_from_setup_py(self.find_array_argument('install_requires'), runtime = True)
 
     def build_deps_from_setup_py(self): # setup_requires
-        return self.deps_from_setup_py(False)
+        return RequirementsParser.deps_from_setup_py(self.find_array_argument('setup_requires'), runtime = False)
 
     def has_file_with_suffix(self, suffixes):
         name, suffix = os.path.splitext(self.local_file)
