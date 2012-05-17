@@ -7,13 +7,19 @@ from pyp2rpmlib import settings
 from pyp2rpmlib import exceptions
 
 class PackageGetter(object):
+    """Base class for package getters"""
     def get(self):
         raise NotImplementedError('Whoops, get method not implemented by %s.' % self.__class__)
 
     def get_name_version(self):
+        """Returns (name, version) tuple.
+        Returns:
+            (name, version) tuple of the package.
+        """
         raise NotImplementedError('Whoops, get method not implemented by %s.' % self.__class__)
 
 class PypiDownloader(PackageGetter):
+    """Class for downloading the package from PyPI."""
     def __init__(self, client, name, version = None, save_dir = None):
         self.client = client
         self.name = name
@@ -26,6 +32,10 @@ class PypiDownloader(PackageGetter):
         return self.client.release_urls(self.name, self.version)[0]['url']
 
     def get(self):
+        """Downloads the package from PyPI.
+        Returns:
+            Full path of the downloaded file.
+        """
         save_file = '%s/%s' % (self.save_dir, self.url.split('/')[-1])
         urllib.urlretrieve(self.url, save_file)
         return save_file
@@ -39,12 +49,20 @@ class LocalFileGetter(PackageGetter):
         self.save_dir = save_dir or os.path.expanduser('~/rpmbuild/SOURCES/')
 
     def get(self):
+        """Copies file from local filesystem to self.save_dir.
+        Returns:
+            Full path of the copied file.
+        """
         save_file = '%s/%s' % (self.save_dir, os.path.basename(self.local_file))
         shutil.copy2(local_file, save_file)
         return save_file
 
     @property
     def _stripped_name_version(self):
+        """Returns filename stripped of the suffix.
+        Returns:
+            Filename stripped of the suffix (extension).
+        """
         # we don't use splitext, because on "a.tar.gz" it returns ("a.tar", "gz")
         filename = os.path.basename(self.local_file)
         for archive_suffix in settings.ARCHIVE_SUFFIXES:
