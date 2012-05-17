@@ -145,20 +145,26 @@ class MetadataExtractor(object):
     def has_file_with_suffix(self, suffixes):
         """Finds out if there is a file with one of suffixes in the archive.
         Args:
-            suffixes: list of suffixes to look for
+            suffixes: list of suffixes or single suffix to look for
         Returns:
-            True if there is at least one file with at least one given suffix in the archive, False otherwise
+            True if there is at least one file with at least one given suffix in the archive, False otherwise (or archive can't be opened)
         """
 
         name, suffix = os.path.splitext(self.local_file)
         extractor = self.get_extractor_cls(suffix)
-        has_file = False
+        if not isinstance(suffixes, list):
+            suffixes = [suffixes]
 
         if extractor:
-            with extractor.open(self.local_file) as opened_file:
-                for member in opened_file.getmembers():
-                    if os.path.splitext(member.name)[1] in suffixes:
-                        has_file = True
+            try:
+                with extractor.open(self.local_file) as opened_file:
+                    for member in opened_file.getmembers():
+                        if os.path.splitext(member.name)[1] in suffixes:
+                            return True
+            except BaseException as e: # TODO: log
+                pass
+
+        return False
 
     @property
     def has_bundled_egg_info(self):

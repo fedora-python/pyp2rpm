@@ -62,3 +62,11 @@ class TestMetadataExtractor(object):
     def test_runtime_deps_from_egg_info_some_deps(self):
         flexmock(self.e[3]).should_receive('get_content_of_file_from_archive').with_args('requires.txt').and_return('spam>1.0\n\n')
         assert len(self.e[3].runtime_deps_from_egg_info) == 1
+
+    @pytest.mark.parametrize(('i', 'suf', 'expected'), [
+        (0, ['.spamspamspam'],  False),
+        (1, '.py', True),
+        (4, ['.eggs'], False),
+    ])
+    def test_has_file_with_suffix_no_file(self, i, suf, expected):
+        assert self.e[i].has_file_with_suffix(suf) == expected
