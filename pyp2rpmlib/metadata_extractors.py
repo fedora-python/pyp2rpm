@@ -45,7 +45,7 @@ class MetadataExtractor(object):
         return file_cls
 
     @utils.memoize_by_args
-    def get_content_of_file_from_archive(self, name): # TODO: extend to be able to match whole path in archive
+    def get_content_of_file_from_archive(self, name): # TODO: extend to be able to match whole path in archive, log if file can't be opened
         """Returns content of file from archive.
 
         So far this only considers name, not full path in the archive. Therefore if two such files exist,
@@ -60,11 +60,14 @@ class MetadataExtractor(object):
         extractor = self.get_extractor_cls(suffix)
 
         if extractor:
-            with extractor.open(self.local_file) as opened_file:
-                for member in opened_file.getmembers():
-                    if os.path.basename(member.name) == name:
-                        extracted = opened_file.extractfile(member)
-                        return extracted.read()
+            try:
+                with extractor.open(self.local_file) as opened_file:
+                    for member in opened_file.getmembers():
+                        if os.path.basename(member.name) == name:
+                            extracted = opened_file.extractfile(member)
+                            return extracted.read()
+            except BaseException as e:
+                pass
 
         return None
 
