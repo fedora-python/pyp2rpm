@@ -22,7 +22,7 @@ BuildRequires:  python-devel
 {%- endfor %}
 
 %description
-{{ data.description }}
+{{ data.description|wordwrap }}
 
 
 %prep
