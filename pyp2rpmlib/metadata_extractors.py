@@ -8,6 +8,7 @@ from pyp2rpmlib import utils
 
 
 class MetadataExtractor(object):
+    """Base class for metadata extractors"""
     def __init__(self, local_file, name, version):
         self.local_file = local_file
         self.name = name
@@ -17,6 +18,12 @@ class MetadataExtractor(object):
         raise NotImplementedError('Whoops, extract_data method not implemented by %s.' % self.__class__)
 
     def get_extractor_cls(self, suffix):
+        """Returns the class that can read the archive based on archive suffix.
+        Args:
+            suffix: the suffix (extension) of the archive file (with leading ".", e.g. not "tar", but ".tar")
+        Returns:
+            class that can read the archive or None if no such exists
+        """
         file_cls = None
 
         # only catches ".gz", even from ".tar.gz"
@@ -34,6 +41,16 @@ class MetadataExtractor(object):
 
     @utils.memoize_by_args
     def get_content_of_file_from_archive(self, name): # TODO: extend to be able to match whole path in archive
+        """Returns content of file from archive.
+
+        So far this only considers name, not full path in the archive. Therefore if two such files exist,
+        content of one is returned (it is not specified which one that is).
+
+        Args:
+            name: name of the file to get content of
+        Returns:
+            Content of the file with given name or None, if no such.
+        """
         suffix = os.path.splitext(self.local_file)[1]
         extractor = self.get_extractor_cls(suffix)
 
@@ -46,7 +63,7 @@ class MetadataExtractor(object):
 
         return None
 
-    def find_array_argument(self, setup_argument): # very stupid method to find an array argument of setup()
+    def find_array_argument(self, setup_argument):
         setup_py = self.get_content_of_file_from_archive('setup.py')
         if not setup_py: return []
 
