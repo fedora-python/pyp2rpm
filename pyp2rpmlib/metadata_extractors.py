@@ -111,7 +111,7 @@ class MetadataExtractor(object):
         Returns:
             list of runtime dependencies of the package
         """
-        return DependencyParser.deps_from_setup_py(self.find_list_argument('install_requires'), runtime = True)
+        return DependencyParser.deps_from_pyp_format(self.find_list_argument('install_requires'), runtime = True)
 
     @property
     def build_deps_from_setup_py(self): # setup_requires
@@ -120,7 +120,7 @@ class MetadataExtractor(object):
         Returns:
             list of build dependencies of the package
         """
-        return DependencyParser.deps_from_setup_py(self.find_list_argument('setup_requires'), runtime = False)
+        return DependencyParser.deps_from_pyp_format(self.find_list_argument('setup_requires'), runtime = False)
 
     @property
     def runtime_deps_from_egg_info(self):
@@ -132,7 +132,7 @@ class MetadataExtractor(object):
             list of runtime dependencies of the package
         """
         requires_txt = self.get_content_of_file_from_archive('requires.txt') or []
-        return DependencyParser.deps_from_setup_py(requires_txt.splitlines())
+        return DependencyParser.deps_from_pyp_format(requires_txt.splitlines())
 
     @property
     def build_deps_from_egg_info(self):

@@ -32,7 +32,7 @@ class DependencyParser(object):
         return converted
 
     @staticmethod
-    def deps_from_setup_py(requires, runtime = True):
+    def deps_from_pyp_format(requires, runtime = True):
         """Parses dependencies extracted from setup.py.
         Args:
             requires: list of dependencies as written in setup.py of the package.
