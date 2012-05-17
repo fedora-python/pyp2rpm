@@ -2,7 +2,7 @@ import os
 import re
 
 from pyp2rpmlib.package_data import PypiData, LocalData
-from pyp2rpmlib.requirements_parser import RequirementsParser
+from pyp2rpmlib.requirements_parser import DependencyParser
 from pyp2rpmlib import settings
 from pyp2rpmlib import utils
 
@@ -107,7 +107,7 @@ class MetadataExtractor(object):
         Returns:
             list of runtime dependencies of the package
         """
-        return RequirementsParser.deps_from_setup_py(self.find_list_argument('install_requires'), runtime = True)
+        return DependencyParser.deps_from_setup_py(self.find_list_argument('install_requires'), runtime = True)
 
     @property
     def build_deps_from_setup_py(self): # setup_requires
@@ -116,7 +116,7 @@ class MetadataExtractor(object):
         Returns:
             list of build dependencies of the package
         """
-        return RequirementsParser.deps_from_setup_py(self.find_list_argument('setup_requires'), runtime = False)
+        return DependencyParser.deps_from_setup_py(self.find_list_argument('setup_requires'), runtime = False)
 
     def has_file_with_suffix(self, suffixes):
         """Finds out if there is a file with one of suffixes in the archive.

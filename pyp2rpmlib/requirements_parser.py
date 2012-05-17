@@ -2,7 +2,7 @@ from pkg_resources import Requirement
 
 from pyp2rpmlib import utils
 
-class RequirementsParser(object):
+class DependencyParser(object):
     @staticmethod
     def dependency_to_rpm(dep, runtime):
         """Converts a dependency got by pkg_resources.Requirement.parse() to RPM format.
@@ -46,7 +46,7 @@ class RequirementsParser(object):
             parsed.append(Requirement.parse(req))
         in_rpm_format = []
         for dep in parsed:
-            in_rpm_format.extend(RequirementsParser.dependency_to_rpm(dep, runtime))
+            in_rpm_format.extend(DependencyParser.dependency_to_rpm(dep, runtime))
 
         return in_rpm_format
 
