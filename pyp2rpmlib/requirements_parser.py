@@ -5,6 +5,14 @@ from pyp2rpmlib import utils
 class RequirementsParser(object):
     @staticmethod
     def dependency_to_rpm(dep, runtime):
+        """Converts a dependency got by pkg_resources.Requirement.parse() to RPM format.
+        Args:
+            dep - a dependency retrieved by pkg_resources.Requirement.parse()
+            runtime - whether the returned dependency should be runtime (True) or build time (False)
+        Returns:
+            List of RPM SPECFILE dependencies.
+            For example: [['Requires', 'python-jinja2'], ['Conflicts', 'python-jinja2', '=', '2.0.1']]
+        """
         converted = []
         if len(dep.specs) == 0:
             converted.append(['Requires', utils.rpm_name(dep.project_name)])
@@ -25,6 +33,13 @@ class RequirementsParser(object):
 
     @staticmethod
     def deps_from_setup_py(requires, runtime = True):
+        """Parses dependencies extracted from setup.py.
+        Args:
+            requires: list of dependencies as written in setup.py of the package.
+            runtime: are the dependencies runtime (True) or build time (False)?
+        Returns:
+            List of RPM SPECFILE dependencies (see dependency_to_rpm for format).
+        """
         parsed = []
 
         for req in requires:
