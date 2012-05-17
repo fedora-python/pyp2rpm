@@ -181,14 +181,16 @@ class PypiMetadataExtractor(MetadataExtractor):
         for data_field in settings.PYPI_USABLE_DATA:
             setattr(data, data_field, release_data.get(data_field, None))
 
-        # if license is not known, try to extract if from trove classifiers
-        if data.license in [None, 'UNKNOWN']:
-            data.license = []
-            for classifier in release_data['classifiers']:
-                if classifier.find('License') != -1:
-                    data.license.append(settings.TROVE_LICENSES.get(classifier, 'UNKNOWN'))
+        # we usually get better license representation from trove classifiers
+        trove_license = []
+        for classifier in release_data['classifiers']:
+            if classifier.find('License') != -1:
+                if settings.TROVE_LICENSES.has_key(classifier):
+                    trove_license.append(settings.TROVE_LICENSES[classifier])
+        trove_license = ' AND '.join(trove_license)
 
-            data.license = ' AND '.join(data.license)
+        if trove_license:
+            data.license = trove_license
 
         for k, v in self.data_from_archive.iteritems():
             setattr(data, k, v)
