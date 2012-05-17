@@ -13,11 +13,11 @@ Source0:        {{ data.url }}
 BuildArch:      noarch
 {%- endif %}
 BuildRequires:  python-devel
-{%- for build_dep in data.build_deps_from_setup_py %}
+{%- for build_dep in data.build_deps %}
 {{ build_dep[0] }}:{{ ' ' * (15 - build_dep[0]|length) }}{{ build_dep[1] }}{% if build_dep[2] is defined %} {{ build_dep[2] }} {{ build_dep[3] }}{% endif %}
 {%- endfor %}
 
-{%- for runtime_dep in data.runtime_deps_from_setup_py %}
+{%- for runtime_dep in data.runtime_deps %}
 {{ runtime_dep[0] }}:{{ ' ' * (15 - runtime_dep[0]|length) }}{{ runtime_dep[1] }}{% if runtime_dep[2] is defined %} {{ runtime_dep[2] }} {{ runtime_dep[3] }}{% endif %}
 {%- endfor %}
 

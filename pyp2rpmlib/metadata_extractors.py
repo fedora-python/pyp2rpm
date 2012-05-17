@@ -36,7 +36,7 @@ class MetadataExtractor(object):
         # only catches ".gz", even from ".tar.gz"
         if suffix in ['.tar', '.gz', '.bz2']:
             file_cls = TarFile
-        elif suffix in ['.zip']:
+        elif suffix in ['.zip', '.egg']:
             file_cls = ZipFile
         else:
             pass
@@ -122,6 +122,23 @@ class MetadataExtractor(object):
         """
         return DependencyParser.deps_from_setup_py(self.find_list_argument('setup_requires'), runtime = False)
 
+    @property
+    def runtime_deps_from_egg_info(self):
+        """ Returns list of runtime dependencies of the package specified in EGG-INFO/requires.txt.
+
+        Dependencies are in RPM SPECFILE format - see DependencyParser.dependency_to_rpm() for details.
+
+        Returns:
+            list of runtime dependencies of the package
+        """
+        requires_txt = self.get_content_of_file_from_archive('requires.txt') or []
+        return DependencyParser.deps_from_setup_py(requires_txt.splitlines())
+
+    @property
+    def build_deps_from_egg_info(self):
+        """Stub"""
+        return []
+
     def has_file_with_suffix(self, suffixes):
         """Finds out if there is a file with one of suffixes in the archive.
         Args:
@@ -165,8 +182,12 @@ class MetadataExtractor(object):
         archive_data = {}
         archive_data['has_extension'] = self.has_extension
         archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
-        archive_data['runtime_deps_from_setup_py'] = self.runtime_deps_from_setup_py
-        archive_data['build_deps_from_setup_py'] = self.build_deps_from_setup_py
+        if self.local_file.endswith('.egg'):
+            archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
+            archive_data['build_deps'] = self.build_deps_from_egg_info
+        else:
+            archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
+            archive_data['build_deps'] = self.build_deps_from_setup_py
 
         return archive_data
 

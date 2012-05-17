@@ -1,4 +1,4 @@
-ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2', '.gz', '.bz2', '.zip']
+ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2', '.gz', '.bz2', '.zip', '.egg']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
 PYPI_URL = 'http://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'release_url', 'requires']
