@@ -26,7 +26,7 @@ class PackageData(object):
 
     @property
     def pkg_name(self):
-        utils.rpm_name(self.name)
+        return utils.rpm_name(self.name)
 
     @property
     def changelog_date_packager(self):
