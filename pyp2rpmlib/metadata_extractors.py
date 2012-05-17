@@ -101,8 +101,7 @@ class MetadataExtractor(object):
     def runtime_deps_from_setup_py(self): # install_requires
         """ Returns list of runtime dependencies of the package specified in setup.py.
 
-        Dependencies are in RPM SPECFILE format.
-        For example: [['Requires', 'python-jinja2'], ['Conflicts', 'python-jinja2', '=', '2.0.1']]
+        Dependencies are in RPM SPECFILE format - see DependencyParser.dependency_to_rpm() for details.
 
         Returns:
             list of runtime dependencies of the package
