@@ -79,7 +79,7 @@ class MetadataExtractor(object):
         Args:
             setup_argument: name of the argument of setup() function to get value of
         Returns:
-            The requested setup() argument or empty list, if setup.py can't be open.
+            The requested setup() argument or empty list, if setup.py can't be open (or argument is not present).
         """
         setup_py = self.get_content_of_file_from_archive('setup.py')
         if not setup_py: return []
