@@ -14,7 +14,7 @@ class MetadataExtractor(object):
         self.version = version
 
     def extract_data(self):
-        raise NotImplementedError('Whoops, do_extraction method not implemented by %s.' % self.__class__)
+        raise NotImplementedError('Whoops, extract_data method not implemented by %s.' % self.__class__)
 
     def get_extractor_cls(self, suffix):
         file_cls = None
@@ -71,9 +71,11 @@ class MetadataExtractor(object):
             argument[-1] = argument[-1].rstrip().rstrip(',')
             return eval(' '.join(argument).strip())
 
+    @property
     def runtime_deps_from_setup_py(self): # install_requires
         return RequirementsParser.deps_from_setup_py(self.find_array_argument('install_requires'), runtime = True)
 
+    @property
     def build_deps_from_setup_py(self): # setup_requires
         return RequirementsParser.deps_from_setup_py(self.find_array_argument('setup_requires'), runtime = False)
 
@@ -88,11 +90,23 @@ class MetadataExtractor(object):
                     if os.path.splitext(member.name)[1] in suffixes:
                         has_file = True
 
+    @property
     def has_bundled_egg_info(self):
         return self.has_file_with_suffix('.egg-info')
 
+    @property
     def has_extension(self):
         return self.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
+
+    @property
+    def data_from_archive(self):
+        archive_data = {}
+        archive_data['has_extension'] = self.has_extension
+        archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
+        archive_data['runtime_deps_from_setup_py'] = self.runtime_deps_from_setup_py
+        archive_data['build_deps_from_setup_py'] = self.build_deps_from_setup_py
+
+        return archive_data
 
 class PypiMetadataExtractor(MetadataExtractor):
     def __init__(self, local_file, name, version, client):
@@ -115,10 +129,8 @@ class PypiMetadataExtractor(MetadataExtractor):
 
             data.license = ' AND '.join(data.license)
 
-        data.has_extension = self.has_extension()
-        data.has_bundled_egg_info = self.has_bundled_egg_info()
-        data.runtime_deps_from_setup_py = self.runtime_deps_from_setup_py()
-        data.build_deps_from_setup_py = self.build_deps_from_setup_py()
+        for k, v in self.data_from_archive.iteritems():
+            setattr(data, k, v)
 
         return data
 
