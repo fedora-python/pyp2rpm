@@ -4,8 +4,8 @@ import re
 from tarfile import TarFile
 from zipfile import ZipFile, ZipInfo
 
+from pyp2rpmlib.dependency_parser import DependencyParser
 from pyp2rpmlib.package_data import PypiData, LocalData
-from pyp2rpmlib.requirements_parser import DependencyParser
 from pyp2rpmlib import settings
 from pyp2rpmlib import utils
 
