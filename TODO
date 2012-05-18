@@ -1,0 +1,3 @@
+- Add support for choosing templates.
+- Add Python 3 to default fedora template.
+- Handle package data files, if given (some switch for setup.py --install in some cases).
