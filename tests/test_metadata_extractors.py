@@ -68,5 +68,14 @@ class TestMetadataExtractor(object):
         (1, '.py', True),
         (4, ['.eggs'], False),
     ])
-    def test_has_file_with_suffix_no_file(self, i, suf, expected):
+    def test_has_file_with_suffix(self, i, suf, expected):
         assert self.e[i].has_file_with_suffix(suf) == expected
+
+    @pytest.mark.parametrize(('i', 'expected'), [
+        (0, True),
+        (1, True),
+        (3, False),
+        (4, False),
+    ])
+    def test_has_bundled_egg_info(self, i, expected):
+        assert self.e[i].has_bundled_egg_info == expected

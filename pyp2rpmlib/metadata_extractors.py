@@ -161,6 +161,11 @@ class MetadataExtractor(object):
                     for member in opened_file.getmembers():
                         if os.path.splitext(member.name)[1] in suffixes:
                             return True
+                        else:
+                            # hack for .zip files, where directories are not returned themselves, therefore we can't find e.g. .egg-info
+                            for suffix in suffixes:
+                                if '%s/' % suffix in member.name:
+                                    return True
             except BaseException as e: # TODO: log
                 pass
 
