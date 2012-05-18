@@ -44,7 +44,7 @@ class PypiDownloader(PackageGetter):
         return (self.name, self.version)
 
 class LocalFileGetter(PackageGetter):
-    def __init__(local_file, save_dir = None):
+    def __init__(self, local_file, save_dir = None):
         self.local_file = local_file
         self.save_dir = save_dir or os.path.expanduser('~/rpmbuild/SOURCES/')
 
@@ -72,8 +72,6 @@ class LocalFileGetter(PackageGetter):
         raise exceptions.UnknownArchiveFormatException('Unkown archive format of file %s.' % filename)
 
     def get_name_version(self):
-        split_name_version = self._stripped_name_version.rsplit('-', 1)
-        if len(split_name_version) != 2:
-            raise BadFilenameException('Filename %s seems to have wrong format - have you renamed?' % _stripped_name_version)
+        split_name_version = self._stripped_name_version.rsplit('-', 2)
 
         return (split_name_version[0], split_name_version[1])
