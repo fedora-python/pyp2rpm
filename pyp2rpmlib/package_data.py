@@ -16,6 +16,10 @@ class PackageData(object):
 
         return 'TODO:'
 
+    def set_from(self, data_dict):
+        for k, v in data_dict.iteritems():
+            setattr(self, k, v)
+
     @property
     def summary(self):
         return self._summary

@@ -224,11 +224,36 @@ class PypiMetadataExtractor(MetadataExtractor):
         # we usually get better license representation from trove classifiers
         data.license = utils.license_from_trove(release_data['classifiers']) or data.license
 
-        for k, v in self.data_from_archive.iteritems():
-            setattr(data, k, v)
+        data.set_from(self.data_from_archive)
 
         return data
 
 class LocalMetadataExtractor(MetadataExtractor):
     def __init__(self, local_file, name, version):
         super(LocalMetadataExtractor, self).__init__(local_file, name, version)
+
+    @property
+    def license_from_archive(self):
+        if self.local_file.endswith('.egg'):
+            return self.license_from_egg_info
+        else:
+            return self.license_from_setup_py
+
+    @property
+    def license_from_setup_py(self):
+        return utils.license_from_trove(self.find_list_argument('classifiers'))
+
+    @property
+    def license_from_egg_info(self):
+        return utils.license_from_trove(self.get_content_of_file_from_archive('PKG-INFO').splitlines())
+
+    def extract_data(self):
+        """Extracts data from archive.
+        Returns:
+            LocalData object containing the extracted data.
+        """
+        data = LocalData(self.local_file, self.name, self.version)
+        data.set_from(self.data_from_archive)
+        data.license = self.license_from_archive
+
+        return data
