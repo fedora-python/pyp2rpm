@@ -4,11 +4,6 @@
 *.swp
 *.swn
 *~
-mcc-test
-local_settings.py
-var/
-tmp/
-.project
-.pydevproject
-.settings
-docs/build/
+build/
+dist/
+pyp2rpm.egg-info
