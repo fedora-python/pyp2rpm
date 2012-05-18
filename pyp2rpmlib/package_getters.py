@@ -53,8 +53,10 @@ class LocalFileGetter(PackageGetter):
         Returns:
             Full path of the copied file.
         """
-        save_file = '%s/%s' % (self.save_dir, os.path.basename(self.local_file))
-        shutil.copy2(local_file, save_file)
+        save_file = '%s%s' % (self.save_dir, os.path.basename(self.local_file))
+        if self.local_file != save_file:
+            shutil.copy2(self.local_file, save_file)
+
         return save_file
 
     @property

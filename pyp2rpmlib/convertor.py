@@ -21,7 +21,7 @@ class Convertor(object):
         self.save_dir = save_dir
         self.source_from = source_from
         self.metadata_from = metadata_from
-        self.template = template or 'fedora'
+        self.template = template
 
         self._getter = None
         self._metadata_extractor = None
@@ -54,7 +54,7 @@ class Convertor(object):
             if self.source_from == 'pypi':
                 if self.name == None: raise exceptions.NameNotSpecifiedException('Must specify package when getting from PyPI.')
                 self._getter = package_getters.PypiDownloader(self.client, self.name, self.version, self.save_dir)
-            elif os.path.exists(source_from):
+            elif os.path.exists(self.source_from):
                 self._getter = package_getters.LocalFileGetter(self.source_from, self.save_dir)
             else:
                 raise OSError('"%s" is neither one of preset sources nor a file.' % self.source_from)
