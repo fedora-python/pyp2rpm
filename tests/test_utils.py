@@ -28,6 +28,7 @@ class TestUtils(object):
     @pytest.mark.parametrize(("input", "expected"), [
         ([], ""),
         (['License :: OSI Approved :: Python Software Foundation License'], 'Python'),
+        (['Classifier: License :: OSI Approved :: Python Software Foundation License'], 'Python'),
         (['License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)', 'License :: OSI Approved :: MIT License'], 'GPLv2+ and MIT'),
     ])
     def test_license_from_trove(self, input, expected):
