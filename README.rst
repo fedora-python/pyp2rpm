@@ -6,14 +6,14 @@ Under heavy development, see TODO file for list of planned features.
 
 Usage:
 
-The most simple use case is running
+The most simple use case is running::
 
-::
     pyp2rpm -n package_name
 
 This downloads the package from PyPI and outputs the RPM SPECFILE.
 
 All of the options are (print this by running pyp2rpm -h::
+
     usage: pyp2rpm [-h] -n PYPI_NAME [-v VERSION] [-m METADATA_SOURCE]
                    [-s PACKAGE_SOURCE] [-d SAVE_DIR] [-t TEMPLATE]
 
@@ -27,3 +27,5 @@ All of the options are (print this by running pyp2rpm -h::
     -s PACKAGE_SOURCE   Where to get package from ("pypi" or "/full/path/to/local/file", default: "pypi").
     -d SAVE_DIR         Where to save the package file (default: "/home/bkabrda/rpmbuild/SOURCES/")
     -t TEMPLATE         Template file (jinja2 format) to render (default: "fedora"). [choosing template not working yet]
+
+pyp2rpm is licensed under MIT license.
