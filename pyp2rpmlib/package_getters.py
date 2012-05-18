@@ -24,7 +24,7 @@ class PypiDownloader(PackageGetter):
         self.client = client
         self.name = name
         self.version = version or self.client.package_releases(self.name)[0]
-        self.save_dir = save_dir or os.path.expanduser('~/rpmbuild/SOURCES/')
+        self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
         # TODO: verify that package exists
 
     @property
@@ -46,7 +46,7 @@ class PypiDownloader(PackageGetter):
 class LocalFileGetter(PackageGetter):
     def __init__(self, local_file, save_dir = None):
         self.local_file = local_file
-        self.save_dir = save_dir or os.path.expanduser('~/rpmbuild/SOURCES/')
+        self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
 
     def get(self):
         """Copies file from local filesystem to self.save_dir.

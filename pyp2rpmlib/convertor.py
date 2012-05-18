@@ -11,13 +11,17 @@ from pyp2rpmlib import settings
 
 class Convertor(object):
     """Object that takes care of the actual process of converting the package."""
-    def __init__(self, name = None, version = None, save_dir = None, source_from = 'pypi', metadata_from = 'pypi', template = 'fedora'):
+    def __init__(self, name = None, version = None,
+                 save_dir = settings.DEFAULT_PKG_SAVE_PATH,
+                 template = settings.DEFAULT_TEMPLATE,
+                 source_from = settings.DEFAULT_PKG_SOURCE,
+                 metadata_from = settings.DEFAULT_METADATA_SOURCE):
         self.name = name
         self.version = version
         self.save_dir = save_dir
         self.source_from = source_from
         self.metadata_from = metadata_from
-        self.template = template
+        self.template = template or 'fedora'
 
         self._getter = None
         self._metadata_extractor = None
