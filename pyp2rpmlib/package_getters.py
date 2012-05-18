@@ -35,6 +35,8 @@ class PypiDownloader(PackageGetter):
         """Downloads the package from PyPI.
         Returns:
             Full path of the downloaded file.
+        Raises:
+            EnvironmentError if the save_dir is not writable.
         """
         save_file = '%s/%s' % (self.save_dir, self.url.split('/')[-1])
         urllib.urlretrieve(self.url, save_file)
@@ -52,9 +54,11 @@ class LocalFileGetter(PackageGetter):
         """Copies file from local filesystem to self.save_dir.
         Returns:
             Full path of the copied file.
+        Raises:
+            EnvironmentError if the file can't be found or the save_dir is not writable.
         """
-        save_file = '%s%s' % (self.save_dir, os.path.basename(self.local_file))
-        if self.local_file != save_file:
+        save_file = '%s/%s' % (self.save_dir, os.path.basename(self.local_file))
+        if not os.path.exists(save_file) or not os.path.samefile(self.local_file, save_file):
             shutil.copy2(self.local_file, save_file)
 
         return save_file
