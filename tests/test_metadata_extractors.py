@@ -22,6 +22,7 @@ class TestMetadataExtractor(object):
                   MetadataExtractor('%srestsh-0.1.tar.gz' % self.td_dir, 'restsh', '0.1'),
                   MetadataExtractor('%sSphinx-1.1.3-py2.6.egg' % self.td_dir, 'Sphinx', '1.1.3'),
                   MetadataExtractor('%sunextractable-1.tar' % self.td_dir, 'unextractable', '1'),
+                  MetadataExtractor('%sbitarray-0.8.0.tar.gz' % self.td_dir, 'bitarray', '0.8.0'),
                  ]
 
     @pytest.mark.parametrize(('i', 's', 'expected'), [
@@ -79,3 +80,12 @@ class TestMetadataExtractor(object):
     ])
     def test_has_bundled_egg_info(self, i, expected):
         assert self.e[i].has_bundled_egg_info == expected
+
+    @pytest.mark.parametrize(('i', 'expected'), [
+        (0, False),
+        (3, False),
+        (4, False),
+        (5, True),
+    ])
+    def test_has_extension(self, i, expected):
+        assert self.e[i].has_extension == expected
