@@ -33,9 +33,6 @@ class PackageData(object):
     def pkg_name(self):
         return utils.rpm_name(self.name)
 
-    def pkg_name_for_python_version(self, version):
-        return utils.rpm_versioned_name(self.name, version)
-
     @property
     def changelog_date_packager(self):
         """Returns part of the changelog entry, containing date and packager.

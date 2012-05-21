@@ -5,6 +5,7 @@ import xmlrpclib
 import jinja2
 
 from pyp2rpmlib import exceptions
+from pyp2rpmlib import filters
 from pyp2rpmlib import metadata_extractors
 from pyp2rpmlib import package_data
 from pyp2rpmlib import package_getters
@@ -45,6 +46,8 @@ class Convertor(object):
 
         data = self.metadata_extractor(local_file).extract_data()
         jinja_env = jinja2.Environment(loader = jinja2.PackageLoader('pyp2rpmlib', 'templates'))
+        for filter in filters.__all__:
+            jinja_env.filters[filter.__name__] = filter
         jinja_template = jinja_env.get_template('%s.spec' % self.template)
 
         return jinja_template.render(data = data)
