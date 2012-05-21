@@ -1,3 +1,4 @@
+* The -n parameter is no longer required for local sources.
 * Choosing templates now work (either relative or absolute path).
 
 - 0.2.0
