@@ -9,6 +9,7 @@ class PackageData(object):
         self.local_file = local_file
         self.name = name
         self.version = version
+        self.python_versions = []
 
     def __getattr__(self, name):
         if name in self.__dict__:
@@ -31,6 +32,9 @@ class PackageData(object):
     @property
     def pkg_name(self):
         return utils.rpm_name(self.name)
+
+    def pkg_name_for_python_version(self, version):
+        return utils.rpm_versioned_name(self.name, version)
 
     @property
     def changelog_date_packager(self):
