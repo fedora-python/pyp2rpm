@@ -24,8 +24,10 @@ class Convertor(object):
         self.save_dir = save_dir
         self.source_from = source_from
         self.metadata_from = metadata_from
-        self.template = template
         self.python_versions = python_versions
+        self.template = template
+        if not self.template.endswith('.spec'):
+            self.template = '%s.spec' % self.template
 
         self._getter = None
         self._metadata_extractor = None
@@ -48,10 +50,18 @@ class Convertor(object):
 
         data = self.metadata_extractor(local_file).extract_data()
         data.python_versions = self.python_versions
-        jinja_env = jinja2.Environment(loader = jinja2.PackageLoader('pyp2rpmlib', 'templates'))
+        jinja_env = jinja2.Environment(loader = jinja2.ChoiceLoader([
+                                                    jinja2.FileSystemLoader(['/']),
+                                                    jinja2.PackageLoader('pyp2rpmlib', 'templates'),
+                                                ])
+                                      )
         for filter in filters.__all__:
             jinja_env.filters[filter.__name__] = filter
-        jinja_template = jinja_env.get_template('%s.spec' % self.template)
+
+        try:
+            jinja_template = jinja_env.get_template(os.path.abspath(self.template))
+        except jinja2.exceptions.TemplateNotFound: # absolute path not found => search in default template dir
+            jinja_template = jinja_env.get_template(self.template)
 
         return jinja_template.render(data = data)
 

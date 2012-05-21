@@ -37,7 +37,7 @@ parser.add_argument('-d',
                    )
 parser.add_argument('-t',
                     required = False,
-                    help = 'Template file (jinja2 format) to render (default: "%s").' % settings.DEFAULT_TEMPLATE,
+                    help = 'Template file (jinja2 format) to render (default: "%s"). Search order is 1) filesystem, 2) default templates.' % settings.DEFAULT_TEMPLATE,
                     metavar = 'TEMPLATE',
                     default = settings.DEFAULT_TEMPLATE
                    )

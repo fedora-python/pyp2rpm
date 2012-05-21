@@ -1,3 +1,5 @@
+* Choosing templates now work (either relative or absolute path).
+
 - 0.2.0
 * Minor bug fixes.
 * Support multiple python versions in one template (e.g. %{?with_python3}).

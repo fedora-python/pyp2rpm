@@ -1,4 +1,3 @@
-- Add support for choosing templates.
 - Handle package data files, if given (some switch for setup.py --install in some cases).
 - Add Group tag.
 - The -n parameter should not be required for local source.
