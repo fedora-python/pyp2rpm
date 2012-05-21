@@ -27,5 +27,6 @@ All of the options are (print this by running pyp2rpm -h::
     -s PACKAGE_SOURCE   Where to get package from ("pypi" or "/full/path/to/local/file", default: "pypi").
     -d SAVE_DIR         Where to save the package file (default: "/home/bkabrda/rpmbuild/SOURCES/")
     -t TEMPLATE         Template file (jinja2 format) to render (default: "fedora"). [choosing template not working yet]
+    -p PYTHON_VERSION   Additional Python versions to include in the specfile (e.g -p3 for %{?with_python3}). Can be specified multiple times.
 
 pyp2rpm is licensed under MIT license.

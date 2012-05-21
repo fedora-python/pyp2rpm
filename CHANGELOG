@@ -1,3 +1,6 @@
+- 0.2.0
+* Minor bug fixes.
+* Support multiple python versions in one template (e.g. %{?with_python3}).
 * Check that the package exists on PyPI when getting source.
 
 - 0.1.0

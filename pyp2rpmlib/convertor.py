@@ -17,13 +17,15 @@ class Convertor(object):
                  save_dir = settings.DEFAULT_PKG_SAVE_PATH,
                  template = settings.DEFAULT_TEMPLATE,
                  source_from = settings.DEFAULT_PKG_SOURCE,
-                 metadata_from = settings.DEFAULT_METADATA_SOURCE):
+                 metadata_from = settings.DEFAULT_METADATA_SOURCE,
+                 python_versions = []):
         self.name = name
         self.version = version
         self.save_dir = save_dir
         self.source_from = source_from
         self.metadata_from = metadata_from
         self.template = template
+        self.python_versions = python_versions
 
         self._getter = None
         self._metadata_extractor = None
@@ -45,6 +47,7 @@ class Convertor(object):
         self.name, self.version = self.getter().get_name_version()
 
         data = self.metadata_extractor(local_file).extract_data()
+        data.python_versions = self.python_versions
         jinja_env = jinja2.Environment(loader = jinja2.PackageLoader('pyp2rpmlib', 'templates'))
         for filter in filters.__all__:
             jinja_env.filters[filter.__name__] = filter
