@@ -23,9 +23,13 @@ class PypiDownloader(PackageGetter):
     def __init__(self, client, name, version = None, save_dir = None):
         self.client = client
         self.name = name
-        self.version = version or self.client.package_releases(self.name)[0]
+        try:
+            self.version = version or self.client.package_releases(self.name)[0]
+        except IndexError: # no such package
+            raise exceptions.NoSuchPackageException('Package "%s" could not be found on PyPI.' % name)
+        if version and self.client.release_urls(name, version) == []: # if version is specified, will check if such version exists
+            raise exceptions.NoSuchPackageException('Package with name "%s" and version "%s" could not be found on PyPI' % (name, version))
         self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
-        # TODO: verify that package exists
 
     @property
     def url(self):

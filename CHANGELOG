@@ -1,2 +1,4 @@
+* Check that the package exists on PyPI when getting source.
+
 - 0.1.0
 * Initial release.

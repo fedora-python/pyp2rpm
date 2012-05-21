@@ -1,4 +1,5 @@
 import os
+import sys
 import xmlrpclib
 
 import jinja2
@@ -34,7 +35,10 @@ class Convertor(object):
             Rendered RPM SPECFILE.
         """
         # move file into position
-        local_file = self.getter().get()
+        try:
+            local_file = self.getter().get()
+        except (exceptions.NoSuchPackageException, OSError) as e:
+            sys.exit(e)
 
         # save name and version from the file (rewrite if set previously)
         self.name, self.version = self.getter().get_name_version()

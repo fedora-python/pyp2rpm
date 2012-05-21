@@ -6,3 +6,6 @@ class BadFilenameException(BaseException):
 
 class NameNotSpecifiedException(BaseException):
     pass
+
+class NoSuchPackageException(BaseException):
+    pass
