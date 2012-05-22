@@ -3,9 +3,35 @@ import tempfile
 
 import pytest
 
+from flexmock import flexmock
+
 from pyp2rpmlib.package_getters import *
+from pyp2rpmlib.exceptions import *
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
+
+class TestPypiFileGetter(object):
+    client = flexmock(
+        package_releases = lambda n: n == 'spam' and ['2', '1'] or [],
+        release_urls = lambda n, v: n == 'spam' and v in ['2', '1'] and [{'url': 'spam'}] or []
+    )
+
+    @pytest.mark.parametrize(('name', 'version'), [
+        ('eggs', '2'),
+        ('spam', '3'),
+    ])
+    def test_init_bad_data(self, name, version):
+        with pytest.raises(NoSuchPackageException):
+            PypiDownloader(self.client, name, version)
+
+    @pytest.mark.parametrize(('name', 'version', 'expected_ver'), [
+        ('spam', '1', '1'),
+        ('spam', None, '2'),
+    ])
+    def test_init_good_data(self, name, version, expected_ver):
+        d = PypiDownloader(self.client, name, version)
+        assert d.version == expected_ver
+
 
 class TestLocalFileGetter(object):
     td_dir = '%s/test_data/' % tests_dir
