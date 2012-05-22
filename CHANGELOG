@@ -1,3 +1,4 @@
+* Enable searching archive for files according to given re.
 * Extracted archive handling to a class.
 * Archives can now be searched for files by full path (internal thing only).
 
