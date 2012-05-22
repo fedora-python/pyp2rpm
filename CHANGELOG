@@ -1,3 +1,4 @@
+- 0.3.0
 * More tests, mainly for PyPI functionality (mocked, do not need net connection).
 * The -n parameter is no longer required for local sources.
 * Choosing templates now work (either relative or absolute path).

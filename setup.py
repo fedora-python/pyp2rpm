@@ -8,7 +8,7 @@ except:
 
 setup(
     name = 'pyp2rpm',
-    version = "0.2.0",
+    version = "0.3.0",
     description = "Convert Python packages to RPM SPECFILES",
     long_description = "Convert Python packages to RPM SPECFILES. The packages can be downloaded from PyPI and the produced SPEC is in line with Fedora Packaging Guidelines.",
     keywords = 'pypi, rpm, spec, specfile, convert',
@@ -26,7 +26,7 @@ setup(
     setup_requires = ['pytest',
                       'flexmock >= 0.9.3'
                      ],
-    classifiers = ['Development Status :: 3 - Alpha',
+    classifiers = ['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
                    'Intended Audience :: System Administrators',
