@@ -118,17 +118,22 @@ class Archive(object):
 
         return False
 
-    def get_files_re(self, file_re, full_path = False):
+    def get_files_re(self, file_re, full_path = False, ignorecase = False):
         """Finds all files that match file_re and returns their list.
         Doesn't care about directories!
 
         Args:
             file_re: raw string to match files against (gets compiled into re)
             full_path: whether to match against full path inside the archive or just the filenames
+            ignorecase: whether to ignore case when using the given re
         Returns:
             List of full paths of files inside the archive that match the given file_re.
         """
-        compiled_re = re.compile(file_re)
+        if ignorecase:
+            compiled_re = re.compile(file_re, re.I)
+        else:
+            compiled_re = re.compile(file_re)
+
         found = []
 
         if self.handle:

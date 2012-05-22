@@ -67,11 +67,12 @@ class TestArchive(object):
         with self.a[i] as a:
             assert a.has_file_with_suffix(suf) == expected
 
-    @pytest.mark.parametrize(('i', 'r', 'f', 'expected'), [
-        (0, r'PKG-INFO', False, ['plumbum-0.9.0/PKG-INFO', 'plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
-        (0, r'[a-z]/PKG-INFO', True, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
-        (0, r'spam/PKG-INFO', True, []),
+    @pytest.mark.parametrize(('i', 'r', 'f', 'c', 'expected'), [
+        (0, r'PKG-INFO', False, False, ['plumbum-0.9.0/PKG-INFO', 'plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'[a-z]/PKG-INFO', True, False, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'[a-z]/pKg-InfO', True, True, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'spam/PKG-INFO', True, False, []),
     ])
-    def test_get_files_re(self, i, r, f, expected):
+    def test_get_files_re(self, i, r, f, c, expected):
         with self.a[i] as a:
-            assert set(a.get_files_re(r, f)) == set(expected)
+            assert set(a.get_files_re(r, f, c)) == set(expected)
