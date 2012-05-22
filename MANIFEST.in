@@ -1,4 +1,4 @@
 include CHANGELOG
 include LICENSE
-include README
+include README.rst
 include pyp2rpmlib/templates/*
