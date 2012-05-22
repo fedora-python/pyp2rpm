@@ -1,3 +1,5 @@
+* Archives can now be searched for files by full path (internal thing only).
+
 - 0.3.1
 * Put the 'Created ...' header in templates - taking some credits here ;) (Added version file for that.)
 * Some minor fixes in templates (no functionality affected).
