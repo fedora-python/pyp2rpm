@@ -29,4 +29,12 @@ All of the options are (print this by running pyp2rpm -h::
     -t TEMPLATE         Template file (jinja2 format) to render (default: "fedora"). Search order is 1) filesystem, 2) default templates.
     -p PYTHON_VERSION   Additional Python versions to include in the specfile (e.g -p3 for %{?with_python3}). Can be specified multiple times.
 
+
+To run the unit tests, cd into the checked out directory and run::
+
+    PYTHONPATH=$(pwd) py.test
+
+I will gladly accept any pull request or recommendation.
+With complex pull requests, please include unit tests in *pytest*, use *flexmock* if you need mocking.
+
 pyp2rpm is licensed under MIT license.
