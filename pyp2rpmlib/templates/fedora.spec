@@ -1,4 +1,4 @@
-{%- from 'macros.spec' import dependencies %}
+{% from 'macros.spec' import dependencies -%}
 %global pypi_name {{ data.name }}
 {%- for pv in data.python_versions %}
 %global with_python{{ pv }} 1
@@ -62,9 +62,11 @@ popd
 {% endfor %}
 
 %install
+{%- if data.python_versions|length > 0 %}
 # Must do the subpackages' install first because the scripts in /usr/bin are
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
+{%- endif %}
 {%- for pv in data.python_versions %}
 %if 0%{?with_python{{ pv }}}
 pushd %{py{{ pv }}dir}

@@ -1,3 +1,5 @@
+* Some minor fixes in templates (no functionality affected).
+
 - 0.3.0
 * More tests, mainly for PyPI functionality (mocked, do not need net connection).
 * The -n parameter is no longer required for local sources.
