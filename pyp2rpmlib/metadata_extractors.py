@@ -45,11 +45,12 @@ class MetadataExtractor(object):
         return file_cls
 
     @utils.memoize_by_args
-    def get_content_of_file_from_archive(self, name): # TODO: extend to be able to match whole path in archive, log if file can't be opened
+    def get_content_of_file_from_archive(self, name, full_path = False): # TODO: log if file can't be opened
         """Returns content of file from archive.
 
-        So far this only considers name, not full path in the archive. Therefore if two such files exist,
+        If full_path is set to False and two files with given name exist,
         content of one is returned (it is not specified which one that is).
+        If set to True, returns content of exactly that file.
 
         Args:
             name: name of the file to get content of
@@ -63,7 +64,7 @@ class MetadataExtractor(object):
             try:
                 with extractor.open(self.local_file) as opened_file:
                     for member in opened_file.getmembers():
-                        if os.path.basename(member.name) == name:
+                        if (full_path and member.name == name) or (not full_path and os.path.basename(member.name) == name):
                             extracted = opened_file.extractfile(member)
                             return extracted.read()
             except BaseException as e:
@@ -81,7 +82,7 @@ class MetadataExtractor(object):
         Returns:
             The requested setup() argument or empty list, if setup.py can't be open (or argument is not present).
         """
-        setup_py = self.get_content_of_file_from_archive('setup.py')
+        setup_py = self.get_content_of_file_from_archive('setup.py') # TODO: construct absolute path here
         if not setup_py: return []
 
         argument = []
@@ -134,7 +135,7 @@ class MetadataExtractor(object):
         Returns:
             list of runtime dependencies of the package
         """
-        requires_txt = self.get_content_of_file_from_archive('requires.txt') or ''
+        requires_txt = self.get_content_of_file_from_archive('EGG-INFO/requires.txt', True) or ''
         return DependencyParser.deps_from_pyp_format(requires_txt.splitlines())
 
     @property
@@ -245,7 +246,7 @@ class LocalMetadataExtractor(MetadataExtractor):
 
     @property
     def license_from_egg_info(self):
-        return utils.license_from_trove(self.get_content_of_file_from_archive('PKG-INFO').splitlines())
+        return utils.license_from_trove(self.get_content_of_file_from_archive('EGG-INFO/PKG-INFO', True).splitlines())
 
     def extract_data(self):
         """Extracts data from archive.
