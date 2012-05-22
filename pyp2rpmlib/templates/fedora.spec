@@ -56,7 +56,7 @@ find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}
 {% for pv in data.python_versions %}
 %if 0%{?with_python{{ pv }}}
 pushd %{py{{ pv }}dir}
-CFLAGS="$RPM_OPT_FLAGS" %{__python{{ pv }}} setup.py build
+{% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}%{__python{{ pv }}} setup.py build
 popd
 %endif # with_python{{ pv }}
 {% endfor %}
