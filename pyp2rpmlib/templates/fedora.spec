@@ -74,8 +74,7 @@ pushd %{py{{ pv }}dir}
 %{__python{{ pv }}} setup.py install --skip-build --root $RPM_BUILD_ROOT
 popd
 %endif # with_python{{ pv }}
-{%- endfor %}
-
+{% endfor %}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
 
