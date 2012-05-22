@@ -69,6 +69,9 @@ class Convertor(object):
         """Returns the proper PackageGetter subclass.
         Returns:
             The proper PackageGetter subclass according to self.source_from.
+        Raises:
+            NoSuchSourceException if source to get the package from is unknown
+            NoSuchPackageException if the package is unknown on PyPI
         """
         if not self._getter:
             if self.source_from == 'pypi':
@@ -77,7 +80,7 @@ class Convertor(object):
             elif os.path.exists(self.source_from):
                 self._getter = package_getters.LocalFileGetter(self.source_from, self.save_dir)
             else:
-                raise OSError('"%s" is neither one of preset sources nor a file.' % self.source_from)
+                raise exceptions.NoSuchSourceException('"%s" is neither one of preset sources nor a file.' % self.source_from)
 
         return self._getter
 

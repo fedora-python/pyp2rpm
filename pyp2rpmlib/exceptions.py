@@ -9,3 +9,6 @@ class NameNotSpecifiedException(BaseException):
 
 class NoSuchPackageException(BaseException):
     pass
+
+class NoSuchSourceException(BaseException):
+    pass
