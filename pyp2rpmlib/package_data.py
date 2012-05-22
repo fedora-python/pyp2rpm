@@ -2,8 +2,11 @@ import subprocess
 import time
 
 from pyp2rpmlib import utils
+from pyp2rpmlib import version
 
 class PackageData(object):
+    credit_line = '# Created by pyp2rpm-%s' % version.version
+
     """A simple object that carries data about a package."""
     def __init__(self, local_file, name, version):
         self.local_file = local_file

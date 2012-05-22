@@ -1,3 +1,4 @@
+{{ data.credit_line }}
 {% from 'macros.spec' import dependencies -%}
 %global pypi_name {{ data.name }}
 {%- for pv in data.python_versions %}
