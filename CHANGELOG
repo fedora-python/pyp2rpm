@@ -1,3 +1,4 @@
+* Extracted archive handling to a class.
 * Archives can now be searched for files by full path (internal thing only).
 
 - 0.3.1
