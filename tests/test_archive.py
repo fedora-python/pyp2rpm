@@ -66,3 +66,12 @@ class TestArchive(object):
     def test_has_file_with_suffix(self, i, suf, expected):
         with self.a[i] as a:
             assert a.has_file_with_suffix(suf) == expected
+
+    @pytest.mark.parametrize(('i', 'r', 'f', 'expected'), [
+        (0, r'PKG-INFO', False, ['plumbum-0.9.0/PKG-INFO', 'plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'[a-z]/PKG-INFO', True, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'spam/PKG-INFO', True, []),
+    ])
+    def test_get_files_re(self, i, r, f, expected):
+        with self.a[i] as a:
+            assert set(a.get_files_re(r, f)) == set(expected)

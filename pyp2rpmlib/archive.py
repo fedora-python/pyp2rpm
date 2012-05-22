@@ -1,4 +1,5 @@
 import os
+import re
 
 from zipfile import ZipFile, ZipInfo
 from tarfile import TarFile
@@ -95,7 +96,7 @@ class Archive(object):
 
         return None
 
-    def has_file_with_suffix(self, suffixes):
+    def has_file_with_suffix(self, suffixes): # TODO: maybe implement this using get_files_re
         """Finds out if there is a file with one of suffixes in the archive.
         Args:
             suffixes: list of suffixes or single suffix to look for
@@ -116,6 +117,26 @@ class Archive(object):
                             return True
 
         return False
+
+    def get_files_re(self, file_re, full_path = False):
+        """Finds all files that match file_re and returns their list.
+        Doesn't care about directories!
+
+        Args:
+            file_re: raw string to match files against (gets compiled into re)
+            full_path: whether to match against full path inside the archive or just the filenames
+        Returns:
+            List of full paths of files inside the archive that match the given file_re.
+        """
+        compiled_re = re.compile(file_re)
+        found = []
+
+        if self.handle:
+            for member in self.handle.getmembers():
+                if (full_path and compiled_re.search(member.name)) or (not full_path and compiled_re.search(os.path.basename(member.name))):
+                    found.append(member.name)
+
+        return found
 
     def find_list_argument(self, setup_argument):
         """A simple method that gets setup() function from setup.py list argument like install_requires.
