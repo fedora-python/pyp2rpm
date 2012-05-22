@@ -1,4 +1,3 @@
 - Handle package data files, if given (some switch for setup.py --install in some cases).
 - Add Group tag.
 - Test template rendering.
-- Try to handle README, licensing, etc.. and add them to %doc in %files.

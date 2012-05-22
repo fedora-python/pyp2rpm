@@ -73,6 +73,18 @@ class MetadataExtractor(object):
         return self.archive.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
     @property
+    def doc_files(self):
+        """Returns list of doc files that should be used for %doc in specfile.
+        Returns:
+            List of doc files from the archive - only basenames, not full paths.
+        """
+        doc_files = []
+        for doc_file_re in settings.DOC_FILES_RE:
+            doc_files.extend(self.archive.get_files_re(doc_file_re, ignorecase = True))
+
+        return map(lambda x: os.path.basename(x), doc_files)
+
+    @property
     def data_from_archive(self):
         """Returns all metadata extractable from the archive.
         Returns:
@@ -81,6 +93,7 @@ class MetadataExtractor(object):
         archive_data = {}
         archive_data['has_extension'] = self.has_extension
         archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
+        archive_data['doc_files'] = self.doc_files
         if self.archive.is_egg:
             archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
             archive_data['build_deps'] = self.build_deps_from_egg_info

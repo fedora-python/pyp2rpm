@@ -43,7 +43,7 @@ class TestMetadataExtractor(object):
         (4, False),
     ])
     def test_has_bundled_egg_info(self, i, expected):
-        with self.e[i].archive as a:
+        with self.e[i].archive:
             assert self.e[i].has_bundled_egg_info == expected
 
     @pytest.mark.parametrize(('i', 'expected'), [
@@ -53,9 +53,16 @@ class TestMetadataExtractor(object):
         (5, True),
     ])
     def test_has_extension(self, i, expected):
-        with self.e[i].archive as a:
+        with self.e[i].archive:
             assert self.e[i].has_extension == expected
-
+    @pytest.mark.parametrize(('i', 'expected'), [
+        (0, ['README.rst', 'LICENSE']),
+        (1, ['README.txt', 'LICENSE']),
+        (3, []),
+    ])
+    def test_doc_files(self, i, expected):
+        with self.e[i].archive:
+            assert self.e[i].doc_files == expected
 
 class TestPypiMetadataExtractor(object):
     td_dir = '%s/test_data/' % tests_dir

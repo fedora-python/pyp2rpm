@@ -79,7 +79,7 @@ popd
 
 
 %files
-%doc
+%doc {{ data.doc_files|join(' ') }}
 %{python_sitelib}/%{pypi_name}
 %{python_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 {%- if data.has_extension %}
@@ -88,7 +88,7 @@ popd
 {% for pv in data.python_versions %}
 %if 0%{?with_python{{pv}}}
 %files -n {{ data.name|macroed_pkg_name|for_python_version(pv) }}
-%doc
+%doc {{ data.doc_files|join(' ') }}
 %{python{{pv}}_sitelib}/%{pypi_name}
 %{python{{pv}}_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
   {%- if data.has_extension %}
