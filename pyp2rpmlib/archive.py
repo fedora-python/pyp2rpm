@@ -6,12 +6,6 @@ from tarfile import TarFile, TarInfo
 
 from pyp2rpmlib import utils
 
-# monkey patch ZipFile to behave like TarFile
-ZipFile.getmembers = ZipFile.infolist
-ZipFile.extractfile = ZipFile.open
-ZipFile.open = ZipFile
-ZipInfo.name = ZipInfo.filename
-
 
 class Archive(object):
     """Class representing package archive. All the operations must be run using with statement.
@@ -21,10 +15,23 @@ class Archive(object):
     with archive as a:
         a.get_contents_of_file('spam.py')
     """
+    monkey_patched_zip = False
+
+    @classmethod
+    def monkey_patch_zip(cls):
+        if not cls.monkey_patched_zip:
+            # monkey patch ZipFile to behave like TarFile
+            ZipFile.getmembers = ZipFile.infolist
+            ZipFile.extractfile = ZipFile.open
+            ZipFile.open = ZipFile
+            ZipInfo.name = ZipInfo.filename
+            cls.monkey_patched_zip = True
+
     def __init__(self, local_file):
         self.file = local_file
         self.name, self.suffix = os.path.splitext(local_file)
         self.handle = None
+        self.monkey_patch_zip()
 
     @property
     def is_zip(self):
