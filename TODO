@@ -1,4 +1,3 @@
-- Sphinx documentation generation.
 - Test template rendering.
 ? Add Group tag - not completely necessary, not sure how to get it
    ? from trove classifiers - but they may yield more Groups

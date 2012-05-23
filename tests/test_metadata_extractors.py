@@ -26,6 +26,7 @@ class TestMetadataExtractor(object):
                   MetadataExtractor('%sSphinx-1.1.3-py2.6.egg' % self.td_dir, 'Sphinx', '1.1.3'),
                   MetadataExtractor('%sunextractable-1.tar' % self.td_dir, 'unextractable', '1'),
                   MetadataExtractor('%sbitarray-0.8.0.tar.gz' % self.td_dir, 'bitarray', '0.8.0'),
+                  MetadataExtractor('%sversiontools-1.9.1.tar.gz' % self.td_dir, 'versiontools', '1.9.1'),
                  ]
 
     def test_runtime_deps_from_egg_info_no_deps(self):
@@ -63,6 +64,14 @@ class TestMetadataExtractor(object):
     def test_doc_files(self, i, expected):
         with self.e[i].archive:
             assert self.e[i].doc_files == expected
+
+    @pytest.mark.parametrize(('i', 'expected'), [
+        (0, None),
+        (6, 'versiontools-1.9.1/doc'),
+    ])
+    def test_sphinx_dir(self, i, expected):
+        with self.e[i].archive:
+            assert self.e[i].sphinx_dir == expected
 
 class TestPypiMetadataExtractor(object):
     td_dir = '%s/test_data/' % tests_dir

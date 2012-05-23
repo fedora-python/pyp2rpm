@@ -85,6 +85,23 @@ class MetadataExtractor(object):
         return map(lambda x: os.path.basename(x), doc_files)
 
     @property
+    def sphinx_dir(self):
+        """Returns directory with sphinx documentation, if there is such.
+        Returns:
+            Full path to sphinx documentation dir inside the archive, or None if there is no such.
+        """
+        sphinx_dir = None
+
+        # search for sphinx dir doc/ or docs/ under the first directory in archive (e.g. spam-1.0.0/doc)
+        candidate_dirs = self.archive.get_directories_re(settings.SPHINX_DIR_RE, full_path = True)
+        for d in candidate_dirs: # search for conf.py in the dirs (TODO: what if more are found?)
+            contains_conf_py = len(self.archive.get_files_re(r'%s/conf.py' % d, full_path = True)) > 0
+            if contains_conf_py == True:
+                sphinx_dir = d
+
+        return sphinx_dir
+
+    @property
     def data_from_archive(self):
         """Returns all metadata extractable from the archive.
         Returns:
@@ -100,6 +117,11 @@ class MetadataExtractor(object):
         else:
             archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
             archive_data['build_deps'] = self.build_deps_from_setup_py
+
+        sphinx_dir = self.sphinx_dir
+        if sphinx_dir:
+            archive_data['sphinx_dir'] = os.path.basename(sphinx_dir)
+            archive_data['build_deps'].append(['BuildRequires', 'python-sphinx'])
 
         return archive_data
 

@@ -43,12 +43,25 @@ Summary:        {{ data.summary }}
 {%- if data.has_bundled_egg_info %}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
+{% if data.sphinx_dir %}
+# generate html docs
+sphinx-build {{ data.sphinx_dir }} html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
+{%- endif -%}
 {% for pv in data.python_versions %}
 %if 0%{?with_python{{ pv }}}
 rm -rf %{py{{pv}}dir}
 cp -a . %{py{{pv}}dir}
 find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|'
+
+{% if data.sphinx_dir -%}
+# generate html docs
+python{{pv}}-sphinx-build {{ data.sphinx_dir }} html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+{%- endif %}
 %endif # with_python{{pv}}
 {% endfor %}
 
@@ -79,7 +92,7 @@ popd
 
 
 %files
-%doc {{ data.doc_files|join(' ') }}
+%doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 %{python_sitelib}/%{pypi_name}
 %{python_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 {%- if data.has_extension %}
@@ -88,7 +101,7 @@ popd
 {% for pv in data.python_versions %}
 %if 0%{?with_python{{pv}}}
 %files -n {{ data.name|macroed_pkg_name|for_python_version(pv) }}
-%doc {{ data.doc_files|join(' ') }}
+%doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 %{python{{pv}}_sitelib}/%{pypi_name}
 %{python{{pv}}_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
   {%- if data.has_extension %}

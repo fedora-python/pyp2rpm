@@ -13,6 +13,7 @@ class PackageData(object):
         self.name = name
         self.version = version
         self.python_versions = []
+        self._sphinx_dir = None
 
     def __getattr__(self, name):
         if name in self.__dict__:
@@ -31,6 +32,14 @@ class PackageData(object):
     @summary.setter
     def summary(self, value):
         self._summary = value.rstrip('.')
+
+    @property
+    def sphinx_dir(self):
+        return self._sphinx_dir
+
+    @sphinx_dir.setter
+    def sphinx_dir(self, value):
+        self._sphinx_dir = value
 
     @property
     def pkg_name(self):

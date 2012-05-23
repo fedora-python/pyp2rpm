@@ -7,6 +7,7 @@ DEFAULT_PKG_SAVE_PATH = os.path.expanduser('~/rpmbuild/SOURCES/')
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2', '.gz', '.bz2', '.zip', '.egg']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
 DOC_FILES_RE = [r'readme.+', r'licens.+', r'copying.+']
+SPHINX_DIR_RE = r'[^/]+/doc.?'
 PYPI_URL = 'http://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'release_url', 'requires']
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
