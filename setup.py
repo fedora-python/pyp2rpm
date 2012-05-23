@@ -3,10 +3,13 @@
 
 from pyp2rpmlib.version import version
 
-try:
-    from distutils import setup
-except:
-    from setuptools import setup
+#try:
+#    from setuptools import setup
+#except:
+#    from distutils.core import setup
+
+# add temporarily to overcome the compression issue
+from distutils.core import setup
 
 description = """Convert Python packages to RPM SPECFILES. The packages can be downloaded from
 PyPI and the produced SPEC is in line with Fedora Packaging Guidelines.
