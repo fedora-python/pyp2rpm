@@ -152,6 +152,29 @@ class Archive(object):
 
         return found
 
+    def get_directories_re(self, directory_re, full_path = False, ignorecase = False):
+        """Same as get_files_re, but for directories"""
+        if ignorecase:
+            compiled_re = re.compile(directory_re, re.I)
+        else:
+            compiled_re = re.compile(directory_re)
+
+        found = set()
+
+        if self.handle:
+            for member in self.handle.getmembers():
+                if isinstance(member, ZipInfo): # zipfiles only list directories => have to work around that
+                    to_match = os.path.dirname(member.name)
+                elif isinstance(member, TarInfo) and member.isdir(): # tarfiles => only match directories
+                    to_match = member.name
+                else:
+                    to_match = None
+                if to_match:
+                    if (full_path and compiled_re.search(to_match)) or (not full_path and compiled_re.search(os.path.basename(to_match))):
+                        found.add(to_match)
+
+        return list(found)
+
     def find_list_argument(self, setup_argument):
         """A simple method that gets setup() function from setup.py list argument like install_requires.
 

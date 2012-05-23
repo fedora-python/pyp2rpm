@@ -1,3 +1,4 @@
+* Enable searching archive for directories according to given re.
 * Moved monkey patching of ZipFile to not interfere with setup.py install (thanks to
   Konstantin Zemlyak).
 

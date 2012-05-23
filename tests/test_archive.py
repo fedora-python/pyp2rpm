@@ -77,3 +77,20 @@ class TestArchive(object):
     def test_get_files_re(self, i, r, f, c, expected):
         with self.a[i] as a:
             assert set(a.get_files_re(r, f, c)) == set(expected)
+
+    @pytest.mark.parametrize(('i', 'r', 'f', 'c', 'expected'), [
+        (0, r'plumbum.*', False, False, ['plumbum-0.9.0', 'plumbum-0.9.0/plumbum.egg-info', 'plumbum-0.9.0/plumbum']),
+        (0, r'[0-9]/plumbum$', True, False, ['plumbum-0.9.0/plumbum']),
+        (0, r'[0-9]/pLuMbUm$', True, True, ['plumbum-0.9.0/plumbum']),
+        (0, r'spam/plumbum.*', True, False, []),
+        (0, r'setup.py', True, False, []), # should ignore file
+        # test for zipfile separately - some more logic going on there...
+        (1, r'pytest.*', False, False, ['pytest-2.2.3', 'pytest-2.2.3/pytest.egg-info', 'pytest-2.2.3/_pytest']),
+        (1, r't/assertion$', True, False, ['pytest-2.2.3/_pytest/assertion']),
+        (1, r'[0-9]/_pYtEsT$', True, True, ['pytest-2.2.3/_pytest']),
+        (1, r'spam/.*_pytest.*', True, False, []),
+        (1, r'setup.py', True, False, []), # should ignore file
+    ])
+    def test_get_directories_re(self, i, r, f, c, expected):
+        with self.a[i] as a:
+            assert set(a.get_directories_re(r, f, c)) == set(expected)
