@@ -8,11 +8,18 @@ try:
 except:
     from setuptools import setup
 
+description = """Convert Python packages to RPM SPECFILES. The packages can be downloaded from
+PyPI and the produced SPEC is in line with Fedora Packaging Guidelines.
+
+Users can provide their own templates for rendering the package metadata. Both the package
+source and metadata can be extracted from PyPI or from local filesystem (local file doesn't
+provide that much information though)."""
+
 setup(
     name = 'pyp2rpm',
     version = version,
     description = "Convert Python packages to RPM SPECFILES",
-    long_description = "Convert Python packages to RPM SPECFILES. The packages can be downloaded from PyPI and the produced SPEC is in line with Fedora Packaging Guidelines.",
+    long_description = description,
     keywords = 'pypi, rpm, spec, specfile, convert',
     author = 'Bohuslav "Slavek" Kabrda',
     author_email = 'bkabrda@redhat.com',
