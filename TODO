@@ -1,4 +1,17 @@
-- Handle package data files, if given (some switch for setup.py --install in some cases).
-- Add Group tag.
+- Sphinx documentation generation.
 - Test template rendering.
-- Try running tests.
+? Add Group tag - not completely necessary, not sure how to get it
+   ? from trove classifiers - but they may yield more Groups
+   ? or just put Development/Libraries in the template
+? Try running tests - probably not possible in general case? "python setup.py nosetests" is
+   generally not enough (for this package for example)
+? Maybe refactor templates using http://jinja.pocoo.org/docs/templates/#call - would it really
+   make templates more readable?
+x Handle package data files, if given ("--install-data" switch for "setup.py --install" in
+   some cases) - some data can't be separated (like pyp2rpm templates), some can =>
+   probably generally undecidable.
+
+
+- = definitelly TODO
+? = not clear how to achieve/not sure if needed
+x = not achievable ATM, accepting ideas :)
