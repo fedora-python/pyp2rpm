@@ -2,7 +2,7 @@ import os
 import re
 
 from zipfile import ZipFile, ZipInfo
-from tarfile import TarFile
+from tarfile import TarFile, TarInfo
 
 from pyp2rpmlib import utils
 
@@ -120,7 +120,7 @@ class Archive(object):
 
     def get_files_re(self, file_re, full_path = False, ignorecase = False):
         """Finds all files that match file_re and returns their list.
-        Doesn't care about directories!
+        Doesn't return directories, only files.
 
         Args:
             file_re: raw string to match files against (gets compiled into re)
@@ -138,7 +138,9 @@ class Archive(object):
 
         if self.handle:
             for member in self.handle.getmembers():
-                if (full_path and compiled_re.search(member.name)) or (not full_path and compiled_re.search(os.path.basename(member.name))):
+                if isinstance(member, TarInfo) and member.isdir():
+                    pass # for TarInfo files, filter out directories
+                elif (full_path and compiled_re.search(member.name)) or (not full_path and compiled_re.search(os.path.basename(member.name))):
                     found.append(member.name)
 
         return found

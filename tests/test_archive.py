@@ -72,6 +72,7 @@ class TestArchive(object):
         (0, r'[a-z]/PKG-INFO', True, False, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
         (0, r'[a-z]/pKg-InfO', True, True, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
         (0, r'spam/PKG-INFO', True, False, []),
+        (0, r'plumbum-0.9.0$', True, False, []), # should ignore directory in tarfile
     ])
     def test_get_files_re(self, i, r, f, c, expected):
         with self.a[i] as a:
