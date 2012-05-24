@@ -22,12 +22,17 @@ def rpm_versioned_name(name, version):
     rpm_versioned_name('python-foo', '26') will return python26-foo
     rpm_versioned_name('pyfoo, '3') will return python3-pyfoo
 
+    If version is same as settings.DEFAULT_PYTHON_VERSION, no change is done.
+
     Args:
         name: name to version
         version: version or None
     Returns:
         Versioned name or the original name if given version is None.
     """
+    if version == settings.DEFAULT_PYTHON_VERSION:
+        return name
+
     versioned_name = name
     if version:
         if name.startswith('python-'):

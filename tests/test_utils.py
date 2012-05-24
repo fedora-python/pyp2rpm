@@ -1,6 +1,7 @@
 import pytest
 
 from pyp2rpmlib import utils
+from pyp2rpmlib import settings
 
 class TestUtils(object):
     @pytest.mark.parametrize(("input", "expected"), [
@@ -17,6 +18,7 @@ class TestUtils(object):
         ('pyspam', None, 'pyspam'),
         ('python-spam', '3', 'python3-spam'),
         ('pyspam', '26', 'python26-pyspam'),
+        ('pyspam', settings.DEFAULT_PYTHON_VERSION, 'pyspam'),
     ])
     def test_rpm_versioned_name(self, name, version, expected):
         assert utils.rpm_versioned_name(name, version) == expected
