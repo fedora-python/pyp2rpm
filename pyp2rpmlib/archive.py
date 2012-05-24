@@ -208,3 +208,17 @@ class Archive(object):
             argument[0] = argument[0][argument[0].find('['):]
             argument[-1] = argument[-1].rstrip().rstrip(',')
             return eval(' '.join(argument).strip())
+
+    def has_argument(self, argument):
+        """A simple method that finds out if setup() function from setup.py is called with given argument.
+        Args:
+            argument: argument to look for
+        Returns:
+            True if argument is used, False otherwise
+        """
+        setup_py = self.get_content_of_file('setup.py')
+        if not setup_py: return False
+
+        argument_re = re.compile(r'setup\(.*(?<!\w)%s.*\)' % argument, re.DOTALL)
+
+        return True if argument_re.search(setup_py) else False

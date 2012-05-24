@@ -94,3 +94,14 @@ class TestArchive(object):
     def test_get_directories_re(self, i, r, f, c, expected):
         with self.a[i] as a:
             assert set(a.get_directories_re(r, f, c)) == set(expected)
+
+    @pytest.mark.parametrize(('i', 'arg', 'expected'), [
+        (0, 'name', True),
+        (0, 'classifiers', True),
+        (0, 'version', True),
+        (0, 'spam', False),
+        (0, 'lassifiers', False),
+    ])
+    def test_has_argument(self, i, arg, expected):
+        with self.a[i] as a:
+            assert a.has_argument(arg) == expected
