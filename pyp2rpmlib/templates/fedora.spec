@@ -1,5 +1,5 @@
 {{ data.credit_line }}
-{% from 'macros.spec' import dependencies -%}
+{% from 'macros.spec' import dependencies, for_python_versions -%}
 %global pypi_name {{ data.name }}
 {%- for pv in data.python_versions %}
 %global with_python{{ pv }} 1
@@ -28,68 +28,60 @@ BuildArch:      noarch
 
 %description
 {{ data.description|wordwrap }}
-{% for pv in data.python_versions %}
-%if 0%{?with_python{{ pv }}}
+{% call(pv) for_python_versions(data.python_versions) -%}
 %package -n     {{ data.name|macroed_pkg_name|for_python_version(pv) }}
 Summary:        {{ data.summary }}
 
 %description -n {{ data.name|macroed_pkg_name|for_python_version(pv) }}
 {{ data.description|wordwrap }}
-%endif # with_python{{ pv }}
-{% endfor %}
+{%- endcall %}
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
 {%- if data.has_bundled_egg_info %}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
-{% if data.sphinx_dir %}
-# generate html docs
-sphinx-build {{ data.sphinx_dir }} html
-# remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
-{%- endif -%}
-{% for pv in data.python_versions %}
-
-%if 0%{?with_python{{ pv }}}
+{% call(pv) for_python_versions([''] + data.python_versions) -%}
+{%- if pv -%}
 rm -rf %{py{{pv}}dir}
 cp -a . %{py{{pv}}dir}
 find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|'
-
+{%- endif %}
 {%- if data.sphinx_dir %}
-# generate html docs
-python{{pv}}-sphinx-build {{ data.sphinx_dir }} html
+# generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...) #}
+{% if pv %}python{{ pv }}-{% endif %}sphinx-build {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
-%endif # with_python{{pv}}
-{% endfor %}
+{% endcall %}
 
 %build
-{% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}%{__python} setup.py build
-{% for pv in data.python_versions %}
-%if 0%{?with_python{{ pv }}}
+{%- call(pv) for_python_versions([''] + data.python_versions) -%}
+{%- if pv -%}
 pushd %{py{{ pv }}dir}
+{%- endif %}
 {% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}%{__python{{ pv }}} setup.py build
+{% if pv -%}
 popd
-%endif # with_python{{ pv }}
-{% endfor %}
+{%- endif %}
+{%- endcall %}
 
 %install
 {%- if data.python_versions|length > 0 %}
 # Must do the subpackages' install first because the scripts in /usr/bin are
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
-{%- endif %}
-{%- for pv in data.python_versions %}
-%if 0%{?with_python{{ pv }}}
+{%- endif -%}
+{%- call(pv) for_python_versions(data.python_versions + ['']) -%}
+{%- if pv -%}
 pushd %{py{{ pv }}dir}
-%{__python{{ pv }}} setup.py install --skip-build --root $RPM_BUILD_ROOT
+{%- endif %}
+%{__python{{ pv }}} setup.py install --skip-build --root %{buildroot}
+{%- if pv %}
 popd
-%endif # with_python{{ pv }}
-{% endfor %}
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+{%- endif %}
+{%- endcall %}
 
 
 %files
@@ -104,8 +96,7 @@ popd
 {%- if data.has_extension %}
 %{python_sitearch}/%{pypi_name}
 {%- endif %}
-{% for pv in data.python_versions %}
-%if 0%{?with_python{{pv}}}
+{% call(pv) for_python_versions(data.python_versions) -%}
 %files -n {{ data.name|macroed_pkg_name|for_python_version(pv) }}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
   {%- if data.has_packages %}
@@ -118,8 +109,7 @@ popd
   {%- if data.has_extension %}
 %{python{{ pv }}_sitearch}/%{pypi_name}
   {%- endif %}
-%endif # with_python{{ pv }}
-{% endfor %}
+{%- endcall %}
 
 %changelog
 * {{ data.changelog_date_packager }} - {{ data.version }}-1

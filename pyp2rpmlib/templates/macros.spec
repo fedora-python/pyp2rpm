@@ -18,3 +18,15 @@ BuildRequires:  python{{ python_version }}-devel
     {%- endif %}
   {%- endif %}
 {%- endmacro %}
+
+{%- macro for_python_versions(python_versions) %}
+{%- for pv in python_versions %}
+{%- if pv %}
+%if 0%{?with_python{{ pv }}}
+{% endif %}
+{{- caller(pv) }}
+{%- if pv %}
+%endif # with_python{{ pv }}
+{% endif %}
+{%- endfor %}
+{%- endmacro %}
