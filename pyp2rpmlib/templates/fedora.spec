@@ -61,7 +61,7 @@ rm -rf html/.{doctrees,buildinfo}
 {%- if pv != data.base_python_version -%}
 pushd %{py{{ pv }}dir}
 {%- endif %}
-{% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}%{__python{{ pv }}} setup.py build
+{% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}{{ '%{__python}'|python_bin_for_python_version(pv) }} setup.py build
 {% if pv != data.base_python_version -%}
 popd
 {%- endif %}
@@ -77,7 +77,7 @@ popd
 {%- if pv != data.base_python_version -%}
 pushd %{py{{ pv }}dir}
 {%- endif %}
-%{__python{{ pv }}} setup.py install --skip-build --root %{buildroot}
+{{ '%{__python}'|python_bin_for_python_version(pv) }} setup.py install --skip-build --root %{buildroot}
 {%- if pv != data.base_python_version %}
 popd
 {%- endif %}

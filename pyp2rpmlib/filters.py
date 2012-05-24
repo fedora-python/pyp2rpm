@@ -10,10 +10,16 @@ def sitedir_for_python_version(name, version):
     else:
         return name.replace('python', 'python%s' % version)
 
+def python_bin_for_python_version(name, version):
+    if version == settings.DEFAULT_PYTHON_VERSION:
+        return name
+    else:
+        return name.replace('__python', '__python3')
+
 def macroed_pkg_name(name):
     if name.startswith('python-'):
         return 'python-%{pypi_name}'
     else:
         return '%{pypi_name}'
 
-__all__ = [name_for_python_version, sitedir_for_python_version, macroed_pkg_name]
+__all__ = [name_for_python_version, sitedir_for_python_version, python_bin_for_python_version, macroed_pkg_name]
