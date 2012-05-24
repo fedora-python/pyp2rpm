@@ -1,5 +1,6 @@
 import subprocess
 import time
+import locale
 
 from pyp2rpmlib import utils
 from pyp2rpmlib import version
@@ -51,7 +52,8 @@ class PackageData(object):
         """
         packager = subprocess.Popen('rpmdev-packager', stdout = subprocess.PIPE).communicate()[0].strip()
         date_str = time.strftime('%a %b %d %Y', time.gmtime())
-        return "%s %s" % (date_str, packager)
+        encoding = locale.getpreferredencoding()
+        return "%s %s" % (date_str, packager.decode(encoding))
 
 class PypiData(PackageData):
     """Carries data about package from PyPI"""

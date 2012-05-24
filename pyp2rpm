@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import locale
 
 from pyp2rpmlib import Convertor
 from pyp2rpmlib import settings
@@ -63,4 +64,4 @@ convertor = Convertor(name = ns.__dict__['n'],
                       template = ns.__dict__['t'],
                       python_versions = ns.__dict__['p'])
 
-print convertor.convert()
+print convertor.convert().encode(locale.getpreferredencoding())

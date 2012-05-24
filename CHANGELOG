@@ -1,3 +1,5 @@
+* Fix encoding issues (thanks to Pádraig Brady).
+
 - 0.4.2
 * Enable searching for sphinx documentation and generating it.
 * Enable searching archive for directories according to given re.
