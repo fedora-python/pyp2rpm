@@ -1,7 +1,14 @@
 from pyp2rpmlib import utils
+from pyp2rpmlib import settings
 
-def for_python_version(name, version):
+def name_for_python_version(name, version):
     return utils.rpm_name(name, version)
+
+def sitedir_for_python_version(name, version):
+    if version == settings.DEFAULT_PYTHON_VERSION:
+        return name
+    else:
+        return name.replace('python', 'python%s' % version)
 
 def macroed_pkg_name(name):
     if name.startswith('python-'):
@@ -9,4 +16,4 @@ def macroed_pkg_name(name):
     else:
         return '%{pypi_name}'
 
-__all__ = [for_python_version, macroed_pkg_name]
+__all__ = [name_for_python_version, sitedir_for_python_version, macroed_pkg_name]
