@@ -87,16 +87,17 @@ popd
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}{% endif %}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
-  {%- if data.has_packages %}
+{%- if data.has_packages %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/%{pypi_name}
-  {%- endif %}
-  {%- for module in data.py_modules %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{% if data.name == module %}%{pypi_name}{% else %}{{ module }}{% endif %}.py*
-  {%- endfor %}
+{%- endif %}
+{% for module in data.py_modules -%}
+{% if pv == '3' %}{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*{% endif %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{% if data.name == module %}%{pypi_name}{% else %}{{ module }}{% endif %}.py{% if pv != '3'%}*{% endif %}
+{%- endfor %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/%{pypi_name}-%{version}-py?.?.egg-info
-  {%- if data.has_extension %}
+{%- if data.has_extension %}
 {{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/%{pypi_name}
-  {%- endif %}
+{%- endif %}
 {%- endcall %}
 
 %changelog

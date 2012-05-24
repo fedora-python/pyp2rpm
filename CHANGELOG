@@ -1,3 +1,4 @@
+* List __pycache__ with pure Python 3 packages that contain py_modules.
 * Add support for pure Python 3 specfiles.
 * Refactor templates using macros.
 * Add listing py_modules from setup.py setup() in %files (thanks to Pádraig Brady for pointing this direction).
