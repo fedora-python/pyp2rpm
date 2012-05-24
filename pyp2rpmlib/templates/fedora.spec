@@ -51,12 +51,13 @@ rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
 {%- endif -%}
 {% for pv in data.python_versions %}
+
 %if 0%{?with_python{{ pv }}}
 rm -rf %{py{{pv}}dir}
 cp -a . %{py{{pv}}dir}
 find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|'
 
-{% if data.sphinx_dir -%}
+{%- if data.sphinx_dir %}
 # generate html docs
 python{{pv}}-sphinx-build {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
