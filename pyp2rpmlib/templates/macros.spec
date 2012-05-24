@@ -3,20 +3,20 @@
 {%- endmacro %}
 
 {%- macro dependencies(deps, runtime, python_version, base_python_version) %}
-  {%- if deps|length > 0 or not runtime %} {# for build deps, we always have at least 1 - pythonXX-devel #}
-    {%- if python_version != base_python_version %}
+{%- if deps|length > 0 or not runtime %} {# for build deps, we always have at least 1 - pythonXX-devel #}
+{%- if python_version != base_python_version %}
 %if %{?with_python{{ python_version }}}
-    {%- endif %}
-    {%- if not runtime %}
+{%- endif %}
+{%- if not runtime %}
 BuildRequires:  {{ 'python-devel'|name_for_python_version('2') }}
-    {%- endif %}
-    {%- for dep in deps -%}
+{%- endif %}
+{%- for dep in deps -%}
 {{ one_dep(dep, python_version) }}
-    {%- endfor %}
-    {%- if python_version != base_python_version%}
+{%- endfor %}
+{%- if python_version != base_python_version%}
 %endif # if with_python{{ python_version }}
-    {%- endif %}
-  {%- endif %}
+{%- endif %}
+{%- endif %}
 {%- endmacro %}
 
 {%- macro for_python_versions(python_versions, base_python_version) %}
