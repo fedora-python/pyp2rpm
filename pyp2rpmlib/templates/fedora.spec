@@ -93,7 +93,12 @@ popd
 
 %files
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
+{%- if data.has_packages %}
 %{python_sitelib}/%{pypi_name}
+{%- endif %}
+{%- for module in data.py_modules %}
+%{python_sitelib}/{% if data.name == module %}%{pypi_name}{% else %}{{ module }}{% endif %}.py*
+{%- endfor %}
 %{python_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 {%- if data.has_extension %}
 %{python_sitearch}/%{pypi_name}
@@ -102,7 +107,12 @@ popd
 %if 0%{?with_python{{pv}}}
 %files -n {{ data.name|macroed_pkg_name|for_python_version(pv) }}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
+  {%- if data.has_packages %}
 %{python{{pv}}_sitelib}/%{pypi_name}
+  {%- endif %}
+  {%- for module in data.py_modules %}
+%{python{{ pv }}_sitelib}/{% if data.name == module %}%{pypi_name}{% else %}{{ module }}{% endif %}.py*
+  {%- endfor %}
 %{python{{pv}}_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
   {%- if data.has_extension %}
 %{python{{ pv }}_sitearch}/%{pypi_name}

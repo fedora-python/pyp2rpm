@@ -1,3 +1,6 @@
+- List packages in %files according to names, not only %{pypi_name} - will probably be more
+   complex due to usage of find_packages(), but should be doable.
+   ? Maybe it would suffice to use distribute internals for that?
 - Test template rendering.
 ? Add Group tag - not completely necessary, not sure how to get it
    ? from trove classifiers - but they may yield more Groups

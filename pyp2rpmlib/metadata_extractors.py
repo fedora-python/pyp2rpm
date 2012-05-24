@@ -102,6 +102,18 @@ class MetadataExtractor(object):
         return sphinx_dir
 
     @property
+    def has_packages(self):
+        return self.archive.has_argument('packages')
+
+    @property
+    def has_py_modules(self):
+        return self.archive.has_argument('py_modules')
+
+    @property
+    def py_modules(self):
+        return self.archive.find_list_argument('py_modules')
+
+    @property
     def data_from_archive(self):
         """Returns all metadata extractable from the archive.
         Returns:
@@ -122,6 +134,9 @@ class MetadataExtractor(object):
         if sphinx_dir:
             archive_data['sphinx_dir'] = os.path.basename(sphinx_dir)
             archive_data['build_deps'].append(['BuildRequires', 'python-sphinx'])
+
+        archive_data['has_packages'] = self.has_packages
+        archive_data['py_modules'] = self.py_modules
 
         return archive_data
 

@@ -1,3 +1,4 @@
+* Add listing py_modules from setup.py setup() in %files (thanks to Pádraig Brady for pointing this direction).
 * Fix encoding issues (thanks to Pádraig Brady).
 
 - 0.4.2
