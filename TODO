@@ -1,3 +1,6 @@
+- When package has a py_module and Python3 is used, %{python_sitelib}/__pycache__
+   has to be in files.
+- Add support for pure Python3 packages (new template?).
 - List packages in %files according to names, not only %{pypi_name} - will probably be more
    complex due to usage of find_packages(), but should be doable.
    ? Maybe it would suffice to use distribute internals for that?
