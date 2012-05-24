@@ -85,15 +85,19 @@ popd
 
 
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-%files{% if pv != data.base_python_version %} -n {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}{% endif %}
+%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name|name_for_python_version(pv) }}{% endif %}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 {%- if data.has_packages %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/%{pypi_name}
 {%- endif %}
+{%- if data.py_modules %}
 {% for module in data.py_modules -%}
-{% if pv == '3' %}{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*{% endif %}
+{%- if pv == '3' -%}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
+{% endif -%}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{% if data.name == module %}%{pypi_name}{% else %}{{ module }}{% endif %}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
+{%- endif %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/%{pypi_name}-%{version}-py?.?.egg-info
 {%- if data.has_extension %}
 {{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/%{pypi_name}
