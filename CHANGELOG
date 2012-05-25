@@ -1,3 +1,5 @@
+* If original package name contains '-', it is usually replaced by '_' in directory name, fixed in %files section.
+
 - 0.5.0
 * Various small bug fixes.
 * List __pycache__ with pure Python 3 packages that contain py_modules.

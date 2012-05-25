@@ -1,5 +1,5 @@
 {{ data.credit_line }}
-{% from 'macros.spec' import dependencies, for_python_versions -%}
+{% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
 %global pypi_name {{ data.name }}
 {%- for pv in data.python_versions %}
 %global with_python{{ pv }} 1
@@ -88,7 +88,7 @@ popd
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name|name_for_python_version(pv) }}{% endif %}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 {%- if data.has_packages %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/%{pypi_name}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
 {%- endif %}
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
@@ -98,9 +98,9 @@ popd
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{% if data.name == module %}%{pypi_name}{% else %}{{ module }}{% endif %}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/%{pypi_name}-%{version}-py?.?.egg-info
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- if data.has_extension %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/%{pypi_name}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
 {%- endif %}
 {%- endcall %}
 

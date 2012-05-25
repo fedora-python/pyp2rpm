@@ -37,3 +37,7 @@ BuildRequires:  {{ 'python-devel'|name_for_python_version(python_version) }}
 {% endif %}
 {%- endfor %}
 {%- endmacro %}
+
+{% macro underscored_or_pypi(original, underscored) -%}
+{% if underscored != original %}{{ underscored }}{% else %}%{pypi_name}{% endif %}
+{%- endmacro %}

@@ -19,3 +19,12 @@ class TestPackageData(object):
     def test_get_nonexistent_attribute(self):
         pd = PackageData('spam', 'spam', 'spam')
         assert pd.eggs == 'TODO:'
+
+    @pytest.mark.parametrize(('n', 'expected'), [
+        ('py-spam', 'py_spam'),
+        ('py_spam', 'py_spam'),
+        ('spam', 'spam'),
+    ])
+    def test_underscored_name(self, n, expected):
+        pd = PackageData('spam', n, 'spam')
+        assert pd.underscored_name == expected

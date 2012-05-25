@@ -47,6 +47,10 @@ class PackageData(object):
         return utils.rpm_name(self.name)
 
     @property
+    def underscored_name(self):
+        return self.name.replace('-', '_')
+
+    @property
     def changelog_date_packager(self):
         """Returns part of the changelog entry, containing date and packager.
         """
