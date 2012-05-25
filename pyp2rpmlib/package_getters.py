@@ -1,6 +1,9 @@
 import os
 import shutil
-import urllib
+try:
+    import urllib.request as request
+except ImportError:
+    import urllib as request
 try:
     import xmlrpclib
 except ImportError:
@@ -46,7 +49,7 @@ class PypiDownloader(PackageGetter):
             EnvironmentError if the save_dir is not writable.
         """
         save_file = '%s/%s' % (self.save_dir, self.url.split('/')[-1])
-        urllib.urlretrieve(self.url, save_file)
+        request.urlretrieve(self.url, save_file)
         return save_file
 
     def get_name_version(self):
