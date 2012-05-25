@@ -71,4 +71,9 @@ convertor = Convertor(name = ns.__dict__['n'],
                       base_python_version = ns.__dict__['b'],
                       python_versions = ns.__dict__['p'])
 
-print(convertor.convert().encode(locale.getpreferredencoding()))
+converted = convertor.convert()
+
+if isinstance(converted, str): # python 3
+    print(converted)
+else: # python 2
+    print(converted.encode(locale.getpreferredencoding()))
