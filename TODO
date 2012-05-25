@@ -7,8 +7,6 @@
    ? or just put Development/Libraries in the template
 ? Try running tests - probably not possible in general case? "python setup.py nosetests" is
    generally not enough (for this package for example)
-? Maybe refactor templates using http://jinja.pocoo.org/docs/templates/#call - would it really
-   make templates more readable?
 x Handle package data files, if given ("--install-data" switch for "setup.py --install" in
    some cases) - some data can't be separated (like pyp2rpm templates), some can =>
    probably generally undecidable.
