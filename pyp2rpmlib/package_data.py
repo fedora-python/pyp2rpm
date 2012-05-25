@@ -23,7 +23,7 @@ class PackageData(object):
         return 'TODO:'
 
     def set_from(self, data_dict):
-        for k, v in data_dict.iteritems():
+        for k, v in data_dict.items():
             setattr(self, k, v)
 
     @property

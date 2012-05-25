@@ -1,6 +1,9 @@
 import os
 import sys
-import xmlrpclib
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 
 import jinja2
 

@@ -71,10 +71,10 @@ def license_from_trove(trove):
     """
     license = []
     for classifier in trove:
-        if classifier.find('License') != -1:
+        if 'License' in classifier != -1:
             stripped = classifier.strip()
             # if taken from EGG-INFO, begins with Classifier:
             stripped = stripped[stripped.find('License'):]
-            if settings.TROVE_LICENSES.has_key(stripped):
+            if stripped in settings.TROVE_LICENSES:
                 license.append(settings.TROVE_LICENSES[stripped])
     return ' and '.join(license)

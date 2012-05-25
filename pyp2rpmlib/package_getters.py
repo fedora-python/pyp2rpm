@@ -1,7 +1,10 @@
 import os
 import shutil
 import urllib
-import xmlrpclib
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 
 from pyp2rpmlib import settings
 from pyp2rpmlib import exceptions

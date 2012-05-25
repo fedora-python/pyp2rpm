@@ -1,1 +1,1 @@
-from convertor import Convertor
+from pyp2rpmlib.convertor import Convertor

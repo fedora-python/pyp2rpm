@@ -1,3 +1,4 @@
+import locale
 import os
 import re
 
@@ -99,7 +100,7 @@ class Archive(object):
             for member in self.handle.getmembers():
                 if (full_path and member.name == name) or (not full_path and os.path.basename(member.name) == name):
                     extracted = self.handle.extractfile(member)
-                    return extracted.read()
+                    return extracted.read().decode(locale.getpreferredencoding())
 
         return None
 
@@ -193,7 +194,7 @@ class Archive(object):
         cont = False
 
         for line in setup_py.splitlines():
-            if line.find(setup_argument) != -1 or cont:
+            if setup_argument in line or cont:
                 start_braces += line.count('[')
                 end_braces += line.count(']')
 

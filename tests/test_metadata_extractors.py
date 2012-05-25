@@ -1,5 +1,4 @@
 import os
-import xmlrpclib
 
 from tarfile import TarFile
 from zipfile import ZipFile
