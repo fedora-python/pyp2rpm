@@ -79,6 +79,11 @@ pushd %{py{{ pv }}dir}
 {%- endif %}
 {{ '%{__python}'|python_bin_for_python_version(pv) }} setup.py install --skip-build --root %{buildroot}
 {%- if pv != data.base_python_version %}
+{%- if data.scripts %}
+{%- for script in data.scripts %}
+mv %{buildroot}%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+{%- endfor %}
+{%- endif %}
 popd
 {%- endif %}
 {%- endcall %}
@@ -87,6 +92,11 @@ popd
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name|name_for_python_version(pv) }}{% endif %}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
+{%- if data.scripts %}
+{%- for script in data.scripts %}
+%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+{%- endfor %}
+{%- endif %}
 {%- if data.has_packages %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
 {%- endif %}

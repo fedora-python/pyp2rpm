@@ -1,3 +1,4 @@
+* Handle 'scripts' setup.py argument.
 * pyp2rpm is now compatible with Python 3.
 * If original package name contains '-', it is usually replaced by '_' in directory name, fixed in %files section.
 

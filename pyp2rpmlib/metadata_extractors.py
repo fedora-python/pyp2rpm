@@ -114,6 +114,10 @@ class MetadataExtractor(object):
         return self.archive.find_list_argument('py_modules')
 
     @property
+    def scripts(self):
+        return self.archive.find_list_argument('scripts')
+
+    @property
     def data_from_archive(self):
         """Returns all metadata extractable from the archive.
         Returns:
@@ -137,6 +141,7 @@ class MetadataExtractor(object):
 
         archive_data['has_packages'] = self.has_packages
         archive_data['py_modules'] = self.py_modules
+        archive_data['scripts'] = self.scripts
 
         return archive_data
 
