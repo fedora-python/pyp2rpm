@@ -115,7 +115,17 @@ class MetadataExtractor(object):
 
     @property
     def scripts(self):
-        return self.archive.find_list_argument('scripts')
+        scripts = self.archive.find_list_argument('scripts')
+        # handle the case for 'console_scripts' = [ 'a = b' ]
+        transformed = []
+        for script in scripts:
+            equal_sign = script.find('=')
+            if equal_sign == -1:
+                transformed.append(script)
+            else:
+                transformed.append(script[0:equal_sign].strip())
+
+        return transformed
 
     @property
     def data_from_archive(self):

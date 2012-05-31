@@ -180,6 +180,11 @@ class Archive(object):
         """A simple method that gets setup() function from setup.py list argument like install_requires.
 
         Will not work in all cases and might need a smarter approach.
+        On the other side, it's so stupid, that it's actually smart - it gets this:
+        'console_scripts': [
+            'xtermcolor = xtermcolor.Main:Cli'
+        ]
+        as 'scripts', which is very nice :)
 
         Args:
             setup_argument: name of the argument of setup() function to get value of
