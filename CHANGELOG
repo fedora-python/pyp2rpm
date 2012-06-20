@@ -1,3 +1,5 @@
+* Catch exception when list_argument in setup.py is unparsable.
+
 0.5.1
 * Use %{pypi_name} and %{version} in Source URL.
 * Handle 'scripts' setup.py argument.
