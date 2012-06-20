@@ -213,7 +213,10 @@ class Archive(object):
         else:
             argument[0] = argument[0][argument[0].find('['):]
             argument[-1] = argument[-1].rstrip().rstrip(',')
-            return eval(' '.join(argument).strip())
+            try:
+                return eval(' '.join(argument).strip())
+            except: # something unparsable in the list - different errors can come out - function undefined, syntax error, ...
+                return []
 
     def has_argument(self, argument):
         """A simple method that finds out if setup() function from setup.py is called with given argument.
