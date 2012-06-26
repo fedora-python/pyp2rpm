@@ -10,7 +10,7 @@ EXTENSION_SUFFIXES = ['.c', '.cpp']
 DOC_FILES_RE = [r'readme.+', r'licens.+', r'copying.+']
 SPHINX_DIR_RE = r'[^/]+/doc.?'
 PYPI_URL = 'http://pypi.python.org/pypi'
-PYPI_USABLE_DATA = ['description', 'summary', 'license', 'release_url', 'requires']
+PYPI_USABLE_DATA = ['description', 'summary', 'license', 'home_page', 'requires']
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
                   'License :: OSI Approved :: Apache Software License': 'ASL %(version)s',
                   'License :: OSI Approved :: Apple Public Source License': 'APSL %(version)s',

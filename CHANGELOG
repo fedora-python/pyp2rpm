@@ -1,3 +1,4 @@
+* The URL tag in specfile should in fact be home_page from pypi xmlrpc.
 * Catch exception when list_argument in setup.py is unparsable.
 
 0.5.1
