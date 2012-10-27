@@ -165,9 +165,16 @@ class PypiMetadataExtractor(MetadataExtractor):
         Returns:
             PypiData object containing data extracted from PyPI and archive.
         """
-        release_urls = self.client.release_urls(self.name, self.version)[0]
+        release_urls = self.client.release_urls(self.name, self.version)
         release_data = self.client.release_data(self.name, self.version)
-        data = PypiData(self.local_file, self.name, self.version, release_urls['md5_digest'], release_urls['url'])
+        if len(release_urls) > 0:
+            url = release_urls[0]['url']
+            md5_digest = release_urls[0]['md5_digest']
+        else:
+            url = release_data['download_url']
+            md5_digest = None
+        data = PypiData(self.local_file, self.name, self.version,
+                        md5_digest, url)
         for data_field in settings.PYPI_USABLE_DATA:
             setattr(data, data_field, release_data.get(data_field, None))
 
