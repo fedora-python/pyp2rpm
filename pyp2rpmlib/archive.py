@@ -1,6 +1,7 @@
 import locale
 import os
 import re
+import sys
 
 from zipfile import ZipFile, ZipInfo
 from tarfile import TarFile, TarInfo
@@ -200,6 +201,8 @@ class Archive(object):
 
         for line in setup_py.splitlines():
             if setup_argument in line or cont:
+                if line.find("#") != -1:
+                   line = line.split("#")[0]
                 start_braces += line.count('[')
                 end_braces += line.count(']')
 
@@ -207,11 +210,11 @@ class Archive(object):
                 argument.append(line)
                 if start_braces == end_braces:
                     break
-
-        if not argument:
+        if not argument or start_braces == 0:
             return []
         else:
             argument[0] = argument[0][argument[0].find('['):]
+            argument[-1] = argument[-1][:argument[-1].rfind(']')+1]
             argument[-1] = argument[-1].rstrip().rstrip(',')
             try:
                 return eval(' '.join(argument).strip())

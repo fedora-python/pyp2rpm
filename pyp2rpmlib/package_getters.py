@@ -39,7 +39,12 @@ class PypiDownloader(PackageGetter):
 
     @property
     def url(self):
-        return self.client.release_urls(self.name, self.version)[0]['url']
+        urls = self.client.release_urls(self.name, self.version)
+        if len(urls) > 0:
+            return self.client.release_urls(self.name, self.version)[0]['url']
+        else:
+            return self.client.release_data(self.name, self.version)['download_url']
+
 
     def get(self):
         """Downloads the package from PyPI.
