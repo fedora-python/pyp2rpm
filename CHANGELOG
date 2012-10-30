@@ -1,3 +1,6 @@
+- 0.5.2
+* Mageia spec template (thanks to Joseph Wang)
+* Various fixes to import robustness (thanks to Joseph Wang)
 * The URL tag in specfile should in fact be home_page from pypi xmlrpc.
 * Catch exception when list_argument in setup.py is unparsable.
 
