@@ -41,6 +41,7 @@ class TestLocalFileGetter(object):
                   LocalFileGetter('%sSphinx-1.1.3-py2.6.egg' % self.td_dir),
                   LocalFileGetter('%sunextractable-1.tar' % self.td_dir),
                   LocalFileGetter('python-foo-1.tar'),
+                  LocalFileGetter('python-many-dashes-foo-1.tar'),
                  ]
 
     @pytest.mark.parametrize(('i', 'expected'), [
@@ -63,6 +64,7 @@ class TestLocalFileGetter(object):
         (0, ('plumbum', '0.9.0')),
         (1, ('Sphinx', '1.1.3')),
         (3, ('python-foo', '1')),
+        (4, ('python-many-dashes-foo', '1')),
     ])
     def test_get_name_version(self, i, expected):
         assert self.l[i].get_name_version() == expected
