@@ -53,13 +53,13 @@ def rpm_name(name, python_version = None):
     """
     rpmized_name = name
 
-    if name.lower().find('python-') == -1: # name doesn't contain "py" => prefix with "python-"
+    if name.lower().find('py') == -1: # name doesn't contain "py" => prefix with "python-"
         rpmized_name = 'python-%s' % name
     elif name.endswith('-python'): # name ends with "-python" => strip that and put it to front
         rpmized_name = 'python-%s' % name.replace('-python', '')
     # else the name contains "py" as its part => do nothing
     # or the name is in form "python-%(name)s", which is fine, toO
-    rpmized_namne = rpmized_name.lower()
+
     return rpm_versioned_name(rpmized_name, python_version)
 
 def license_from_trove(trove):
