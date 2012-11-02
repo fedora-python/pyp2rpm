@@ -94,5 +94,9 @@ class LocalFileGetter(PackageGetter):
 
     def get_name_version(self):
         split_name_version = self._stripped_name_version.rsplit('-', 2)
+        if len(split_name_version) == 3:
+            if not split_name_version[2].startswith('py'):
+                split_name_version[0] = '-'.join(split_name_version[0:2])
+                split_name_version[1] = split_name_version[2]
 
         return (split_name_version[0], split_name_version[1])

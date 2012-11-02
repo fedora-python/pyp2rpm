@@ -1,3 +1,8 @@
+* More robustness for cases when the distribution is not available on pypi in the same versionas the provided source archive is. (thanks to Tomas Mlcoch for reporting)
+
+- 0.5.2
+* Mageia spec template (thanks to Joseph Wang)
+* Various fixes to import robustness (thanks to Joseph Wang)
 * The URL tag in specfile should in fact be home_page from pypi xmlrpc.
 * Catch exception when list_argument in setup.py is unparsable.
 

@@ -3,6 +3,7 @@ pyp2rpm
 =======
 Tool to convert a package from PyPI to RPM SPECFILE.
 Under heavy development, see TODO file for list of planned features.
+pyp2rpm currently ships with Fedora and Mageia specific templates.
 
 Usage:
 
