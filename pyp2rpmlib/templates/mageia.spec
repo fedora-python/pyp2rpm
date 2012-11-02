@@ -115,7 +115,3 @@ popd
 {{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
 {%- endif %}
 {%- endcall %}
-
-%changelog
-* {{ data.changelog_date_packager }} - {{ data.version }}-1
-- Initial package.
