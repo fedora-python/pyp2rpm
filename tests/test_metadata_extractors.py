@@ -30,6 +30,15 @@ class TestMetadataExtractor(object):
                   MetadataExtractor('{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
                  ]
 
+    @pytest.mark.parametrize(('lst', 'expected'), [
+        ([['Requires', 'pyfoo', 'spam', 'spam']], [['Requires', 'pyfoo', 'spam', 'spam']]),
+        ([['Requires', 'foo', 'spam', 'spam']], [['Requires', 'python-foo', 'spam', 'spam']]),
+        ([['Requires', 'foo-python']], [['Requires', 'python-foo']]),
+        ([['Requires', 'python-foo', 'spam']], [['Requires', 'python-foo', 'spam']]),
+    ])
+    def test_name_convert_deps_list(self, lst, expected):
+        assert self.e[0].name_convert_deps_list(lst) == expected
+
     def test_runtime_deps_from_egg_info_no_deps(self):
         flexmock(Archive).should_receive('get_content_of_file').with_args('EGG-INFO/requires.txt', True).and_return('')
         assert self.e[3].runtime_deps_from_egg_info == []
