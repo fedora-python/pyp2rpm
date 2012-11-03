@@ -6,7 +6,7 @@
 {%- endfor %}
 %define version {{ data.version }}
 
-Name:           {{ data.pkg_name|macroed_pkg_name|name_for_python_version(data.base_python_version) }}
+Name:           {{ data.pkg_name|name_for_python_version(data.base_python_version) }}
 Version:        %{version}
 Release:        %mkrel 1
 Group:          Development/Python
