@@ -5,8 +5,8 @@ import pytest
 
 from flexmock import flexmock
 
-from pyp2rpmlib.package_getters import *
-from pyp2rpmlib.exceptions import *
+from pyp2rpm.package_getters import *
+from pyp2rpm.exceptions import *
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -34,12 +34,12 @@ class TestPypiFileGetter(object):
 
 
 class TestLocalFileGetter(object):
-    td_dir = '%s/test_data/' % tests_dir
+    td_dir = '{0}/test_data/'.format(tests_dir)
 
     def setup_method(self, method):
-        self.l = [LocalFileGetter('%splumbum-0.9.0.tar.gz' % self.td_dir),
-                  LocalFileGetter('%sSphinx-1.1.3-py2.6.egg' % self.td_dir),
-                  LocalFileGetter('%sunextractable-1.tar' % self.td_dir),
+        self.l = [LocalFileGetter('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir)),
+                  LocalFileGetter('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir)),
+                  LocalFileGetter('{0}unextractable-1.tar'.format(self.td_dir)),
                   LocalFileGetter('python-foo-1.tar'),
                   LocalFileGetter('python-many-dashes-foo-1.tar'),
                  ]
