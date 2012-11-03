@@ -3,7 +3,7 @@ import os
 DEFAULT_PYTHON_VERSION = '2'
 DEFAULT_PKG_SOURCE = 'pypi'
 DEFAULT_METADATA_SOURCE = 'pypi'
-DEFAULT_TEMPLATE = 'mageia'
+DEFAULT_TEMPLATE = 'fedora'
 DEFAULT_PKG_SAVE_PATH = os.path.expanduser('~/rpmbuild/SOURCES/')
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2', '.gz', '.bz2', '.zip', '.egg']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
