@@ -2,13 +2,13 @@ import pytest
 
 from pkg_resources import Requirement as R
 
-from pyp2rpmlib.dependency_parser import DependencyParser as DP
+from pyp2rpm.dependency_parser import DependencyParser as DP
 
 class TestDependencyParser(object):
     @pytest.mark.parametrize(('d', 'r', 'expected'), [
-        ('docutils>=0.3,<1,!=0.5', True, [['Requires', 'python-docutils', '>=', '0.3'],
-                                            ['Requires', 'python-docutils', '<', '1'],
-                                            ['Conflicts', 'python-docutils', '=', '0.5']
+        ('docutils>=0.3,<1,!=0.5', True, [['Requires', 'docutils', '>=', '0.3'],
+                                            ['Requires', 'docutils', '<', '1'],
+                                            ['Conflicts', 'docutils', '=', '0.5']
                                            ]
         ),
         ('pytest>=0.3a5,<1.1.1.1,!=1', False, [['BuildRequires', 'pytest', '>=', '0.3a5'],
