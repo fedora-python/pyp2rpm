@@ -48,7 +48,7 @@ class NameConvertor(object):
 
         if name.lower().find(exclude_string) == -1: # name doesn't contain "py" => prefix with "python-"
             rpmized_name = 'python-{0}'.format(name)
-        elif name.endswith('-python'): # name ends with "-python" => strip that and put it to front
+        if name.endswith('-python'): # name ends with "-python" => strip that and put it to front (I hope that's for Mageia, too)
             rpmized_name = 'python-{0}'.format(name.replace('-python', ''))
         # else the name contains "py" as its part => do nothing
         # or the name is in form "python-%(name)s", which is fine, toO
