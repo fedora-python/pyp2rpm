@@ -4,8 +4,8 @@ import argparse
 import os
 import locale
 
-from pyp2rpmlib import Convertor
-from pyp2rpmlib import settings
+from pyp2rpm.convertor import Convertor
+from pyp2rpm import settings
 
 def main():
     parser = argparse.ArgumentParser(description = 'Convert PyPI package to RPM specfile.')
