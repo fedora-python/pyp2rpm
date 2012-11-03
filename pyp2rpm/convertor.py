@@ -113,8 +113,8 @@ class Convertor(object):
             else:
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(local_file,
                                                                                       self.name,
-                                                                                      self.version,
-                                                                                      self.name_convertor)
+                                                                                      self.name_convertor,
+                                                                                      self.version)
 
         return self._metadata_extractor
 

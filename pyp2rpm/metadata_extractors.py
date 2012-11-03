@@ -204,7 +204,7 @@ class PypiMetadataExtractor(MetadataExtractor):
         return data
 
 class LocalMetadataExtractor(MetadataExtractor):
-    def __init__(self, local_file, name, version):
+    def __init__(self, local_file, name, name_convertor, version):
         super(LocalMetadataExtractor, self).__init__(local_file, name, version, name_convertor)
 
     @property
