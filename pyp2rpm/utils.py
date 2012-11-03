@@ -1,6 +1,6 @@
 import functools
 
-from pyp2rpmlib import settings
+from pyp2rpm import settings
 
 def memoize_by_args(func):
     """Memoizes return value of a func based on args."""

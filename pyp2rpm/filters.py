@@ -1,5 +1,5 @@
-from pyp2rpmlib import utils
-from pyp2rpmlib import settings
+from pyp2rpm import utils
+from pyp2rpm import settings
 
 def name_for_python_version(name, version):
     return utils.rpm_name(name, version)

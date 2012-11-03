@@ -1,11 +1,11 @@
 import os
 import re
 
-from pyp2rpmlib import archive
-from pyp2rpmlib.dependency_parser import DependencyParser
-from pyp2rpmlib.package_data import PypiData, LocalData
-from pyp2rpmlib import settings
-from pyp2rpmlib import utils
+from pyp2rpm import archive
+from pyp2rpm.dependency_parser import DependencyParser
+from pyp2rpm.package_data import PypiData, LocalData
+from pyp2rpm import settings
+from pyp2rpm import utils
 
 
 class MetadataExtractor(object):

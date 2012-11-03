@@ -6,7 +6,7 @@ import sys
 from zipfile import ZipFile, ZipInfo
 from tarfile import TarFile, TarInfo
 
-from pyp2rpmlib import utils
+from pyp2rpm import utils
 
 
 class Archive(object):

@@ -9,8 +9,8 @@ try:
 except ImportError:
     import xmlrpc.client as xmlrpclib
 
-from pyp2rpmlib import settings
-from pyp2rpmlib import exceptions
+from pyp2rpm import settings
+from pyp2rpm import exceptions
 
 class PackageGetter(object):
     """Base class for package getters"""

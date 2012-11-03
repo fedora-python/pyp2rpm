@@ -2,8 +2,8 @@ import subprocess
 import time
 import locale
 
-from pyp2rpmlib import utils
-from pyp2rpmlib import version
+from pyp2rpm import utils
+from pyp2rpm import version
 
 class PackageData(object):
     credit_line = '# Created by pyp2rpm-%s' % version.version

@@ -7,12 +7,12 @@ except ImportError:
 
 import jinja2
 
-from pyp2rpmlib import exceptions
-from pyp2rpmlib import filters
-from pyp2rpmlib import metadata_extractors
-from pyp2rpmlib import package_data
-from pyp2rpmlib import package_getters
-from pyp2rpmlib import settings
+from pyp2rpm import exceptions
+from pyp2rpm import filters
+from pyp2rpm import metadata_extractors
+from pyp2rpm import package_data
+from pyp2rpm import package_getters
+from pyp2rpm import settings
 
 class Convertor(object):
     """Object that takes care of the actual process of converting the package."""
@@ -58,7 +58,7 @@ class Convertor(object):
         data.python_versions = self.python_versions
         jinja_env = jinja2.Environment(loader = jinja2.ChoiceLoader([
                                                     jinja2.FileSystemLoader(['/']),
-                                                    jinja2.PackageLoader('pyp2rpmlib', 'templates'),
+                                                    jinja2.PackageLoader('pyp2rpm', 'templates'),
                                                 ])
                                       )
         for filter in filters.__all__:

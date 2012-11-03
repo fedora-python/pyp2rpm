@@ -1,6 +1,6 @@
 from pkg_resources import Requirement
 
-from pyp2rpmlib import utils
+from pyp2rpm import utils
 
 class DependencyParser(object):
     @staticmethod
