@@ -36,8 +36,7 @@ def main():
     parser.add_argument('-t',
                         required = False,
                         help = 'Template file (jinja2 format) to render (default: "%s"). Search order is 1) filesystem, 2) default templates.' % settings.DEFAULT_TEMPLATE,
-                        metavar = 'TEMPLATE',
-                        default = settings.DEFAULT_TEMPLATE)
+                        metavar = 'TEMPLATE') # no default, because we need to know, whether this was specified or not
     parser.add_argument('-o',
                         required = False,
                         help = 'Default distro whose conversion rules to use (default: "%s"). Default templates have their rules associated and ignore this.' % settings.DEFAULT_DISTRO,
@@ -70,7 +69,7 @@ def main():
                           metadata_from = ns.__dict__['m'],
                           source_from = ns.__dict__['s'],
                           save_dir = ns.__dict__['d'],
-                          template = ns.__dict__['t'],
+                          template = ns.__dict__['t'] or settings.DEFAULT_TEMPLATE,
                           distro = distro,
                           base_python_version = ns.__dict__['b'],
                           python_versions = ns.__dict__['p'])
