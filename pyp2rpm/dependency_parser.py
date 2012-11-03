@@ -1,7 +1,5 @@
 from pkg_resources import Requirement
 
-from pyp2rpm import utils
-
 class DependencyParser(object):
     @staticmethod
     def dependency_to_rpm(dep, runtime):
@@ -10,20 +8,20 @@ class DependencyParser(object):
             dep - a dependency retrieved by pkg_resources.Requirement.parse()
             runtime - whether the returned dependency should be runtime (True) or build time (False)
         Returns:
-            List of RPM SPECFILE dependencies.
-            For example: [['Requires', 'python-jinja2'], ['Conflicts', 'python-jinja2', '=', '2.0.1']]
+            List of semi-SPECFILE dependencies (package names are not properly converted yet).
+            For example: [['Requires', 'jinja2'], ['Conflicts', 'jinja2', '=', '2.0.1']]
         """
         converted = []
         if len(dep.specs) == 0:
-            converted.append(['Requires', utils.rpm_name(dep.project_name)])
+            converted.append(['Requires', dep.project_name])
         else:
             for ver_spec in dep.specs:
                 if ver_spec[0] == '!=':
-                    converted.append(['Conflicts', utils.rpm_name(dep.project_name), '=', ver_spec[1]])
+                    converted.append(['Conflicts', dep.project_name, '=', ver_spec[1]])
                 elif ver_spec[0] == '==':
-                    converted.append(['Requires', utils.rpm_name(dep.project_name), '=', ver_spec[1]])
+                    converted.append(['Requires', dep.project_name, '=', ver_spec[1]])
                 else:
-                    converted.append(['Requires', utils.rpm_name(dep.project_name), ver_spec[0], ver_spec[1]])
+                    converted.append(['Requires', dep.project_name, ver_spec[0], ver_spec[1]])
 
         if not runtime:
             for conv in converted:
@@ -38,7 +36,7 @@ class DependencyParser(object):
             requires: list of dependencies as written in setup.py of the package.
             runtime: are the dependencies runtime (True) or build time (False)?
         Returns:
-            List of RPM SPECFILE dependencies (see dependency_to_rpm for format).
+            List of semi-SPECFILE dependencies (see dependency_to_rpm for format).
         """
         parsed = []
 

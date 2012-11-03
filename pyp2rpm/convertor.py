@@ -108,11 +108,13 @@ class Convertor(object):
                 self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(local_file,
                                                                                      self.name,
                                                                                      self.version,
+                                                                                     self.name_convertor,
                                                                                      self.client)
             else:
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(local_file,
                                                                                       self.name,
-                                                                                      self.version)
+                                                                                      self.version,
+                                                                                      self.name_convertor)
 
         return self._metadata_extractor
 

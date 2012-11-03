@@ -2,16 +2,16 @@ import subprocess
 import time
 import locale
 
-from pyp2rpm import utils
 from pyp2rpm import version
 
 class PackageData(object):
     credit_line = '# Created by pyp2rpm-%s' % version.version
 
     """A simple object that carries data about a package."""
-    def __init__(self, local_file, name, version):
+    def __init__(self, local_file, name, pkg_name, version):
         self.local_file = local_file
         self.name = name
+        self.pkg_name = pkg_name
         self.version = version
         self.python_versions = []
         self._sphinx_dir = None
@@ -43,10 +43,6 @@ class PackageData(object):
         self._sphinx_dir = value
 
     @property
-    def pkg_name(self):
-        return utils.rpm_name(self.name)
-
-    @property
     def underscored_name(self):
         return self.name.replace('-', '_')
 
@@ -61,11 +57,11 @@ class PackageData(object):
 
 class PypiData(PackageData):
     """Carries data about package from PyPI"""
-    def __init__(self, local_file, name, version, md5, url):
-        super(PypiData, self).__init__(local_file, name, version)
+    def __init__(self, local_file, name, pkg_name, version, md5, url):
+        super(PypiData, self).__init__(local_file, name, pkg_name, version)
         self.md5 = md5
         self.url = url
 
 class LocalData(PackageData):
-    def __init__(self, local_file, name, version):
-        super(LocalData, self).__init__(local_file, name, version)
+    def __init__(self, local_file, name, pkg_name, version):
+        super(LocalData, self).__init__(local_file, name, pkg_name, version)

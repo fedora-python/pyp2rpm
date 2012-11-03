@@ -10,25 +10,33 @@ from pyp2rpm import utils
 
 class MetadataExtractor(object):
     """Base class for metadata extractors"""
-    def __init__(self, local_file, name, version):
+    def __init__(self, local_file, name, version, name_convertor):
         self.local_file = local_file
         self.archive = archive.Archive(local_file)
         self.name = name
+        self.name_convertor = name_convertor
         self.version = version
 
     def extract_data(self):
         raise NotImplementedError('Whoops, extract_data method not implemented by %s.' % self.__class__)
 
+    def name_convert_deps_list(self, deps_list):
+        for dep in deps_list:
+            deps_list[1] = self.name_convertor.rpm_name(dep)
+
+        return deps_list
+
     @property
     def runtime_deps_from_setup_py(self): # install_requires
         """ Returns list of runtime dependencies of the package specified in setup.py.
 
-        Dependencies are in RPM SPECFILE format - see DependencyParser.dependency_to_rpm() for details.
+        Dependencies are in RPM SPECFILE format - see DependencyParser.dependency_to_rpm() for details, but names are already
+        transformed according to current distro.
 
         Returns:
             list of runtime dependencies of the package
         """
-        return DependencyParser.deps_from_pyp_format(self.archive.find_list_argument('install_requires'), runtime = True)
+        return self.name_convert_deps_list(DependencyParser.deps_from_pyp_format(self.archive.find_list_argument('install_requires'), runtime = True))
 
     @property
     def build_deps_from_setup_py(self): # setup_requires
@@ -37,19 +45,20 @@ class MetadataExtractor(object):
         Returns:
             list of build dependencies of the package
         """
-        return DependencyParser.deps_from_pyp_format(self.archive.find_list_argument('setup_requires'), runtime = False)
+        return self.name_convert_deps_list(DependencyParser.deps_from_pyp_format(self.archive.find_list_argument('setup_requires'), runtime = False))
 
     @property
     def runtime_deps_from_egg_info(self):
         """ Returns list of runtime dependencies of the package specified in EGG-INFO/requires.txt.
 
-        Dependencies are in RPM SPECFILE format - see DependencyParser.dependency_to_rpm() for details.
+        Dependencies are in RPM SPECFILE format - see DependencyParser.dependency_to_rpm() for details, but names are already
+        transformed according to current distro.
 
         Returns:
             list of runtime dependencies of the package
         """
         requires_txt = self.archive.get_content_of_file('EGG-INFO/requires.txt', True) or ''
-        return DependencyParser.deps_from_pyp_format(requires_txt.splitlines())
+        return self.name_convert_deps_list(DependencyParser.deps_from_pyp_format(requires_txt.splitlines()))
 
     @property
     def build_deps_from_egg_info(self):
@@ -156,8 +165,8 @@ class MetadataExtractor(object):
         return archive_data
 
 class PypiMetadataExtractor(MetadataExtractor):
-    def __init__(self, local_file, name, version, client):
-        super(PypiMetadataExtractor, self).__init__(local_file, name, version)
+    def __init__(self, local_file, name, version, name_convertor, client):
+        super(PypiMetadataExtractor, self).__init__(local_file, name, version, name_convertor)
         self.client = client
 
     def extract_data(self):
@@ -177,8 +186,12 @@ class PypiMetadataExtractor(MetadataExtractor):
         elif release_data:
             url = release_data['download_url']
 
-        data = PypiData(self.local_file, self.name, self.version,
-                        md5_digest, url)
+        data = PypiData(self.local_file,
+                        self.name,
+                        self.name_convertor.rpm_name(self.name),
+                        self.version,
+                        md5_digest,
+                        url)
         for data_field in settings.PYPI_USABLE_DATA:
             setattr(data, data_field, release_data.get(data_field, ''))
 
@@ -192,7 +205,7 @@ class PypiMetadataExtractor(MetadataExtractor):
 
 class LocalMetadataExtractor(MetadataExtractor):
     def __init__(self, local_file, name, version):
-        super(LocalMetadataExtractor, self).__init__(local_file, name, version)
+        super(LocalMetadataExtractor, self).__init__(local_file, name, version, name_convertor)
 
     @property
     def license_from_archive(self):
@@ -214,7 +227,10 @@ class LocalMetadataExtractor(MetadataExtractor):
         Returns:
             LocalData object containing the extracted data.
         """
-        data = LocalData(self.local_file, self.name, self.version)
+        data = LocalData(self.local_file,
+                         self.name,
+                         self.name_convertor.rpm_name(self.name),
+                         self.version)
 
         with self.archive:
             data.set_from(self.data_from_archive)
