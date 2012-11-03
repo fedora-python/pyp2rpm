@@ -52,14 +52,19 @@ def rpm_name(name, python_version = None):
         If for_python is not None, the returned name is in form python%(version)s-%(name)s
     """
     rpmized_name = name
+    if settings.DEFAULT_TEMPLATE =="mageia":
+        exclude_string = "python-"
+    else:
+        exclude_string = "py-"
 
-    if name.lower().find('py') == -1: # name doesn't contain "py" => prefix with "python-"
+    if name.lower().find(exclude_string) == -1: # name doesn't contain "py" => prefix with "python-"
         rpmized_name = 'python-%s' % name
     elif name.endswith('-python'): # name ends with "-python" => strip that and put it to front
         rpmized_name = 'python-%s' % name.replace('-python', '')
     # else the name contains "py" as its part => do nothing
     # or the name is in form "python-%(name)s", which is fine, toO
-
+    if settings.DEFAULT_TEMPLATE == "mageia":
+        rpmized_name = rpmized_name.lower()
     return rpm_versioned_name(rpmized_name, python_version)
 
 def license_from_trove(trove):
