@@ -1,3 +1,8 @@
+Rework:
+- Refactor what needs to be refactored :)
+- Fix and rewrite the tests
+
+
 - When the description is too long, truncate it.
 - Improve the find_list_argument function not to use it for hacks like 'console_scripts': []
    - And actually implement something to handle 'console_scripts'.
