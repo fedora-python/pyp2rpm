@@ -10,7 +10,7 @@ from pyp2rpm import utils
 
 class MetadataExtractor(object):
     """Base class for metadata extractors"""
-    def __init__(self, local_file, name, version, name_convertor):
+    def __init__(self, local_file, name, name_convertor, version):
         self.local_file = local_file
         self.archive = archive.Archive(local_file)
         self.name = name
@@ -165,8 +165,8 @@ class MetadataExtractor(object):
         return archive_data
 
 class PypiMetadataExtractor(MetadataExtractor):
-    def __init__(self, local_file, name, version, name_convertor, client):
-        super(PypiMetadataExtractor, self).__init__(local_file, name, version, name_convertor)
+    def __init__(self, local_file, name, name_convertor, version, client):
+        super(PypiMetadataExtractor, self).__init__(local_file, name, name_convertor, version)
         self.client = client
 
     def extract_data(self):
@@ -205,7 +205,7 @@ class PypiMetadataExtractor(MetadataExtractor):
 
 class LocalMetadataExtractor(MetadataExtractor):
     def __init__(self, local_file, name, name_convertor, version):
-        super(LocalMetadataExtractor, self).__init__(local_file, name, version, name_convertor)
+        super(LocalMetadataExtractor, self).__init__(local_file, name, name_convertor, version)
 
     @property
     def license_from_archive(self):

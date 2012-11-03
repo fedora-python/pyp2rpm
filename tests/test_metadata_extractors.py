@@ -7,25 +7,27 @@ import pytest
 
 from flexmock import flexmock
 
-from pyp2rpmlib.archive import Archive
-from pyp2rpmlib.metadata_extractors import *
-from pyp2rpmlib import settings
+from pyp2rpm.archive import Archive
+from pyp2rpm.metadata_extractors import *
+from pyp2rpm.name_convertor import NameConvertor
+from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
 class TestMetadataExtractor(object):
-    td_dir = '%s/test_data/' % tests_dir
+    td_dir = '{0}/test_data/'.format(tests_dir)
 
     def setup_method(self, method):
         # create fresh extractors for every test
 
-        self.e = [MetadataExtractor('%splumbum-0.9.0.tar.gz' % self.td_dir, 'plumbum', '0.9.0'),
-                  MetadataExtractor('%spytest-2.2.3.zip' % self.td_dir, 'pytest', '2.2.3'),
-                  MetadataExtractor('%srestsh-0.1.tar.gz' % self.td_dir, 'restsh', '0.1'),
-                  MetadataExtractor('%sSphinx-1.1.3-py2.6.egg' % self.td_dir, 'Sphinx', '1.1.3'),
-                  MetadataExtractor('%sunextractable-1.tar' % self.td_dir, 'unextractable', '1'),
-                  MetadataExtractor('%sbitarray-0.8.0.tar.gz' % self.td_dir, 'bitarray', '0.8.0'),
-                  MetadataExtractor('%sversiontools-1.9.1.tar.gz' % self.td_dir, 'versiontools', '1.9.1'),
+        self.nc = NameConvertor('fedora')
+        self.e = [MetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
+                  MetadataExtractor('{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3'),
+                  MetadataExtractor('{0}restsh-0.1.tar.gz'.format(self.td_dir), 'restsh', self.nc, '0.1'),
+                  MetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3'),
+                  MetadataExtractor('{0}unextractable-1.tar'.format(self.td_dir), 'unextractable', self.nc, '1'),
+                  MetadataExtractor('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
+                  MetadataExtractor('{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
                  ]
 
     def test_runtime_deps_from_egg_info_no_deps(self):
@@ -73,7 +75,7 @@ class TestMetadataExtractor(object):
             assert self.e[i].sphinx_dir == expected
 
 class TestPypiMetadataExtractor(object):
-    td_dir = '%s/test_data/' % tests_dir
+    td_dir = '{0}/test_data/'.format(tests_dir)
     client = flexmock(
         release_urls = lambda n, v: [{'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
                                       'url': 'http://pypi.python.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
@@ -91,8 +93,9 @@ class TestPypiMetadataExtractor(object):
     )
 
     def setup_method(self, method):
+        self.nc = NameConvertor('fedora')
         # we will only test getting stuff from the client => pass spam as file
-        self.e = PypiMetadataExtractor('spam', 'restsh', '0.1', self.client)
+        self.e = PypiMetadataExtractor('spam', 'restsh', self.nc, '0.1', self.client)
 
     @pytest.mark.parametrize(('what', 'expected'), [
         ('description', 'UNKNOWN'),
@@ -106,11 +109,12 @@ class TestPypiMetadataExtractor(object):
         assert getattr(data, what) == expected
 
 class TestLocalMetadataExtractor(object):
-    td_dir = '%s/test_data/' % tests_dir
+    td_dir = '{0}/test_data/'.format(tests_dir)
 
     def setup_method(self, method): # test for non-egg and egg
-        self.e = [LocalMetadataExtractor('%splumbum-0.9.0.tar.gz' % self.td_dir, 'plumbum', '0.9.0'),
-                  LocalMetadataExtractor('%sSphinx-1.1.3-py2.6.egg' % self.td_dir, 'Sphinx', '1.1.3')
+        self.nc = NameConvertor('fedora')
+        self.e = [LocalMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
+                  LocalMetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3')
                  ]
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
