@@ -38,6 +38,12 @@ def main():
                         help = 'Template file (jinja2 format) to render (default: "%s"). Search order is 1) filesystem, 2) default templates.' % settings.DEFAULT_TEMPLATE,
                         metavar = 'TEMPLATE',
                         default = settings.DEFAULT_TEMPLATE)
+    parser.add_argument('-o',
+                        required = False,
+                        help = 'Default distro whose conversion rules to use (default: "%s"). Default templates have their rules associated and ignore this.' % settings.DEFAULT_DISTRO,
+                        metavar = 'DISTRO',
+                        default = settings.DEFAULT_DISTRO,
+                        choices = settings.KNOWN_DISTROS)
     parser.add_argument('-b',
                         required = False,
                         help = 'Base Python version to package for (default: "%s").' % settings.DEFAULT_PYTHON_VERSION,
@@ -55,12 +61,17 @@ def main():
     if ns.__dict__['n'] == None and not os.path.exists(ns.__dict__['s']):
         parser.error('You must specify name of the package (-n) or full path (-s).')
 
+    distro = ns.__dict__['o']
+    if ns.__dict['t'] in settings.KNOWN_DISTROS:
+        distro = ns.__dict__['t']
+
     convertor = Convertor(name = ns.__dict__['n'],
                           version = ns.__dict__['v'],
                           metadata_from = ns.__dict__['m'],
                           source_from = ns.__dict__['s'],
                           save_dir = ns.__dict__['d'],
                           template = ns.__dict__['t'],
+                          distro = distro,
                           base_python_version = ns.__dict__['b'],
                           python_versions = ns.__dict__['p'])
 
