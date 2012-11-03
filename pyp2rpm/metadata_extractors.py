@@ -22,7 +22,7 @@ class MetadataExtractor(object):
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
-            deps_list[1] = self.name_convertor.rpm_name(dep)
+            dep[1] = self.name_convertor.rpm_name(dep[1])
 
         return deps_list
 

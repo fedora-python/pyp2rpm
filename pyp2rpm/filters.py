@@ -1,8 +1,8 @@
-from pyp2rpm import utils
 from pyp2rpm import settings
+from pyp2rpm import name_convertor
 
 def name_for_python_version(name, version):
-    return utils.rpm_name(name, version)
+    return name_convertor.NameConvertor.rpm_versioned_name(name, version)
 
 def script_name_for_python_version(name, version):
     if version == settings.DEFAULT_PYTHON_VERSION:

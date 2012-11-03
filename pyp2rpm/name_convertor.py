@@ -1,7 +1,10 @@
+from pyp2rpm import settings
+
 class NameConvertor(object):
     def __init__(self, distro):
         self.distro = distro
 
+    @staticmethod
     def rpm_versioned_name(name, version):
         """Properly versions the name.
         For example:
@@ -28,7 +31,7 @@ class NameConvertor(object):
 
         return versioned_name
 
-    def rpm_name(name, python_version = None):
+    def rpm_name(self, name, python_version = None):
         """Returns name of the package coverted to (possibly) correct package name according to Packaging Guidelines.
         Args:
             name: name to convert
@@ -51,4 +54,4 @@ class NameConvertor(object):
         # or the name is in form "python-%(name)s", which is fine, toO
         if self.distro == 'mageia':
             rpmized_name = rpmized_name.lower()
-        return rpm_versioned_name(rpmized_name, python_version)
+        return NameConvertor.rpm_versioned_name(rpmized_name, python_version)

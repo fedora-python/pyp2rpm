@@ -62,7 +62,7 @@ def main():
         parser.error('You must specify name of the package (-n) or full path (-s).')
 
     distro = ns.__dict__['o']
-    if ns.__dict['t'] in settings.KNOWN_DISTROS:
+    if ns.__dict__['t'] in settings.KNOWN_DISTROS:
         distro = ns.__dict__['t']
 
     convertor = Convertor(name = ns.__dict__['n'],
