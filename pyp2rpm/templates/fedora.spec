@@ -22,15 +22,13 @@ BuildArch:      noarch
 {{ dependencies(data.build_deps, False, pv, data.base_python_version) }}
 {%- endfor %}
 {{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version) }}
-{%- for pv in data.python_versions %}
-{{ dependencies(data.runtime_deps, True, pv, data.base_python_version) }}
-{%- endfor %}
 
 %description
 {{ data.description|wordwrap }}
 {% call(pv) for_python_versions(data.python_versions) -%}
 %package -n     {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}
 Summary:        {{ data.summary }}
+{{ dependencies(data.runtime_deps, True, pv, pv) }}
 
 %description -n {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}
 {{ data.description|wordwrap }}
