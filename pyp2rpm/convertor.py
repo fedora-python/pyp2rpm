@@ -35,7 +35,7 @@ class Convertor(object):
         self.template = template
         self.name_convertor = name_convertor.NameConvertor(distro)
         if not self.template.endswith('.spec'):
-            self.template = '%s.spec' % self.template
+            self.template = '{0}.spec'.format(self.template)
 
         self._getter = None
         self._metadata_extractor = None
@@ -94,7 +94,7 @@ class Convertor(object):
                 self._getter = package_getters.LocalFileGetter(self.source_from,
                                                                self.save_dir)
             else:
-                raise exceptions.NoSuchSourceException('"%s" is neither one of preset sources nor a file.' % self.source_from)
+                raise exceptions.NoSuchSourceException('"{0}" is neither one of preset sources nor a file.'.format(self.source_from))
 
         return self._getter
 

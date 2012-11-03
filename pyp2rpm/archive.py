@@ -122,7 +122,7 @@ class Archive(object):
                 else:
                     # hack for .zip files, where directories are not returned themselves, therefore we can't find e.g. .egg-info
                     for suffix in suffixes:
-                        if '%s/' % suffix in member.name:
+                        if '{0}/'.format(suffix) in member.name:
                             return True
 
         return False
@@ -231,6 +231,6 @@ class Archive(object):
         setup_py = self.get_content_of_file('setup.py')
         if not setup_py: return False
 
-        argument_re = re.compile(r'setup\(.*(?<!\w)%s.*\)' % argument, re.DOTALL)
+        argument_re = re.compile(r'setup\(.*(?<!\w){0}.*\)'.format(argument), re.DOTALL)
 
         return True if argument_re.search(setup_py) else False

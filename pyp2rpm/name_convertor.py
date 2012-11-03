@@ -25,9 +25,9 @@ class NameConvertor(object):
         versioned_name = name
         if version:
             if name.startswith('python-'):
-                versioned_name = name.replace('python-', 'python%s-' % version)
+                versioned_name = name.replace('python-', 'python{0}-'.format(version))
             else:
-                versioned_name = 'python%s-%s' % (version, name)
+                versioned_name = 'python{0}-{1}'.format(version, name)
 
         return versioned_name
 
@@ -47,9 +47,9 @@ class NameConvertor(object):
             exclude_string = 'py'
 
         if name.lower().find(exclude_string) == -1: # name doesn't contain "py" => prefix with "python-"
-            rpmized_name = 'python-%s' % name
+            rpmized_name = 'python-{0}'.format(name)
         elif name.endswith('-python'): # name ends with "-python" => strip that and put it to front
-            rpmized_name = 'python-%s' % name.replace('-python', '')
+            rpmized_name = 'python-{0}'.format(name.replace('-python', ''))
         # else the name contains "py" as its part => do nothing
         # or the name is in form "python-%(name)s", which is fine, toO
         if self.distro == 'mageia':

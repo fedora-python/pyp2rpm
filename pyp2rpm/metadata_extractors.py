@@ -18,7 +18,7 @@ class MetadataExtractor(object):
         self.version = version
 
     def extract_data(self):
-        raise NotImplementedError('Whoops, extract_data method not implemented by %s.' % self.__class__)
+        raise NotImplementedError('Whoops, extract_data method not implemented by {0}.'.format(self.__class__))
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
@@ -104,7 +104,7 @@ class MetadataExtractor(object):
         # search for sphinx dir doc/ or docs/ under the first directory in archive (e.g. spam-1.0.0/doc)
         candidate_dirs = self.archive.get_directories_re(settings.SPHINX_DIR_RE, full_path = True)
         for d in candidate_dirs: # search for conf.py in the dirs (TODO: what if more are found?)
-            contains_conf_py = len(self.archive.get_files_re(r'%s/conf.py' % d, full_path = True)) > 0
+            contains_conf_py = len(self.archive.get_files_re(r'{0}/conf.py'.format(d), full_path = True)) > 0
             if contains_conf_py == True:
                 sphinx_dir = d
 

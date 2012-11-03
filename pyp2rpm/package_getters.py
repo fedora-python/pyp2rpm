@@ -15,14 +15,14 @@ from pyp2rpm import exceptions
 class PackageGetter(object):
     """Base class for package getters"""
     def get(self):
-        raise NotImplementedError('Whoops, get method not implemented by %s.' % self.__class__)
+        raise NotImplementedError('Whoops, get method not implemented by {0}.'.format(self.__class__))
 
     def get_name_version(self):
         """Returns (name, version) tuple.
         Returns:
             (name, version) tuple of the package.
         """
-        raise NotImplementedError('Whoops, get method not implemented by %s.' % self.__class__)
+        raise NotImplementedError('Whoops, get method not implemented by {0}.'.format(self.__class__))
 
 class PypiDownloader(PackageGetter):
     """Class for downloading the package from PyPI."""
@@ -32,9 +32,9 @@ class PypiDownloader(PackageGetter):
         try:
             self.version = version or self.client.package_releases(self.name)[0]
         except IndexError: # no such package
-            raise exceptions.NoSuchPackageException('Package "%s" could not be found on PyPI.' % name)
+            raise exceptions.NoSuchPackageException('Package "{0}" could not be found on PyPI.'.format(name))
         if version and self.client.release_urls(name, version) == []: # if version is specified, will check if such version exists
-            raise exceptions.NoSuchPackageException('Package with name "%s" and version "%s" could not be found on PyPI' % (name, version))
+            raise exceptions.NoSuchPackageException('Package with name "{0}" and version "{1}" could not be found on PyPI'.format(name, version))
         self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
 
     @property
@@ -53,7 +53,7 @@ class PypiDownloader(PackageGetter):
         Raises:
             EnvironmentError if the save_dir is not writable.
         """
-        save_file = '%s/%s' % (self.save_dir, self.url.split('/')[-1])
+        save_file = '{0}/{1}'.format(self.save_dir, self.url.split('/')[-1])
         request.urlretrieve(self.url, save_file)
         return save_file
 
@@ -72,7 +72,7 @@ class LocalFileGetter(PackageGetter):
         Raises:
             EnvironmentError if the file can't be found or the save_dir is not writable.
         """
-        save_file = '%s/%s' % (self.save_dir, os.path.basename(self.local_file))
+        save_file = '{0}/{1}'.format(self.save_dir, os.path.basename(self.local_file))
         if not os.path.exists(save_file) or not os.path.samefile(self.local_file, save_file):
             shutil.copy2(self.local_file, save_file)
 
@@ -88,9 +88,9 @@ class LocalFileGetter(PackageGetter):
         filename = os.path.basename(self.local_file)
         for archive_suffix in settings.ARCHIVE_SUFFIXES:
             if filename.endswith(archive_suffix):
-                return filename.rstrip("%s" % archive_suffix)
+                return filename.rstrip('{0}'.format(archive_suffix))
 
-        raise exceptions.UnknownArchiveFormatException('Unkown archive format of file %s.' % filename)
+        raise exceptions.UnknownArchiveFormatException('Unkown archive format of file {0}.'.format(filename))
 
     def get_name_version(self):
         split_name_version = self._stripped_name_version.rsplit('-', 2)

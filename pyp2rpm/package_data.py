@@ -5,7 +5,7 @@ import locale
 from pyp2rpm import version
 
 class PackageData(object):
-    credit_line = '# Created by pyp2rpm-%s' % version.version
+    credit_line = '# Created by pyp2rpm-{0}'.format(version.version)
 
     """A simple object that carries data about a package."""
     def __init__(self, local_file, name, pkg_name, version):
@@ -53,7 +53,7 @@ class PackageData(object):
         packager = subprocess.Popen('rpmdev-packager', stdout = subprocess.PIPE).communicate()[0].strip()
         date_str = time.strftime('%a %b %d %Y', time.gmtime())
         encoding = locale.getpreferredencoding()
-        return "%s %s" % (date_str, packager.decode(encoding))
+        return '{0} {1}'.format(date_str, packager.decode(encoding))
 
 class PypiData(PackageData):
     """Carries data about package from PyPI"""

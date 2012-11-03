@@ -8,13 +8,13 @@ def script_name_for_python_version(name, version):
     if version == settings.DEFAULT_PYTHON_VERSION:
         return name
     else:
-        return 'python%s-%s' % (version, name)
+        return 'python{0}-{1}'.format(version, name)
 
 def sitedir_for_python_version(name, version):
     if version == settings.DEFAULT_PYTHON_VERSION:
         return name
     else:
-        return name.replace('python', 'python%s' % version)
+        return name.replace('python', 'python{0}'.format(version))
 
 def python_bin_for_python_version(name, version):
     if version == settings.DEFAULT_PYTHON_VERSION:
