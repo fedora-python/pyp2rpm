@@ -7,23 +7,22 @@ import pytest
 
 from flexmock import flexmock
 
-from pyp2rpmlib.archive import Archive
+from pyp2rpm.archive import Archive
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
 class TestArchive(object):
-    td_dir = '%s/test_data/' % tests_dir
+    td_dir = '{0}/test_data/'.format(tests_dir)
 
     def setup_method(self, method):
         # create fresh archives for every test
 
-        self.a = [Archive('%splumbum-0.9.0.tar.gz' % self.td_dir),
-                  Archive('%spytest-2.2.3.zip' % self.td_dir),
-                  Archive('%srestsh-0.1.tar.gz' % self.td_dir),
-                  Archive('%sSphinx-1.1.3-py2.6.egg' % self.td_dir),
-                  Archive('%sunextractable-1.tar' % self.td_dir),
-                  Archive('%sbitarray-0.8.0.tar.gz' % self.td_dir),
-                 ]
+        self.a = [Archive('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir)),
+                  Archive('{0}pytest-2.2.3.zip'.format(self.td_dir)),
+                  Archive('{0}restsh-0.1.tar.gz'.format(self.td_dir)),
+                  Archive('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir)),
+                  Archive('{0}unextractable-1.tar'.format(self.td_dir)),
+                  Archive('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir)),]
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, TarFile),
