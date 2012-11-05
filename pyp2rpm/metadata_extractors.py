@@ -174,10 +174,18 @@ class PypiMetadataExtractor(MetadataExtractor):
         Returns:
             PypiData object containing data extracted from PyPI and archive.
         """
-        release_urls = self.client.release_urls(self.name, self.version)
-        release_data = self.client.release_data(self.name, self.version)
+        try:
+            release_urls = self.client.release_urls(self.name, self.version)
+            release_data = self.client.release_data(self.name, self.version)
+        except: # some kind of error with client => return TODO: log the failure
+            return PypiData(self.local_file,
+                            self.name,
+                            self.name_convertor.rpm_name(self.name),
+                            self.version,
+                            'FAILED TO EXTRACT FROM PYPI',
+                            'FAILED TO EXTRACT FROM PYPI')
 
-        url = ""
+        url = ''
         md5_digest = None
 
         if len(release_urls) > 0:
