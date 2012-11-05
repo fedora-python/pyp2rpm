@@ -1,4 +1,3 @@
-- When the description is too long, truncate it.
 - Improve the find_list_argument function not to use it for hacks like 'console_scripts': []
    - And actually implement something to handle 'console_scripts'.
 - List packages in %files according to names, not only %{pypi_name} - will probably be more

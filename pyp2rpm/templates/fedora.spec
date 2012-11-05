@@ -24,14 +24,14 @@ BuildArch:      noarch
 {{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version) }}
 
 %description
-{{ data.description|wordwrap }}
+{{ data.description|truncate(400)|wordwrap }}
 {% call(pv) for_python_versions(data.python_versions) -%}
 %package -n     {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}
 Summary:        {{ data.summary }}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
 
 %description -n {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}
-{{ data.description|wordwrap }}
+{{ data.description|truncate(400)|wordwrap }}
 {%- endcall %}
 
 %prep

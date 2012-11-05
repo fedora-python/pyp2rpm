@@ -1,3 +1,4 @@
+* Truncate description, when it is too long.
 * Allow specifying according to which distro rules to convert.
 * Some mageia specific name conversions.
 * More robustness for cases when the distribution is not available on pypi in the same versionas the provided source archive is. (thanks to Tomas Mlcoch for reporting)
