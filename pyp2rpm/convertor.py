@@ -107,8 +107,8 @@ class Convertor(object):
             if self.metadata_from == 'pypi':
                 self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(local_file,
                                                                                      self.name,
-                                                                                     self.version,
                                                                                      self.name_convertor,
+                                                                                     self.version,
                                                                                      self.client)
             else:
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(local_file,
