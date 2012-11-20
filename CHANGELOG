@@ -1,3 +1,5 @@
+* When we cannot figure the version of a license (such as ASL), make it more obvious, not looking like forgotten interpolation. (thanks to Pádraig Brady for suggestion)
+* Rework of some internals, pyp2rpmlib moved to pyp2rpm, auto-generated binary /usr/bin/pyp2rpm is now used.
 * Truncate description, when it is too long.
 * Allow specifying according to which distro rules to convert.
 * Some mageia specific name conversions.
