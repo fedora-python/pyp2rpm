@@ -14,13 +14,13 @@ SPHINX_DIR_RE = r'[^/]+/doc.?'
 PYPI_URL = 'http://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'home_page', 'requires']
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
-                  'License :: OSI Approved :: Apache Software License': 'ASL %(version)s',
-                  'License :: OSI Approved :: Apple Public Source License': 'APSL %(version)s',
-                  'License :: OSI Approved :: Artistic License': 'Artistic %(version)s',
+                  'License :: OSI Approved :: Apache Software License': 'ASL %(TODO: version)s',
+                  'License :: OSI Approved :: Apple Public Source License': 'APSL %(TODO: version)s',
+                  'License :: OSI Approved :: Artistic License': 'Artistic %(TODO: version)s',
                   'License :: OSI Approved :: Attribution Assurance License': 'AAL',
                   'License :: OSI Approved :: BSD License': 'BSD',
                   'License :: OSI Approved :: Common Public License': 'CPL',
-                  'License :: OSI Approved :: Eiffel Forum License': 'EFL %(version)s',
+                  'License :: OSI Approved :: Eiffel Forum License': 'EFL %(TODO: version)s',
                   'License :: OSI Approved :: European Union Public Licence 1.0 (EUPL 1.0)': 'EUPL 1.0',
                   'License :: OSI Approved :: European Union Public Licence 1.1 (EUPL 1.1)': 'EUPL 1.1',
                   'License :: OSI Approved :: GNU Affero General Public License v3': 'AGPLv3',
@@ -61,7 +61,7 @@ TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL
                   'License :: OSI Approved :: W3C License': 'W3C - not sure',
                   'License :: OSI Approved :: X.Net License': 'X.Net License - Deprecated (BAD)',
                   'License :: OSI Approved :: zlib/libpng License': 'zlib',
-                  'License :: OSI Approved :: Zope Public License': 'ZPLv%(version)s',
+                  'License :: OSI Approved :: Zope Public License': 'ZPLv%(TODO: version)s',
                   'License :: Other/Proprietary License': 'Proprietary shit - BAD',
                   'License :: Public Domain': 'Public Domain',
                   'License :: Repoze Public License': 'Repoze Public License - ???'
