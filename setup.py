@@ -28,7 +28,7 @@ setup(
     license = 'MIT',
     packages = ['pyp2rpm', ],
     package_data = {'pyp2rpm': ['templates/*.spec']},
-    entry_pointsi = {'console_scripts':['pyp2rpm = pyp2rpm.bin:main']},
+    entry_points = {'console_scripts':['pyp2rpm = pyp2rpm.bin:main']},
     install_requires=['Jinja2',
                       'distribute',
                      ],
