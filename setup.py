@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from pyp2rpmlib.version import version
+from pyp2rpm.version import version
 
 try:
     from setuptools import setup
