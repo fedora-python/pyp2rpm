@@ -90,8 +90,7 @@ class MetadataExtractor(object):
         doc_files = []
         for doc_file_re in settings.DOC_FILES_RE:
             doc_files.extend(self.archive.get_files_re(doc_file_re, ignorecase = True))
-
-        return list(map(lambda x: os.path.basename(x), doc_files))
+        return list(map(lambda x: "/".join(x.split("/")[1:]), doc_files))
 
     @property
     def sphinx_dir(self):
