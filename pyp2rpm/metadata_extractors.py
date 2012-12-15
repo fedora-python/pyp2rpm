@@ -154,7 +154,7 @@ class MetadataExtractor(object):
 
         sphinx_dir = self.sphinx_dir
         if sphinx_dir:
-            archive_data['sphinx_dir'] = os.path.basename(sphinx_dir)
+            archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])
             archive_data['build_deps'].append(['BuildRequires', 'python-sphinx'])
 
         archive_data['has_packages'] = self.has_packages
