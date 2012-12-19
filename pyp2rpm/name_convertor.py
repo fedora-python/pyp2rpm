@@ -45,7 +45,9 @@ class NameConvertor(object):
             exclude_string = 'python-'
             if name not in ['pyp2rpm',
                             'py',
-                            'pyflation'] and name[0:2] == 'py':
+                            'pyflation'] and \
+               name.find('py') == 0 and \
+               name.find('python-') != 0:
                 name = name[2:]
         else:
             exclude_string = 'py'
