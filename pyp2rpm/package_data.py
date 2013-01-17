@@ -33,6 +33,7 @@ class PackageData(object):
     @summary.setter
     def summary(self, value):
         self._summary = value.rstrip('.')
+        self._summary = self._summary.replace("\n", " ")
 
     @property
     def sphinx_dir(self):
