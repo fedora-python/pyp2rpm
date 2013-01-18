@@ -149,6 +149,7 @@ class MetadataExtractor(object):
         archive_data['has_extension'] = self.has_extension
         archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
         archive_data['doc_files'] = self.doc_files
+        archive_data['has_pth'] = self.has_pth
         if self.archive.is_egg:
             archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
             archive_data['build_deps'] = self.build_deps_from_egg_info
