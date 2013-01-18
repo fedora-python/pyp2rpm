@@ -28,8 +28,16 @@ def macroed_pkg_name(name):
     else:
         return '%{pypi_name}'
 
+def module_to_path(name, module):
+    module = module.replace(".", "/")
+    if name == module:
+        return "%{pypi_name}"
+    else:
+        return module
+
 __all__ = [name_for_python_version,
            script_name_for_python_version,
            sitedir_for_python_version,
            python_bin_for_python_version,
-           macroed_pkg_name]
+           macroed_pkg_name,
+           module_to_path]

@@ -72,7 +72,11 @@ class MetadataExtractor(object):
             True if the archive contains bundled .egg-info directory, False otherwise
         """
         return self.archive.has_file_with_suffix('.egg-info')
-
+    @property
+    def has_pth(self):
+        """Figure out if package has pth file """
+        return "." in self.name
+        
     @property
     def has_extension(self):
         """Finds out whether the packages has binary extension.
