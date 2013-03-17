@@ -21,6 +21,7 @@ URL:		{{ data.release_url|replace(data.version, '%{version}') }}
 {%- if not data.has_extension %}
 BuildArch:	noarch
 {%- endif %}
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 {{ data.description|truncate(400)|wordwrap }}
@@ -36,6 +37,7 @@ Summary:	{{ data.summary }}
 %prep
 %setup -q -n %{pypi_name}-%{version}
 {%- if data.has_bundled_egg_info %}
+
 # Remove bundled egg-info
 %{__rm} -r %{pypi_name}.egg-info
 {%- endif %}
@@ -68,6 +70,7 @@ cd -
 {%- endcall %}
 
 %install
+rm -rf $RPM_BUILD_ROOT
 {%- if data.python_versions|length > 0 %}
 # Must do the subpackages' install first because the scripts in /usr/bin are
 # overwritten with every setup.py install (and we want the python2 version
@@ -81,6 +84,8 @@ cd %{py{{ pv }}dir}
 	--skip-build \
 	--optimize=2 \
 	--root=$RPM_BUILD_ROOT
+
+%py_postclean
 {%- if pv != data.base_python_version %}
 {%- if data.scripts %}
 {%- for script in data.scripts %}
