@@ -8,13 +8,15 @@ class PackageData(object):
     credit_line = '# Created by pyp2rpm-{0}'.format(version.version)
 
     """A simple object that carries data about a package."""
-    def __init__(self, local_file, name, pkg_name, version):
+    def __init__(self, local_file, name, pkg_name, version, md5='', url=''):
         self.local_file = local_file
         self.name = name
         self.pkg_name = pkg_name
         self.version = version
         self.python_versions = []
         self._sphinx_dir = None
+        self.md5 = md5
+        self.url = url
 
     def __getattr__(self, name):
         if name in self.__dict__:
@@ -55,14 +57,3 @@ class PackageData(object):
         date_str = time.strftime('%a %b %d %Y', time.gmtime())
         encoding = locale.getpreferredencoding()
         return '{0} {1}'.format(date_str, packager.decode(encoding))
-
-class PypiData(PackageData):
-    """Carries data about package from PyPI"""
-    def __init__(self, local_file, name, pkg_name, version, md5, url):
-        super(PypiData, self).__init__(local_file, name, pkg_name, version)
-        self.md5 = md5
-        self.url = url
-
-class LocalData(PackageData):
-    def __init__(self, local_file, name, pkg_name, version):
-        super(LocalData, self).__init__(local_file, name, pkg_name, version)

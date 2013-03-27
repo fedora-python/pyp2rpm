@@ -21,13 +21,13 @@ class TestMetadataExtractor(object):
         # create fresh extractors for every test
 
         self.nc = NameConvertor('fedora')
-        self.e = [MetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
-                  MetadataExtractor('{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3'),
-                  MetadataExtractor('{0}restsh-0.1.tar.gz'.format(self.td_dir), 'restsh', self.nc, '0.1'),
-                  MetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3'),
-                  MetadataExtractor('{0}unextractable-1.tar'.format(self.td_dir), 'unextractable', self.nc, '1'),
-                  MetadataExtractor('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
-                  MetadataExtractor('{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
+        self.e = [LocalMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
+                  LocalMetadataExtractor('{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3'),
+                  LocalMetadataExtractor('{0}restsh-0.1.tar.gz'.format(self.td_dir), 'restsh', self.nc, '0.1'),
+                  LocalMetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3'),
+                  LocalMetadataExtractor('{0}unextractable-1.tar'.format(self.td_dir), 'unextractable', self.nc, '1'),
+                  LocalMetadataExtractor('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
+                  LocalMetadataExtractor('{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
                  ]
 
     @pytest.mark.parametrize(('lst', 'expected'), [

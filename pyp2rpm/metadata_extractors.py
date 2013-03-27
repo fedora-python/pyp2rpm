@@ -3,12 +3,12 @@ import re
 
 from pyp2rpm import archive
 from pyp2rpm.dependency_parser import DependencyParser
-from pyp2rpm.package_data import PypiData, LocalData
+from pyp2rpm.package_data import PackageData
 from pyp2rpm import settings
 from pyp2rpm import utils
 
 
-class MetadataExtractor(object):
+class LocalMetadataExtractor(object):
     """Base class for metadata extractors"""
     def __init__(self, local_file, name, name_convertor, version):
         self.local_file = local_file
@@ -16,9 +16,6 @@ class MetadataExtractor(object):
         self.name = name
         self.name_convertor = name_convertor
         self.version = version
-
-    def extract_data(self):
-        raise NotImplementedError('Whoops, extract_data method not implemented by {0}.'.format(self.__class__))
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
@@ -72,6 +69,7 @@ class MetadataExtractor(object):
             True if the archive contains bundled .egg-info directory, False otherwise
         """
         return self.archive.has_file_with_suffix('.egg-info')
+
     @property
     def has_pth(self):
         """Figure out if package has pth file """
@@ -112,6 +110,21 @@ class MetadataExtractor(object):
                 sphinx_dir = d
 
         return sphinx_dir
+
+    @property
+    def license_from_archive(self):
+        if self.local_file.endswith('.egg'):
+            return self.license_from_egg_info
+        else:
+            return self.license_from_setup_py
+
+    @property
+    def license_from_setup_py(self):
+        return utils.license_from_trove(self.archive.find_list_argument('classifiers'))
+
+    @property
+    def license_from_egg_info(self):
+        return utils.license_from_trove(self.archive.get_content_of_file('EGG-INFO/PKG-INFO', True).splitlines())
 
     @property
     def has_packages(self):
@@ -165,10 +178,26 @@ class MetadataExtractor(object):
         archive_data['has_packages'] = self.has_packages
         archive_data['py_modules'] = self.py_modules
         archive_data['scripts'] = self.scripts
+        archive_data['license'] = self.license_from_archive
 
         return archive_data
 
-class PypiMetadataExtractor(MetadataExtractor):
+    def extract_data(self):
+        """Extracts data from archive.
+        Returns:
+            PackageData object containing the extracted data.
+        """
+        data = PackageData(self.local_file,
+                         self.name,
+                         self.name_convertor.rpm_name(self.name),
+                         self.version)
+
+        with self.archive:
+            data.set_from(self.data_from_archive)
+
+        return data
+
+class PypiMetadataExtractor(LocalMetadataExtractor):
     def __init__(self, local_file, name, name_convertor, version, client):
         super(PypiMetadataExtractor, self).__init__(local_file, name, name_convertor, version)
         self.client = client
@@ -176,13 +205,13 @@ class PypiMetadataExtractor(MetadataExtractor):
     def extract_data(self):
         """Extracts data from PyPI and archive.
         Returns:
-            PypiData object containing data extracted from PyPI and archive.
+            PackageData object containing data extracted from PyPI and archive.
         """
         try:
             release_urls = self.client.release_urls(self.name, self.version)
             release_data = self.client.release_data(self.name, self.version)
         except: # some kind of error with client => return TODO: log the failure
-            return PypiData(self.local_file,
+            return PackageData(self.local_file,
                             self.name,
                             self.name_convertor.rpm_name(self.name),
                             self.version,
@@ -198,7 +227,7 @@ class PypiMetadataExtractor(MetadataExtractor):
         elif release_data:
             url = release_data['download_url']
 
-        data = PypiData(self.local_file,
+        data = PackageData(self.local_file,
                         self.name,
                         self.name_convertor.rpm_name(self.name),
                         self.version,
@@ -207,45 +236,10 @@ class PypiMetadataExtractor(MetadataExtractor):
         for data_field in settings.PYPI_USABLE_DATA:
             setattr(data, data_field, release_data.get(data_field, ''))
 
+        with self.archive:
+            data.set_from(self.data_from_archive)
+
         # we usually get better license representation from trove classifiers
         data.license = utils.license_from_trove(release_data.get('classifiers', '')) or data.license
-
-        with self.archive:
-            data.set_from(self.data_from_archive)
-
-        return data
-
-class LocalMetadataExtractor(MetadataExtractor):
-    def __init__(self, local_file, name, name_convertor, version):
-        super(LocalMetadataExtractor, self).__init__(local_file, name, name_convertor, version)
-
-    @property
-    def license_from_archive(self):
-        if self.local_file.endswith('.egg'):
-            return self.license_from_egg_info
-        else:
-            return self.license_from_setup_py
-
-    @property
-    def license_from_setup_py(self):
-        return utils.license_from_trove(self.archive.find_list_argument('classifiers'))
-
-    @property
-    def license_from_egg_info(self):
-        return utils.license_from_trove(self.archive.get_content_of_file('EGG-INFO/PKG-INFO', True).splitlines())
-
-    def extract_data(self):
-        """Extracts data from archive.
-        Returns:
-            LocalData object containing the extracted data.
-        """
-        data = LocalData(self.local_file,
-                         self.name,
-                         self.name_convertor.rpm_name(self.name),
-                         self.version)
-
-        with self.archive:
-            data.set_from(self.data_from_archive)
-            data.license = self.license_from_archive
 
         return data
