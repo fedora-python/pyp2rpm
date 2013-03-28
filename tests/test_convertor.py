@@ -11,7 +11,7 @@ tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
 class TestConvertor(object):
     client = flexmock(package_releases = lambda n: n == 'spam' and ['0.1'] or [])
-    Convertor.client = client # flexmock can't mock properties yet 
+    Convertor._client = client # flexmock can't mock properties yet
 
     @pytest.mark.parametrize(('sf', 'n', 'g'), [
         ('pypi', 'spam', PypiDownloader),
@@ -19,7 +19,7 @@ class TestConvertor(object):
     ])
     def test_getter_good_data(self, sf, n, g):
         c = Convertor(source_from = sf, name = n)
-        assert isinstance(c.getter, g)
+        assert isinstance(c.get_getter(), g)
 
     @pytest.mark.parametrize(('sf', 'n', 'expected'), [
         ('pypi', 'eggs', NoSuchPackageException),
@@ -29,7 +29,7 @@ class TestConvertor(object):
     def test_getter_bad_data(self, sf, n, expected):
         with pytest.raises(expected):
             c = Convertor(source_from = sf, name = n)
-            c.getter
+            c.get_getter()
 
     @pytest.mark.parametrize(('sf', 'n', 'mf', 'expected'), [
         ('pypi', 'spam', 'pypi', PypiMetadataExtractor),

@@ -37,11 +37,6 @@ class Convertor(object):
         if not self.template.endswith('.spec'):
             self.template = '{0}.spec'.format(self.template)
 
-        self._getter = None
-        self._metadata_extractor = None
-        self._client = None
-        self._client_set = False
-
     def convert(self):
         """Returns RPM SPECFILE.
         Returns:
@@ -49,12 +44,12 @@ class Convertor(object):
         """
         # move file into position
         try:
-            local_file = self.getter.get()
+            local_file = self.get_getter().get()
         except (exceptions.NoSuchPackageException, OSError) as e:
             sys.exit(e)
 
         # save name and version from the file (rewrite if set previously)
-        self.name, self.version = self.getter.get_name_version()
+        self.name, self.version = self.get_getter().get_name_version()
 
         data = self.get_metadata_extractor(local_file).extract_data()
         data.base_python_version = self.base_python_version
@@ -74,19 +69,20 @@ class Convertor(object):
 
         return jinja_template.render(data = data, name_convertor = name_convertor)
 
-    @property
-    def getter(self):
-        """Returns the proper PackageGetter subclass.
+    def get_getter(self):
+        """Returns an instance of proper PackageGetter subclass. Always returns the same instance.
+
         Returns:
-            The proper PackageGetter subclass according to self.source_from.
+            Instance of the proper PackageGetter subclass according to self.source_from.
         Raises:
             NoSuchSourceException if source to get the package from is unknown
             NoSuchPackageException if the package is unknown on PyPI
         """
-        if not self._getter:
+        if not hasattr(self, '_getter'):
             if self.source_from == 'pypi':
-                if self.name == None: raise exceptions.NameNotSpecifiedException('Must specify package when getting from PyPI.')
-                self._getter = package_getters.PypiDownloader(self.client,
+                if self.name == None:
+                    raise exceptions.NameNotSpecifiedException('Must specify package when getting from PyPI.')
+                self._getter = package_getters.PypiDownloader(self.get_client(),
                                                               self.name,
                                                               self.version,
                                                               self.save_dir)
@@ -99,17 +95,18 @@ class Convertor(object):
         return self._getter
 
     def get_metadata_extractor(self, local_file):
-        """Returns the proper MetadataExtractor subclass.
+        """Returns an instance of proper MetadataExtractor subclass. Always returns the same instance.
+
         Returns:
             The proper MetadataExtractor subclass according to self.metadata_from.
         """
-        if not self._metadata_extractor:
+        if not hasattr(self, '_metadata_extractor'):
             if self.metadata_from == 'pypi':
                 self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(local_file,
                                                                                      self.name,
                                                                                      self.name_convertor,
                                                                                      self.version,
-                                                                                     self.client)
+                                                                                     self.get_client())
             else:
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(local_file,
                                                                                       self.name,
@@ -118,15 +115,18 @@ class Convertor(object):
 
         return self._metadata_extractor
 
-    @property
-    def client(self):
-        """Returns the XMLRPC client for PyPI.
+    def get_client(self):
+        """Returns the XMLRPC client for PyPI. Always returns the same instance.
+
         Returns:
             XMLRPC client for PyPI.
         """
         # cannot use "if self._client"...
-        if not self._client_set:
-            self._client = xmlrpclib.ServerProxy(settings.PYPI_URL)
-            self._client_set = True
+        if not hasattr(self, '_client'):
+            if self.source_from == 'pypi':
+                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL)
+                self._client_set = True
+            else:
+                self._client = None
 
         return self._client
