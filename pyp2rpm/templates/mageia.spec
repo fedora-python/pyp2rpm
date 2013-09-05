@@ -106,15 +106,18 @@ popd
 {%- endfor %}
 {%- endif %}
 
-{%- if data.has_pth %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
-{%- endif %}
 {%- if data.has_extension %}
 {{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- if data.has_pth %}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+{%- endif %}
 {{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- else %}
 {%- if data.has_packages %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- endif %}
+{%- if data.has_pth %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
