@@ -95,9 +95,6 @@ popd
 %{_bindir}/{{ script|script_name_for_python_version(pv) }}
 {%- endfor %}
 {%- endif %}
-{%- if data.has_packages %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
-{%- endif %}
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
 {%- if pv == '3' -%}
@@ -110,9 +107,12 @@ popd
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
 {%- if data.has_extension %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
 {{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- else %}
+{%- if data.has_packages %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- endif %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {%- endcall %}
