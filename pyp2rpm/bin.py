@@ -31,6 +31,11 @@ def main():
                         help = 'Where to save the package file (default: "{0}")'.format(settings.DEFAULT_PKG_SAVE_PATH),
                         metavar = 'SAVE_DIR',
                         default = settings.DEFAULT_PKG_SAVE_PATH)
+    parser.add_argument('-r',
+                        required = False,
+                        help = 'Name of rpm package (overrides calculated name)',
+                        metavar = 'RPM_NAME',
+                        default = None)
     parser.add_argument('-t',
                         required = False,
                         help = 'Template file (jinja2 format) to render (default: "{0}"). Search order is 1) filesystem, 2) default templates.'.format(settings.DEFAULT_TEMPLATE),
@@ -70,7 +75,8 @@ def main():
                           template = ns.__dict__['t'] or settings.DEFAULT_TEMPLATE,
                           distro = distro,
                           base_python_version = ns.__dict__['b'],
-                          python_versions = ns.__dict__['p'])
+                          python_versions = ns.__dict__['p'],
+                          rpm_name = ns.__dict__['r'])
 
     converted = convertor.convert()
 
