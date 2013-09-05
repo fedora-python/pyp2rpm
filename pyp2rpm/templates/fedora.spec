@@ -102,16 +102,18 @@ popd
 {% for module in data.py_modules -%}
 {%- if pv == '3' -%}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
-{% endif -%}
+{%- endif %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- if data.has_pth %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
 {%- if data.has_extension %}
 {{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+{%- else %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {%- endcall %}
 
