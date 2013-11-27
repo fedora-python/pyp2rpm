@@ -10,12 +10,14 @@ from pyp2rpm import utils
 
 class LocalMetadataExtractor(object):
     """Base class for metadata extractors"""
-    def __init__(self, local_file, name, name_convertor, version):
+    def __init__(self, local_file, name, name_convertor, version,
+                 rpm_name = None):
         self.local_file = local_file
         self.archive = archive.Archive(local_file)
         self.name = name
         self.name_convertor = name_convertor
         self.version = version
+        self.rpm_name = rpm_name
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
@@ -189,7 +191,8 @@ class LocalMetadataExtractor(object):
         """
         data = PackageData(self.local_file,
                          self.name,
-                         self.name_convertor.rpm_name(self.name),
+                         self.name_convertor.rpm_name(self.name) \
+                           if self.rpm_name == None else self.rpm_name,
                          self.version)
 
         with self.archive:
@@ -198,8 +201,9 @@ class LocalMetadataExtractor(object):
         return data
 
 class PypiMetadataExtractor(LocalMetadataExtractor):
-    def __init__(self, local_file, name, name_convertor, version, client):
-        super(PypiMetadataExtractor, self).__init__(local_file, name, name_convertor, version)
+    def __init__(self, local_file, name, name_convertor, version, client,
+                 rpm_file = None):
+        super(PypiMetadataExtractor, self).__init__(local_file, name, name_convertor, version, rpm_file)
         self.client = client
 
     def extract_data(self):
@@ -213,7 +217,8 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
         except: # some kind of error with client => return TODO: log the failure
             return PackageData(self.local_file,
                             self.name,
-                            self.name_convertor.rpm_name(self.name),
+                            self.name_convertor.rpm_name(self.name) \
+                               if self.rpm_name == None else self.rpm_name,
                             self.version,
                             'FAILED TO EXTRACT FROM PYPI',
                             'FAILED TO EXTRACT FROM PYPI')
@@ -222,14 +227,20 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
         md5_digest = None
 
         if len(release_urls) > 0:
-            url = release_urls[0]['url']
-            md5_digest = release_urls[0]['md5_digest']
+            for release_url in release_urls:
+                if release_url['url'].endswith("tar.gz"):
+                    url = release_url['url']
+                    md5_digest = release_url['md5_digest']
+            if url == '':
+                url = release_urls[0]['url']
+                md5_digest = release_urls[0]['md5_digest']
         elif release_data:
             url = release_data['download_url']
 
         data = PackageData(self.local_file,
                         self.name,
-                        self.name_convertor.rpm_name(self.name),
+                        self.name_convertor.rpm_name(self.name) \
+                           if self.rpm_name == None else self.rpm_name,
                         self.version,
                         md5_digest,
                         url)

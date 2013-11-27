@@ -13,8 +13,8 @@ Group:          Development/Python
 Summary:        {{ data.summary }}
 
 License:        {{ data.license }}
-URL:            {{ data.release_url|replace(data.version, '%{version}') }}
-Source0:        {{ data.url|replace(data.version, '%{version}') }}
+URL:            {{ data.home_page }}
+Source0:        {{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch
@@ -97,22 +97,28 @@ popd
 %{_bindir}/{{ script|script_name_for_python_version(pv) }}
 {%- endfor %}
 {%- endif %}
-{%- if data.has_packages %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
-{%- endif %}
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
 {%- if pv == '3' -%}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
-{% endif -%}
+{%- endif %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+
+{%- if data.has_extension %}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- if data.has_pth %}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+{%- endif %}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+{%- else %}
+{%- if data.has_packages %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- endif %}
 {%- if data.has_pth %}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
-{%- if data.has_extension %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {%- endcall %}

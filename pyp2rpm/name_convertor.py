@@ -43,12 +43,6 @@ class NameConvertor(object):
         rpmized_name = name
         if self.distro == 'mageia':
             exclude_string = 'python-'
-            if name not in ['pyp2rpm',
-                            'py',
-                            'pyflation'] and \
-               name.find('py') == 0 and \
-               name.find('python-') != 0:
-                name = name[2:]
         else:
             exclude_string = 'py'
 

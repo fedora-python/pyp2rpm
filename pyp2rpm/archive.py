@@ -2,6 +2,7 @@ import locale
 import os
 import re
 import sys
+import string
 
 from zipfile import ZipFile, ZipInfo
 from tarfile import TarFile, TarInfo
@@ -192,10 +193,30 @@ class Archive(object):
         Returns:
             The requested setup() argument or empty list, if setup.py can't be open (or argument is not present).
         """
+        argument = []
+        cont = False
+        setup_cfg = self.get_content_of_file('setup.cfg')
+        if setup_cfg:
+            argument_re = re.compile(r'\b' + format(setup_argument) +'\s*=')
+            for line in setup_cfg.splitlines():
+                if line.find("#") != -1:
+                   line = line.split("#")[0]
+                if argument_re.search(line):
+                   args = line.split("=")
+                   if len(args) > 1:
+                       argument.append(args[1])
+                   cont = True
+                   continue
+                if cont and len(line) > 0 and line[0] in string.whitespace:
+                   argument.append(line.strip())
+                   continue
+                if cont:
+                   return argument
+
         setup_py = self.get_content_of_file('setup.py') # TODO: construct absolute path here?
         if not setup_py: return []
 
-        argument = []
+
         start_braces = end_braces = 0
         cont = False
 
@@ -228,6 +249,11 @@ class Archive(object):
         Returns:
             True if argument is used, False otherwise
         """
+        setup_cfg = self.get_content_of_file('setup.cfg')
+        if setup_cfg:
+            argument_re = re.compile(r'\b' + format(argument) +'\s*=')
+            return True if  argument_re.search(setup_cfg) else False
+        
         setup_py = self.get_content_of_file('setup.py')
         if not setup_py: return False
 

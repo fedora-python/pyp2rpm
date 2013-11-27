@@ -41,9 +41,12 @@ class PypiDownloader(PackageGetter):
     def url(self):
         urls = self.client.release_urls(self.name, self.version)
         if len(urls) > 0:
-            return self.client.release_urls(self.name, self.version)[0]['url']
+            for url in urls:
+                if url['url'].endswith(".tar.gz"):
+                    return url['url']
+            return urls[0]['url']
         else:
-            return self.client.release_data(self.name, self.version)['download_url']
+            return urls['download_url']
 
 
     def get(self):

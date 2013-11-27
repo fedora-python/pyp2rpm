@@ -24,7 +24,8 @@ class Convertor(object):
                  source_from = settings.DEFAULT_PKG_SOURCE,
                  metadata_from = settings.DEFAULT_METADATA_SOURCE,
                  base_python_version = settings.DEFAULT_PYTHON_VERSION,
-                 python_versions = []):
+                 python_versions = [],
+                 rpm_name = None):
         self.name = name
         self.version = version
         self.save_dir = save_dir
@@ -36,6 +37,7 @@ class Convertor(object):
         self.name_convertor = name_convertor.NameConvertor(distro)
         if not self.template.endswith('.spec'):
             self.template = '{0}.spec'.format(self.template)
+        self.rpm_name = rpm_name
 
     def convert(self):
         """Returns RPM SPECFILE.
@@ -106,12 +108,14 @@ class Convertor(object):
                                                                                      self.name,
                                                                                      self.name_convertor,
                                                                                      self.version,
-                                                                                     self.get_client())
+                                                                                     self.get_client(),
+                                                                                     self.rpm_name)
             else:
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(local_file,
                                                                                       self.name,
                                                                                       self.name_convertor,
-                                                                                      self.version)
+                                                                                      self.version,
+                                                                                      self.rpm_name)
 
         return self._metadata_extractor
 
