@@ -46,18 +46,22 @@ class TestArchive(object):
             assert a.get_content_of_file(n, abs) == expected
 
     def test_find_list_argument_not_present(self):
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return('install_requires=["spam",\n"eggs"]')
         flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return('install_requires=["spam",\n"eggs"]')
         assert self.a[4].find_list_argument('setup_requires') == []
 
     def test_find_list_argument_present(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return('install_requires=["beans",\n"spam"]\nsetup_requires=["spam"]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return('setup_requires=["spam"]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return('install_requires=["beans",\n"spam"]')
         assert self.a[4].find_list_argument('install_requires') == ['beans', 'spam']
 
     def test_find_list_argument_not_evaluable(self):
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return('install_requires=[some_function()]')
         flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return('install_requires=[some_function()]')
         assert self.a[4].find_list_argument('install_requires') == []
 
     def test_find_list_argument_unopenable_file(self):
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return(None)
         flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return(None)
         assert self.a[4].find_list_argument('install_requires') == []
 

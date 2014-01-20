@@ -252,7 +252,7 @@ class Archive(object):
         setup_cfg = self.get_content_of_file('setup.cfg')
         if setup_cfg:
             argument_re = re.compile(r'\b' + format(argument) +'\s*=')
-            return True if  argument_re.search(setup_cfg) else False
+            if argument_re.search(setup_cfg): return True
         
         setup_py = self.get_content_of_file('setup.py')
         if not setup_py: return False
