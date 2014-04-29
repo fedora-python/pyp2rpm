@@ -58,7 +58,7 @@ class PypiDownloader(PackageGetter):
                     subprocess.Popen(
                         'rpmdev-setuptree', stdout=subprocess.PIPE)
                     logger.info('Using rpmdevtools package to make rpmbuild folders tree')
-                except OSError:
+                except (OSError, FileNotFoundError):
                     self.save_dir = '/tmp'  # pyp2rpm can work without rpmdevtools
                     logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}'.format(
                         self.save_dir, self.local_file))
@@ -101,7 +101,7 @@ class LocalFileGetter(PackageGetter):
                     subprocess.Popen(
                         'rpmdev-setuptree', stdout=subprocess.PIPE)
                     logger.info('Using rpmdevtools package to make rpmbuild folders tree')
-                except OSError:
+                except (OSError, FileNotFoundError):
                     self.save_dir = '/tmp'  # pyp2rpm can work without rpmdevtools
                     logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}'.format(
                         self.save_dir, self.local_file))
