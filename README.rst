@@ -1,3 +1,5 @@
+![Pyp2rpm logo](http://rkuska.fedorapeople.org/pyp2rpm.png)
+
 =======
 pyp2rpm
 =======
@@ -35,6 +37,10 @@ All of the options are (print this by running pyp2rpm -h::
 To run the unit tests, cd into the checked out directory and run::
 
     PYTHONPATH=$(pwd) py.test
+
+or run::
+
+    python setup.py test
 
 I will gladly accept any pull request or recommendation.
 With complex pull requests, please include unit tests in *pytest*, use *flexmock* if you need mocking.

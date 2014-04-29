@@ -1,3 +1,11 @@
+1.1.0
+* New maintainer
+* Pyp2rpm now only supports Python 3
+* Few changes to code, refactoring
+* Added logging
+* Experimental support for Wheel metadata extraction in pyp2rpm.metadata_extractors._WheelMetadataExtractor
+* Fixed issues #8, #7, #6, #4 and also  rhbzs #1056800, #1036046, #1079576
+
 1.0.1
 * Handle docs in subdirectories. (thanks to Joseph Wang)
 
