@@ -19,7 +19,7 @@ class TestConvertor(object):
     ])
     def test_getter_good_data(self, sf, n, g):
         c = Convertor(source_from = sf, name = n)
-        assert isinstance(c.get_getter(), g)
+        assert isinstance(c.getter, g)
 
     @pytest.mark.parametrize(('sf', 'n', 'expected'), [
         ('pypi', 'eggs', NoSuchPackageException),
@@ -29,7 +29,7 @@ class TestConvertor(object):
     def test_getter_bad_data(self, sf, n, expected):
         with pytest.raises(expected):
             c = Convertor(source_from = sf, name = n)
-            c.get_getter()
+            c.getter
 
     @pytest.mark.parametrize(('sf', 'n', 'mf', 'expected'), [
         ('pypi', 'spam', 'pypi', PypiMetadataExtractor),
@@ -37,4 +37,5 @@ class TestConvertor(object):
     ])
     def test_get_metadata_extractor(self, sf, n, mf, expected):
         c = Convertor(source_from = sf, name = n, metadata_from = mf)
-        assert isinstance(c.get_metadata_extractor('spamfile'), expected)
+        c.local_file = 'spamfile'
+        assert isinstance(c.metadata_extractor, expected)

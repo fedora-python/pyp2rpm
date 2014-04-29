@@ -2,6 +2,7 @@ import functools
 
 from pyp2rpm import settings
 
+
 def memoize_by_args(func):
     """Memoizes return value of a func based on args."""
     memory = {}
@@ -15,6 +16,7 @@ def memoize_by_args(func):
         return memory[args]
 
     return memoized
+
 
 def license_from_trove(trove):
     """Finds out license from list of trove classifiers.

@@ -1,7 +1,8 @@
+import json
 import locale
+import logging
 import os
 import re
-import sys
 import string
 
 from zipfile import ZipFile, ZipInfo
@@ -9,8 +10,11 @@ from tarfile import TarFile, TarInfo
 
 from pyp2rpm import utils
 
+logger = logging.getLogger(__name__)
 
-class Archive(object):
+
+class Archive():
+
     """Class representing package archive. All the operations must be run using with statement.
     For example:
 
@@ -38,7 +42,7 @@ class Archive(object):
 
     @property
     def is_zip(self):
-        return self.suffix in ['.egg', '.zip']
+        return self.suffix in ['.egg', '.zip', '.whl']
 
     @property
     def is_tar(self):
@@ -48,11 +52,17 @@ class Archive(object):
     def is_egg(self):
         return self.suffix == '.egg'
 
+    @property
+    def is_wheel(self):
+        return self.suffix == '.whl'
+
     def open(self):
         try:
             self.handle = self.extractor_cls.open(self.file)
-        except BaseException as e: # TODO: log
+        except BaseException:  # TODO: log
             self.handle = None
+            logger.error('Failed to open archive {}'.format(self.file), exc_info=True)
+            logger.info("That's all folks!")
 
         return self
 
@@ -63,7 +73,7 @@ class Archive(object):
     def __enter__(self):
         return self.open()
 
-    def __exit__(self, type, value, traceback): # TODO: handle exceptions here
+    def __exit__(self, type, value, traceback):  # TODO: handle exceptions here
         self.close()
 
     @property
@@ -81,12 +91,14 @@ class Archive(object):
             file_cls = ZipFile
         else:
             pass
-            # TODO: log that file has unextractable archive suffix and we can't look inside the archive
+            # TODO: log that file has unextractable archive suffix and we can't
+            # look inside the archive
+            logger.info("Couldn't recognize archive suffix:{}".format(self.suffix))
 
         return file_cls
 
     @utils.memoize_by_args
-    def get_content_of_file(self, name, full_path = False): # TODO: log if file can't be opened
+    def get_content_of_file(self, name, full_path=False):  # TODO: log if file can't be opened
         """Returns content of file from archive.
 
         If full_path is set to False and two files with given name exist,
@@ -106,7 +118,7 @@ class Archive(object):
 
         return None
 
-    def has_file_with_suffix(self, suffixes): # TODO: maybe implement this using get_files_re
+    def has_file_with_suffix(self, suffixes):  # TODO: maybe implement this using get_files_re
         """Finds out if there is a file with one of suffixes in the archive.
         Args:
             suffixes: list of suffixes or single suffix to look for
@@ -121,14 +133,15 @@ class Archive(object):
                 if os.path.splitext(member.name)[1] in suffixes:
                     return True
                 else:
-                    # hack for .zip files, where directories are not returned themselves, therefore we can't find e.g. .egg-info
+                    # hack for .zip files, where directories are not returned
+                    # themselves, therefore we can't find e.g. .egg-info
                     for suffix in suffixes:
                         if '{0}/'.format(suffix) in member.name:
                             return True
 
         return False
 
-    def get_files_re(self, file_re, full_path = False, ignorecase = False):
+    def get_files_re(self, file_re, full_path=False, ignorecase=False):
         """Finds all files that match file_re and returns their list.
         Doesn't return directories, only files.
 
@@ -149,13 +162,13 @@ class Archive(object):
         if self.handle:
             for member in self.handle.getmembers():
                 if isinstance(member, TarInfo) and member.isdir():
-                    pass # for TarInfo files, filter out directories
+                    pass  # for TarInfo files, filter out directories
                 elif (full_path and compiled_re.search(member.name)) or (not full_path and compiled_re.search(os.path.basename(member.name))):
                     found.append(member.name)
 
         return found
 
-    def get_directories_re(self, directory_re, full_path = False, ignorecase = False):
+    def get_directories_re(self, directory_re, full_path=False, ignorecase=False):
         """Same as get_files_re, but for directories"""
         if ignorecase:
             compiled_re = re.compile(directory_re, re.I)
@@ -166,9 +179,9 @@ class Archive(object):
 
         if self.handle:
             for member in self.handle.getmembers():
-                if isinstance(member, ZipInfo): # zipfiles only list directories => have to work around that
+                if isinstance(member, ZipInfo):  # zipfiles only list directories => have to work around that
                     to_match = os.path.dirname(member.name)
-                elif isinstance(member, TarInfo) and member.isdir(): # tarfiles => only match directories
+                elif isinstance(member, TarInfo) and member.isdir():  # tarfiles => only match directories
                     to_match = member.name
                 else:
                     to_match = None
@@ -197,25 +210,26 @@ class Archive(object):
         cont = False
         setup_cfg = self.get_content_of_file('setup.cfg')
         if setup_cfg:
-            argument_re = re.compile(r'\b' + format(setup_argument) +'\s*=')
+            argument_re = re.compile(r'\b' + format(setup_argument) + '\s*=')
             for line in setup_cfg.splitlines():
                 if line.find("#") != -1:
-                   line = line.split("#")[0]
+                    line = line.split("#")[0]
                 if argument_re.search(line):
-                   args = line.split("=")
-                   if len(args) > 1:
-                       argument.append(args[1])
-                   cont = True
-                   continue
-                if cont and len(line) > 0 and line[0] in string.whitespace:
-                   argument.append(line.strip())
-                   continue
+                    args = line.split("=")
+                    if len(args) > 1:
+                        argument.append(args[1])
+                    cont = True
+                    continue
+                if cont and len(line) and line[0] in string.whitespace:
+                    argument.append(line.strip())
+                    continue
                 if cont:
-                   return argument
+                    return argument
 
-        setup_py = self.get_content_of_file('setup.py') # TODO: construct absolute path here?
-        if not setup_py: return []
-
+        setup_py = self.get_content_of_file(
+            'setup.py')  # TODO: construct absolute path here?
+        if not setup_py:
+            return []
 
         start_braces = end_braces = 0
         cont = False
@@ -223,7 +237,7 @@ class Archive(object):
         for line in setup_py.splitlines():
             if setup_argument in line or cont:
                 if line.find("#") != -1:
-                   line = line.split("#")[0]
+                    line = line.split("#")[0]
                 start_braces += line.count('[')
                 end_braces += line.count(']')
 
@@ -235,11 +249,12 @@ class Archive(object):
             return []
         else:
             argument[0] = argument[0][argument[0].find('['):]
-            argument[-1] = argument[-1][:argument[-1].rfind(']')+1]
+            argument[-1] = argument[-1][:argument[-1].rfind(']') + 1]
             argument[-1] = argument[-1].rstrip().rstrip(',')
             try:
                 return eval(' '.join(argument).strip())
-            except: # something unparsable in the list - different errors can come out - function undefined, syntax error, ...
+            except:  # something unparsable in the list - different errors can come out - function undefined, syntax error, ...
+                logger.info('Something unparsable in the list', exc_info=True)
                 return []
 
     def has_argument(self, argument):
@@ -251,12 +266,48 @@ class Archive(object):
         """
         setup_cfg = self.get_content_of_file('setup.cfg')
         if setup_cfg:
-            argument_re = re.compile(r'\b' + format(argument) +'\s*=')
-            if argument_re.search(setup_cfg): return True
-        
-        setup_py = self.get_content_of_file('setup.py')
-        if not setup_py: return False
+            argument_re = re.compile(r'\b' + format(argument) + '\s*=')
+            if argument_re.search(setup_cfg):
+                return True
 
-        argument_re = re.compile(r'setup\(.*(?<!\w){0}.*\)'.format(argument), re.DOTALL)
+        setup_py = self.get_content_of_file('setup.py')
+        if not setup_py:
+            return False
+
+        argument_re = re.compile(
+            r'setup\(.*(?<!\w){0}.*\)'.format(argument), re.DOTALL)
 
         return True if argument_re.search(setup_py) else False
+
+    @property
+    def json_wheel_metadata(self):
+        """Simple getter that get content of pydist.json file in .whl archive
+        Returns:
+            metadata from pydist.json in json format
+        """
+
+        return json.loads(self.get_content_of_file('pydist.json'))
+
+    @property
+    def record(self):
+        """Getter that get content of RECORD file in .whl archive
+        Returns:
+            dict with keys `modules` and `scripts`
+        """
+
+        modules = []
+        scripts = []
+        if self.get_content_of_file('RECORD'):
+            lines = self.get_content_of_file('RECORD').splitlines()
+            for line in lines:
+                if 'dist-info' in line:
+                    continue
+                elif '.data/scripts' in line:
+                    script = line.split(',', 1)[0]
+                    # strip Name.version.data/scripts/
+                    scripts.append(re.sub('.*/.*/', '', script))
+                else:
+                    # strip everything from first occurance of slash
+                    modules.append(re.sub('/.*', '', line))
+
+        return {'modules': set(modules), 'scripts': set(scripts)}

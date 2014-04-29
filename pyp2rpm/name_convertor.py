@@ -1,6 +1,8 @@
 from pyp2rpm import settings
 
-class NameConvertor(object):
+
+class NameConvertor():
+
     def __init__(self, distro):
         self.distro = distro
 
@@ -25,13 +27,14 @@ class NameConvertor(object):
         versioned_name = name
         if version:
             if name.startswith('python-'):
-                versioned_name = name.replace('python-', 'python{0}-'.format(version))
+                versioned_name = name.replace(
+                    'python-', 'python{0}-'.format(version))
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
 
         return versioned_name
 
-    def rpm_name(self, name, python_version = None):
+    def rpm_name(self, name, python_version=None):
         """Returns name of the package coverted to (possibly) correct package name according to Packaging Guidelines.
         Args:
             name: name to convert
@@ -47,9 +50,9 @@ class NameConvertor(object):
             exclude_string = 'py'
 
         name = name.replace('.', "-")
-        if name.lower().find(exclude_string) == -1: # name doesn't contain "py" => prefix with "python-"
+        if name.lower().find(exclude_string) == -1:  # name doesn't contain "py" => prefix with "python-"
             rpmized_name = 'python-{0}'.format(name)
-        if name.endswith('-python'): # name ends with "-python" => strip that and put it to front (I hope that's for Mageia, too)
+        if name.endswith('-python'):  # name ends with "-python" => strip that and put it to front (I hope that's for Mageia, too)
             rpmized_name = 'python-{0}'.format(name.replace('-python', ''))
         # else the name contains "py" as its part => do nothing
         # or the name is in form "python-%(name)s", which is fine, toO
