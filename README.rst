@@ -1,5 +1,6 @@
-{{http://rkuska.fedorapeople.org/pyp2rpm.png)}
+{{http://rkuska.fedorapeople.org/pyp2rpm.png}}
 
+![Build Status](http://rkuska.fedorapeople.org/pyp2rpm.png)
 =======
 pyp2rpm
 =======
