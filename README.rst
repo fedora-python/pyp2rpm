@@ -1,4 +1,4 @@
-![Pyp2rpm logo](http://rkuska.fedorapeople.org/pyp2rpm.png)
+{{http://rkuska.fedorapeople.org/pyp2rpm.png)}
 
 =======
 pyp2rpm
