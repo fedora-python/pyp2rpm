@@ -61,7 +61,7 @@ class PypiDownloader(PackageGetter):
                 except (OSError, FileNotFoundError):
                     self.save_dir = '/tmp'  # pyp2rpm can work without rpmdevtools
                     logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}'.format(
-                        self.save_dir, self.local_file))
+                        self.save_dir, self.name))
                     logger.warn('Specify folder to store a file or install rpmdevtools')
 
     @property
