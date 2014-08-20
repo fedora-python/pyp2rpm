@@ -1,7 +1,10 @@
 import logging
 import os
 import sys
-import xmlrpc
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 
 import jinja2
 
@@ -15,7 +18,7 @@ from pyp2rpm import settings
 logger = logging.getLogger(__name__)
 
 
-class Convertor():
+class Convertor(object):
     """Object that takes care of the actual process of converting the package."""
 
     def __init__(self, name=None, version=None,
@@ -175,7 +178,7 @@ class Convertor():
         # cannot use "if self._client"...
         if not hasattr(self, '_client'):
             if self.source_from == 'pypi':
-                self._client = xmlrpc.client.ServerProxy(settings.PYPI_URL)
+                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL)
                 self._client_set = True
             else:
                 self._client = None

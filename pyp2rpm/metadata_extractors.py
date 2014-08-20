@@ -10,7 +10,7 @@ from pyp2rpm import utils
 logger = logging.getLogger(__name__)
 
 
-class LocalMetadataExtractor():
+class LocalMetadataExtractor(object):
 
     """Base class for metadata extractors"""
 

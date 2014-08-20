@@ -13,7 +13,7 @@ from pyp2rpm import utils
 logger = logging.getLogger(__name__)
 
 
-class Archive():
+class Archive(object):
 
     """Class representing package archive. All the operations must be run using with statement.
     For example:

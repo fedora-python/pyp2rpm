@@ -8,7 +8,7 @@ from pyp2rpm import version
 logger = logging.getLogger(__name__)
 
 
-class PackageData():
+class PackageData(object):
     credit_line = '# Created by pyp2rpm-{0}'.format(version.version)
 
     """A simple object that carries data about a package."""
@@ -53,4 +53,4 @@ class PackageData():
                 'Package rpmdevtools is missing, using default name: {0}'.format(packager))
         date_str = time.strftime('%a %b %d %Y', time.gmtime())
         encoding = locale.getpreferredencoding()
-        return '{0} {1}'.format(date_str, packager.decode(encoding))
+        return u'{0} {1}'.format(date_str, packager.decode(encoding))

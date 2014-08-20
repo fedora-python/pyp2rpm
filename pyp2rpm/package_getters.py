@@ -1,10 +1,11 @@
-from abc import ABCMeta, abstractmethod
 import logging
 import os
 import shutil
 import subprocess
-import urllib.request as request
-import xmlrpc.client as xmlrpclib
+try:
+    import urllib.request as request
+except ImportError:
+    import urllib as request
 
 from pyp2rpm import settings
 from pyp2rpm import exceptions
@@ -12,20 +13,19 @@ from pyp2rpm import exceptions
 logger = logger = logging.getLogger(__name__)
 
 
-class PackageGetter(metaclass=ABCMeta):
+class PackageGetter(object):
 
     """Base class for package getters"""
 
-    @abstractmethod
     def get(self):
         pass
 
-    @abstractmethod
     def get_name_version(self):
         """Returns (name, version) tuple.
         Returns:
             (name, version) tuple of the package.
         """
+        pass
 
 
 class PypiDownloader(PackageGetter):
@@ -138,9 +138,9 @@ class LocalFileGetter(PackageGetter):
         else:
             raise exceptions.UnknownArchiveFormatException(
                 'Unkown archive format of file {0}.'.format(filename))
-            log.error(
+            logger.error(
                 'Unkown archive format of file {0}.'.format(filename), exc_info=True)
-            log.info("That's all folks!")
+            logger.info("That's all folks!")
 
     def get_name_version(self):
         split_name_version = self._stripped_name_version.rsplit('-', 2)

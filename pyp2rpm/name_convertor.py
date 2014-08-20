@@ -1,7 +1,7 @@
 from pyp2rpm import settings
 
 
-class NameConvertor():
+class NameConvertor(object):
 
     def __init__(self, distro):
         self.distro = distro
