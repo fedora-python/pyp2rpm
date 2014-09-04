@@ -177,7 +177,7 @@ class Convertor(object):
         """
         # cannot use "if self._client"...
         if not hasattr(self, '_client'):
-            if self.source_from == 'pypi':
+            if self.metadata_from == 'pypi':
                 self._client = xmlrpclib.ServerProxy(settings.PYPI_URL)
                 self._client_set = True
             else:
