@@ -257,8 +257,9 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
             release_urls = self.client.release_urls(self.name, self.version)
             release_data = self.client.release_data(self.name, self.version)
         except:  # some kind of error with client => return TODO: log the failure
+            logger.debug('Client: {} Name: {} Version: {}.'.format(self.client, self.name, self.version))
             logger.warn(
-                'Some kind of error while communicating with client: {0}'.format(self.client), exc_info=True)
+                'Some kind of error while communicating with client: {0}.'.format(self.client), exc_info=True)
             return PackageData(self.local_file,
                                self.name,
                                self.name_convertor.rpm_name(self.name)

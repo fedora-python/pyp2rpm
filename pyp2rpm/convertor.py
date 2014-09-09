@@ -22,7 +22,7 @@ class Convertor(object):
     """Object that takes care of the actual process of converting the package."""
 
     def __init__(self, name=None, version=None,
-                 save_dir=settings.DEFAULT_PKG_SAVE_PATH,
+                 save_dir=None,
                  template=settings.DEFAULT_TEMPLATE,
                  distro=settings.DEFAULT_DISTRO,
                  source_from=settings.DEFAULT_PKG_SOURCE,
@@ -54,7 +54,8 @@ class Convertor(object):
         except (exceptions.NoSuchPackageException, OSError) as e:
             logger.error(
                 'Failed and exiting:', exc_info=True)
-            logger.info("That's all folks!")
+            logger.info('Pyp2rpm failed. See log for more info.')
+
             sys.exit(e)
 
         # save name and version from the file (rewrite if set previously)
@@ -77,9 +78,11 @@ class Convertor(object):
                 os.path.abspath(self.template))
         except jinja2.exceptions.TemplateNotFound:
             # absolute path not found => search in default template dir
-            logger.info('Template: {0} was not found in {1} using default template dir'.format(
+            logger.warn('Template: {0} was not found in {1} using default template dir.'.format(
                 self.template, os.path.abspath(self.template)))
+
             jinja_template = jinja_env.get_template(self.template)
+            logger.info('Using default template: {}.'.format(self.template))
 
         return jinja_template.render(data=data, name_convertor=name_convertor)
 
@@ -98,9 +101,8 @@ class Convertor(object):
                 if self.name is None:
                     raise exceptions.NameNotSpecifiedException(
                         'Must specify package when getting from PyPI.')
-                    logger.error(
-                        'Name of the package was not specified', exc_info=True)
-                    logger.info("That's all folks!")
+                    logger.error('Must specify package when getting form PyPI.', exc_info=True)
+                    logger.info('Pyp2rpm failed. See log for more info.')
                 self._getter = package_getters.PypiDownloader(
                     self.client,
                     self.name,
@@ -115,7 +117,7 @@ class Convertor(object):
                     '"{0}" is neither one of preset sources nor a file.'.format(self.source_from))
                 logger.error(
                     '{0} is neither one of preset sources nor a file.'.format(self.source_from), exc_info=True)
-                logger.info("That's all folks!")
+                logger.info('Pyp2rpm failed. See log for more info.')
 
         return self._getter
 
@@ -149,7 +151,7 @@ class Convertor(object):
 
         if not hasattr(self, '_metadata_extractor'):
             if self.metadata_from == 'pypi':
-                logger.info('Getting metadata from pypi')
+                logger.info('Getting metadata from PyPI.')
                 self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(
                     self.local_file,
                     self.name,
@@ -158,7 +160,7 @@ class Convertor(object):
                     self.client,
                     self.rpm_name)
             else:
-                logger.info('Getting metadata from local file')
+                logger.info('Getting metadata from local file.')
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(
                     self.local_file,
                     self.name,

@@ -45,24 +45,27 @@ class PypiDownloader(PackageGetter):
 
         if version and self.client.release_urls(name, version) == []:  # if version is specified, will check if such version exists
             raise exceptions.NoSuchPackageException(
-                'Package with name "{0}" and version "{1}" could not be found on PyPI'.format(name, version))
-            logger.error('Package with name "{0}" and version "{1}" could not be found on PyPI'.format(name, version))
+                'Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(name, version))
+            logger.error('Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(name, version))
 
         self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
+        if self.save_dir == settings.DEFAULT_PKG_SAVE_PATH:
+            self.save_dir += '/SOURCES'
 
         if not os.path.exists(self.save_dir):
-            if self.save_dir != settings.DEFAULT_PKG_SAVE_PATH:
+            if self.save_dir != (settings.DEFAULT_PKG_SAVE_PATH + '/SOURCES'):
                 os.makedirs(self.save_dir)
             else:
                 try:
                     subprocess.Popen(
                         'rpmdev-setuptree', stdout=subprocess.PIPE)
-                    logger.info('Using rpmdevtools package to make rpmbuild folders tree')
+                    logger.info('Using rpmdevtools package to make rpmbuild folders tree.')
                 except (OSError, FileNotFoundError):
                     self.save_dir = '/tmp'  # pyp2rpm can work without rpmdevtools
-                    logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}'.format(
+                    logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}.'.format(
                         self.save_dir, self.name))
-                    logger.warn('Specify folder to store a file or install rpmdevtools')
+                    logger.warn('Specify folder to store a file (SAVE_DIR) or install rpmdevtools.')
+        logger.info('Using {} as directory to save source.'.format(self.save_dir))
 
     @property
     def url(self):
@@ -81,6 +84,7 @@ class PypiDownloader(PackageGetter):
         """
         save_file = '{0}/{1}'.format(self.save_dir, self.url.split('/')[-1])
         request.urlretrieve(self.url, save_file)
+        logger.info('Downloaded package from PyPI: {}.'.format(save_file))
         return save_file
 
     def get_name_version(self):
@@ -91,7 +95,9 @@ class LocalFileGetter(PackageGetter):
 
     def __init__(self, local_file, save_dir=None):
         self.local_file = local_file
-        self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
+        self.save_dir = save_dir
+        if self.save_dir == settings.DEFAULT_PKG_SAVE_PATH:
+            self.save_dir += '/SOURCES'
 
         if not os.path.exists(self.save_dir):
             if self.save_dir != settings.DEFAULT_PKG_SAVE_PATH:
@@ -100,12 +106,12 @@ class LocalFileGetter(PackageGetter):
                 try:
                     subprocess.Popen(
                         'rpmdev-setuptree', stdout=subprocess.PIPE)
-                    logger.info('Using rpmdevtools package to make rpmbuild folders tree')
+                    logger.info('Using rpmdevtools package to make rpmbuild folders tree.')
                 except (OSError, FileNotFoundError):
                     self.save_dir = '/tmp'  # pyp2rpm can work without rpmdevtools
-                    logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}'.format(
+                    logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}.'.format(
                         self.save_dir, self.local_file))
-                    logger.warn('Specify folder to store a file or install rpmdevtools')
+                    logger.warn('Specify folder to store a file or install rpmdevtools.')
 
     def get(self):
         """Copies file from local filesystem to self.save_dir.
@@ -119,7 +125,7 @@ class LocalFileGetter(PackageGetter):
             self.save_dir, os.path.basename(self.local_file))
         if not os.path.exists(save_file) or not os.path.samefile(self.local_file, save_file):
             shutil.copy2(self.local_file, save_file)
-
+        logger.info('Local file: {} copyed to {}.'.format(self.local_file, save_file))
         return save_file
 
     @property
@@ -140,7 +146,7 @@ class LocalFileGetter(PackageGetter):
                 'Unkown archive format of file {0}.'.format(filename))
             logger.error(
                 'Unkown archive format of file {0}.'.format(filename), exc_info=True)
-            logger.info("That's all folks!")
+            logger.info('Rpmbuild failed. See log for more info.')
 
     def get_name_version(self):
         split_name_version = self._stripped_name_version.rsplit('-', 2)

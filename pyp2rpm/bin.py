@@ -5,6 +5,8 @@ import os
 
 from pyp2rpm.convertor import Convertor
 from pyp2rpm import settings
+from pyp2rpm import utils
+from pyp2rpm.logger import register_file_log_handler, register_console_log_handler
 
 
 def main():
@@ -67,8 +69,18 @@ def main():
                         metavar='PYTHON_VERSION',
                         default=[],
                         action='append')
+    parser.add_argument('--srpm',
+                        required=False,
+                        help='When used pyp2rpm will produce srpm instead of printing specfile into stdout.',
+                        action='store_true')
+
+    register_file_log_handler('/tmp/pyp2rpm-{}.log'.format(getpass.getuser()))
 
     args = parser.parse_args()
+
+    if args.srpm:
+        register_console_log_handler()
+
     if args.n is None and not os.path.exists(args.s):
         parser.error(
             'You must specify name of the package (-n) or full path (-s).')
@@ -77,15 +89,9 @@ def main():
     if args.t in settings.KNOWN_DISTROS:
         distro = args.t
 
-    logging.basicConfig(
-        filename='/tmp/{0}-pyp2rpm.log'.format(getpass.getuser()),
-        level=logging.INFO,
-        format='%(asctime)s module:%(name)s %(levelname)s:%(message)s',
-        datefmt='%m/%d/%Y %I:%M:%S %p')
-
     logger = logging.getLogger(__name__)
 
-    logger.info('Start of logging')
+    logger.info('Pyp2rpm initialized.')
 
     convertor = Convertor(name=args.n,
                           version=args.v,
@@ -96,10 +102,37 @@ def main():
                           distro=distro,
                           base_python_version=args.b,
                           python_versions=args.p,
-                          rpm_name=args.r)
+                          rpm_name=args.r,
+                          )
 
+    logger.debug('Convertor: {} created. Trying to convert.'.format(convertor))
     converted = convertor.convert()
+    logger.debug('Convertor: {} succesfully converted.'.format(convertor))
 
+    if args.srpm:
+
+        if args.r:
+            spec_name = args.r + '.spec'
+        else:
+            spec_name = 'python-' + args.n + '.spec'
+        logger.info('Using name: {} for specfile.'.format(spec_name))
+        if args.d == settings.DEFAULT_PKG_SAVE_PATH:
+            # default save_path is rpmbuild tree so we want to save spec
+            # in  rpmbuild/SPECS/
+            spec_path = args.d + '/SPECS/' + spec_name
+        else:
+            # if user provide save_path then save spec in provided path
+            spec_path = args.d + '/' + spec_name
+        logger.debug(u'Opening specfile: {}.'.format(spec_path))
+        with open(spec_path, 'w') as f:
+            f.write(converted.encode('utf-8'))
+            logger.info('Specfile saved at: {}.'.format(spec_path))
+
+        msg = utils.build_srpm(spec_path, args.d)
+        logger.info(msg)
+
+    else:
+        logger.debug('Printing specfile to stdout.')
+        print(converted)
+        logger.debug('Specfile printed.')
     logger.info("That's all folks!")
-
-    print(converted)

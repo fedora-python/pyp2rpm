@@ -1,6 +1,12 @@
 import functools
+import logging
+import os
+import subprocess
 
 from pyp2rpm import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 def memoize_by_args(func):
@@ -9,7 +15,7 @@ def memoize_by_args(func):
 
     @functools.wraps(func)
     def memoized(*args):
-        if not args in memory.keys():
+        if args not in memory.keys():
             value = func(*args)
             memory[args] = value
 
@@ -34,3 +40,40 @@ def license_from_trove(trove):
             if stripped in settings.TROVE_LICENSES:
                 license.append(settings.TROVE_LICENSES[stripped])
     return ' and '.join(license)
+
+
+def build_srpm(specfile, save_dir):
+    """Builds a srpm from given specfile using rpmbuild.
+    Generated srpm is stored in SRPMS folder located in rpmbuild
+    folder tree (rpmdev-setuptree).
+    Args:
+        specfile: path to a specfile
+        save_dir: path to source and build tree
+    """
+    logger.info('Starting rpmbuild to build: {} SRPM.'.format(specfile))
+    if save_dir != settings.DEFAULT_PKG_SAVE_PATH:
+        try:
+            msg = subprocess.Popen(['rpmbuild',
+                                    '--define', '_sourcedir {}'.format(save_dir),
+                                    '--define', '_builddir {}'.format(save_dir),
+                                    '--define', '_srcrpmdir {}'.format(save_dir),
+                                    '--define', '_rpmdir {}'.format(save_dir),
+                                    '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
+        except (OSError, FileNotFoundError):
+            logger.error('Rpmbuild failed for specfile: {} and save_dir: {}'.format(specfile, save_dir), exc_info=True)
+            msg = 'Rpmbuild failed. See log for more info.'
+        return msg
+    else:
+        if not os.path.exists(save_dir):
+            raise IOError('Specify folder to store a file (SAVE_DIR) or install rpmdevtools.')
+        try:
+            msg = subprocess.Popen(['rpmbuild',
+                                    '--define', '_sourcedir {}'.format(save_dir + '/SOURCES'),
+                                    '--define', '_builddir {}'.format(save_dir + '/BUILD'),
+                                    '--define', '_srcrpmdir {}'.format(save_dir + '/SRPMS'),
+                                    '--define', '_rpmdir {}'.format(save_dir + '/RPMS'),
+                                    '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
+        except (OSError, FileNotFoundError):
+            logger.error('Rpmbuild failed for specfile: {} and save_dir: {}'.format(specfile, save_dir), exc_info=True)
+            msg = 'Rpmbuild failed. See log for more info.'
+        return msg

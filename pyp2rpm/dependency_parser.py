@@ -15,6 +15,7 @@ def dependency_to_rpm(dep, runtime):
         List of semi-SPECFILE dependencies (package names are not properly converted yet).
         For example: [['Requires', 'jinja2'], ['Conflicts', 'jinja2', '=', '2.0.1']]
     """
+    logger.debug('Dependencies provided: {} runtime: {}.'.format(dep, runtime))
     converted = []
     if not len(dep.specs):
         converted.append(['Requires', dep.project_name])
@@ -33,6 +34,7 @@ def dependency_to_rpm(dep, runtime):
     if not runtime:
         for conv in converted:
             conv[0] = "Build" + conv[0]
+    logger.debug('Converted dependencies: {}.'.format(converted))
 
     return converted
 
@@ -46,16 +48,18 @@ def deps_from_pyp_format(requires, runtime=True):
         List of semi-SPECFILE dependencies (see dependency_to_rpm for format).
     """
     parsed = []
+    logger.debug('Dependencies from setup.py: {} runtime: {}.'.format(requires, runtime))
 
     for req in requires:
         try:
             parsed.append(Requirement.parse(req))
         except ValueError:  # TODO: log unparsable dependency
-            logger.warn('Unparsable dependency {0}'.format(req), exc_info=True)
+            logger.warn('Unparsable dependency {0}.'.format(req), exc_info=True)
             pass
     in_rpm_format = []
     for dep in parsed:
         in_rpm_format.extend(dependency_to_rpm(dep, runtime))
+    logger.debug('Dependencies from setup.py in rpm format: {}.'.format(in_rpm_format))
 
     return in_rpm_format
 

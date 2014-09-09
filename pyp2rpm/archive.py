@@ -61,8 +61,7 @@ class Archive(object):
             self.handle = self.extractor_cls.open(self.file)
         except BaseException:  # TODO: log
             self.handle = None
-            logger.error('Failed to open archive {}'.format(self.file), exc_info=True)
-            logger.info("That's all folks!")
+            logger.error('Failed to open archive: {}.'.format(self.file), exc_info=True)
 
         return self
 
@@ -93,7 +92,7 @@ class Archive(object):
             pass
             # TODO: log that file has unextractable archive suffix and we can't
             # look inside the archive
-            logger.info("Couldn't recognize archive suffix:{}".format(self.suffix))
+            logger.info("Couldn't recognize archive suffix: {}.".format(self.suffix))
 
         return file_cls
 
@@ -254,7 +253,7 @@ class Archive(object):
             try:
                 return eval(' '.join(argument).strip())
             except:  # something unparsable in the list - different errors can come out - function undefined, syntax error, ...
-                logger.info('Something unparsable in the list', exc_info=True)
+                logger.warn('Something unparsable in the list.', exc_info=True)
                 return []
 
     def has_argument(self, argument):

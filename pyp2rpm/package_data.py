@@ -50,7 +50,7 @@ class PackageData(object):
             # Hi John Doe, you should install rpmdevtools
             packager = "John Doe <john@doe.com>"
             logger.warn(
-                'Package rpmdevtools is missing, using default name: {0}'.format(packager))
+                'Package rpmdevtools is missing, using default name: {0}.'.format(packager))
         date_str = time.strftime('%a %b %d %Y', time.gmtime())
         encoding = locale.getpreferredencoding()
         return u'{0} {1}'.format(date_str, packager.decode(encoding))
