@@ -73,6 +73,11 @@ def main():
                         required=False,
                         help='When used pyp2rpm will produce srpm instead of printing specfile into stdout.',
                         action='store_true')
+    parser.add_argument('--proxy',
+                        required=False,
+                        help='Specify proxy in the form proxy.server:port.',
+                        metavar='PROXY',
+                        default=None)
 
     register_file_log_handler('/tmp/pyp2rpm-{}.log'.format(getpass.getuser()))
 
@@ -103,6 +108,7 @@ def main():
                           base_python_version=args.b,
                           python_versions=args.p,
                           rpm_name=args.r,
+                          proxy=args.proxy,
                           )
 
     logger.debug('Convertor: {} created. Trying to convert.'.format(convertor))

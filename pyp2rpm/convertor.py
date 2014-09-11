@@ -2,6 +2,15 @@ import logging
 import os
 import sys
 try:
+    import urllib2 as urllib
+except ImportError:
+    import urllib
+    from urllib import request
+    urllib.Request = request.Request
+    urllib.ProxyHandler = request.ProxyHandler
+    urllib.build_opener = request.build_opener
+    urllib.install_opener = request.install_opener
+try:
     import xmlrpclib
 except ImportError:
     import xmlrpc.client as xmlrpclib
@@ -29,7 +38,7 @@ class Convertor(object):
                  metadata_from=settings.DEFAULT_METADATA_SOURCE,
                  base_python_version=settings.DEFAULT_PYTHON_VERSION,
                  python_versions=[],
-                 rpm_name=None):
+                 rpm_name=None, proxy=None):
         self.name = name
         self.version = version
         self.save_dir = save_dir
@@ -42,6 +51,7 @@ class Convertor(object):
         if not self.template.endswith('.spec'):
             self.template = '{0}.spec'.format(self.template)
         self.rpm_name = rpm_name
+        self.proxy = proxy
 
     def convert(self):
         """Returns RPM SPECFILE.
@@ -178,11 +188,33 @@ class Convertor(object):
             XMLRPC client for PyPI.
         """
         # cannot use "if self._client"...
+        if self.proxy:
+            proxyhandler= urllib.ProxyHandler({"http": self.proxy})
+            opener = urllib.build_opener(proxyhandler)
+            urllib.install_opener(opener)
+            transport = ProxyTransport()
         if not hasattr(self, '_client'):
+            transport = None
             if self.metadata_from == 'pypi':
-                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL)
+                if self.proxy:
+                    logger.info('Using provided proxy: {}.'.format(self.proxy))
+                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL, transport=transport)
                 self._client_set = True
             else:
                 self._client = None
 
         return self._client
+
+
+class ProxyTransport(xmlrpclib.Transport):
+    """This class serves as Proxy Transport for XMLRPC server."""
+    
+    def request(self, host, handler, request_body, verbose):
+        self.verbose = verbose
+        url = 'http://{}{}'.format(host, handler)
+        request = urllib.Request(url)
+        request.add_data(request_body)
+        request.add_header("User-Agent", self.user_agent)
+        request.add_header("Content-Type", "text/html")
+        f = urllib.urlopen(request)
+        return self.parse_response(f)
