@@ -36,13 +36,13 @@ def main():
                         default=settings.DEFAULT_PKG_SOURCE)
     parser.add_argument('-d',
                         required=False,
-                        help='Where to save the package file (default: "{0}")'.format(
+                        help='Specify where to save package file, specfile and generated SRPM (default: "{0}").'.format(
                             settings.DEFAULT_PKG_SAVE_PATH),
                         metavar='SAVE_DIR',
                         default=settings.DEFAULT_PKG_SAVE_PATH)
     parser.add_argument('-r',
                         required=False,
-                        help='Name of rpm package (overrides calculated name)',
+                        help='Name of rpm package (overrides calculated name).',
                         metavar='RPM_NAME',
                         default=None)
     parser.add_argument('-t',
@@ -123,13 +123,16 @@ def main():
         else:
             # if user provide save_path then save spec in provided path
             spec_path = args.d + '/' + spec_name
-        logger.debug(u'Opening specfile: {}.'.format(spec_path))
+        logger.debug('Opening specfile: {}.'.format(spec_path))
         with open(spec_path, 'w') as f:
-            f.write(converted.encode('utf-8'))
+            f.write(converted)
             logger.info('Specfile saved at: {}.'.format(spec_path))
 
         msg = utils.build_srpm(spec_path, args.d)
-        logger.info(msg)
+        if utils.PY3:
+            logger.info(msg.decode('utf-8'))
+        else:
+            logger.info(msg)
 
     else:
         logger.debug('Printing specfile to stdout.')

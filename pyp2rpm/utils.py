@@ -2,11 +2,14 @@ import functools
 import logging
 import os
 import subprocess
+import sys
 
 from pyp2rpm import settings
 
 
 logger = logging.getLogger(__name__)
+
+PY3 = sys.version > '3'
 
 
 def memoize_by_args(func):
@@ -44,8 +47,8 @@ def license_from_trove(trove):
 
 def build_srpm(specfile, save_dir):
     """Builds a srpm from given specfile using rpmbuild.
-    Generated srpm is stored in SRPMS folder located in rpmbuild
-    folder tree (rpmdev-setuptree).
+    Generated srpm is stored in directory specified by save_dir.
+
     Args:
         specfile: path to a specfile
         save_dir: path to source and build tree
