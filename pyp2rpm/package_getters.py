@@ -95,7 +95,7 @@ class LocalFileGetter(PackageGetter):
 
     def __init__(self, local_file, save_dir=None):
         self.local_file = local_file
-        self.save_dir = save_dir
+        self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
         if self.save_dir == settings.DEFAULT_PKG_SAVE_PATH:
             self.save_dir += '/SOURCES'
 
