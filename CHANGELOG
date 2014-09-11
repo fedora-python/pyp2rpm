@@ -1,3 +1,10 @@
+1.1.1
+* Brings back Python 2 support issue #12.
+* Change python-sphinx-build to sphinx-build.
+* Add support for build SRPMs (see --help).
+* Logging redone.
+* Introduce basic support for http proxy (see --help) #14.
+
 1.1.0
 * New maintainer
 * Pyp2rpm now only supports Python 3
