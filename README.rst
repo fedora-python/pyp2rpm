@@ -36,6 +36,8 @@ All of the options are (print this by running pyp2rpm -h::
       -b BASE_PYTHON      Base Python version to package for (default: "2").
       -p PYTHON_VERSION   Additional Python versions to include in the specfile (e.g -p3 for %{?with_python3}). Can be specified multiple times.
       --srpm              When used pyp2rpm will produce srpm instead of printing specfile into stdout.
+      --proxy PROXY       Specify proxy in the form proxy.server:port.
+
 
 
 To run the unit tests, cd into the checked out directory and run::
