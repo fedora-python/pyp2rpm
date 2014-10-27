@@ -62,7 +62,7 @@ def build_srpm(specfile, save_dir):
                                     '--define', '_srcrpmdir {}'.format(save_dir),
                                     '--define', '_rpmdir {}'.format(save_dir),
                                     '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
-        except (OSError, FileNotFoundError):
+        except OSError:
             logger.error('Rpmbuild failed for specfile: {} and save_dir: {}'.format(specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg
@@ -76,7 +76,7 @@ def build_srpm(specfile, save_dir):
                                     '--define', '_srcrpmdir {}'.format(save_dir + '/SRPMS'),
                                     '--define', '_rpmdir {}'.format(save_dir + '/RPMS'),
                                     '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
-        except (OSError, FileNotFoundError):
+        except OSError:
             logger.error('Rpmbuild failed for specfile: {} and save_dir: {}'.format(specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg

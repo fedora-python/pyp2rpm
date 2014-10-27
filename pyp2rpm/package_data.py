@@ -46,7 +46,7 @@ class PackageData(object):
         try:
             packager = subprocess.Popen(
                 'rpmdev-packager', stdout=subprocess.PIPE).communicate()[0].strip()
-        except (OSError, FileNotFoundError):
+        except OSError:
             # Hi John Doe, you should install rpmdevtools
             packager = "John Doe <john@doe.com>"
             logger.warn(

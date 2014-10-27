@@ -60,7 +60,7 @@ class PypiDownloader(PackageGetter):
                     subprocess.Popen(
                         'rpmdev-setuptree', stdout=subprocess.PIPE)
                     logger.info('Using rpmdevtools package to make rpmbuild folders tree.')
-                except (OSError, FileNotFoundError):
+                except OSError:
                     self.save_dir = '/tmp'  # pyp2rpm can work without rpmdevtools
                     logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}.'.format(
                         self.save_dir, self.name))
@@ -107,7 +107,7 @@ class LocalFileGetter(PackageGetter):
                     subprocess.Popen(
                         'rpmdev-setuptree', stdout=subprocess.PIPE)
                     logger.info('Using rpmdevtools package to make rpmbuild folders tree.')
-                except (OSError, FileNotFoundError):
+                except OSError:
                     self.save_dir = '/tmp'  # pyp2rpm can work without rpmdevtools
                     logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}.'.format(
                         self.save_dir, self.local_file))
@@ -118,8 +118,7 @@ class LocalFileGetter(PackageGetter):
         Returns:
             Full path of the copied file.
         Raises:
-            FileNotFoundError if the file can't be found
-            PermissionError if the save_dir is not writable.
+            EnvironmentError if the file can't be found or the save_dir is not writable.
         """
         save_file = '{0}/{1}'.format(
             self.save_dir, os.path.basename(self.local_file))
