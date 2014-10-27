@@ -1,4 +1,5 @@
 import logging
+import re
 
 from pyp2rpm import settings
 
@@ -31,9 +32,8 @@ class NameConvertor(object):
 
         versioned_name = name
         if version:
-            if name.startswith('python-'):
-                versioned_name = name.replace(
-                    'python-', 'python{0}-'.format(version))
+            if name.startswith('python-') or name.startswith('python2-'):
+                versioned_name = re.sub(r'^python(\d|)-', 'python{0}-'.format(version), name)
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
 

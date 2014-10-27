@@ -13,7 +13,7 @@
 %if %{?with_python{{ python_version }}}
 {%- endif %}
 {%- if not runtime %}
-BuildRequires:  {{ 'python-devel'|name_for_python_version(python_version) }}
+BuildRequires:  {{ 'python2-devel'|name_for_python_version(python_version) }}
 {%- endif %}
 {%- for dep in deps -%}
 {{ one_dep(dep, python_version) }}
