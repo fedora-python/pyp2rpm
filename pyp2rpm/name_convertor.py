@@ -48,7 +48,7 @@ class NameConvertor(object):
             Converted name of the package, that should be in line with Fedora Packaging Guidelines.
             If for_python is not None, the returned name is in form python%(version)s-%(name)s
         """
-        logger.debug('Converting name: {} to rpm name.'.format(name))
+        logger.debug('Converting name: {0} to rpm name.'.format(name))
         rpmized_name = name
         if self.distro == 'mageia':
             exclude_string = 'python-'
@@ -64,5 +64,5 @@ class NameConvertor(object):
         # or the name is in form "python-%(name)s", which is fine, toO
         if self.distro == 'mageia':
             rpmized_name = rpmized_name.lower()
-        logger.debug('Rpmized name of {}: {}.'.format(name, rpmized_name))
+        logger.debug('Rpmized name of {0}: {1}.'.format(name, rpmized_name))
         return NameConvertor.rpm_versioned_name(rpmized_name, python_version)

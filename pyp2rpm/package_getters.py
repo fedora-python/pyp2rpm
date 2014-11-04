@@ -65,7 +65,7 @@ class PypiDownloader(PackageGetter):
                     logger.warn('Package rpmdevtools is missing , using default folder: {0} to store {1}.'.format(
                         self.save_dir, self.name))
                     logger.warn('Specify folder to store a file (SAVE_DIR) or install rpmdevtools.')
-        logger.info('Using {} as directory to save source.'.format(self.save_dir))
+        logger.info('Using {0} as directory to save source.'.format(self.save_dir))
 
     @property
     def url(self):
@@ -84,7 +84,7 @@ class PypiDownloader(PackageGetter):
         """
         save_file = '{0}/{1}'.format(self.save_dir, self.url.split('/')[-1])
         request.urlretrieve(self.url, save_file)
-        logger.info('Downloaded package from PyPI: {}.'.format(save_file))
+        logger.info('Downloaded package from PyPI: {0}.'.format(save_file))
         return save_file
 
     def get_name_version(self):
@@ -124,7 +124,7 @@ class LocalFileGetter(PackageGetter):
             self.save_dir, os.path.basename(self.local_file))
         if not os.path.exists(save_file) or not os.path.samefile(self.local_file, save_file):
             shutil.copy2(self.local_file, save_file)
-        logger.info('Local file: {} copyed to {}.'.format(self.local_file, save_file))
+        logger.info('Local file: {0} copyed to {1}.'.format(self.local_file, save_file))
         return save_file
 
     @property

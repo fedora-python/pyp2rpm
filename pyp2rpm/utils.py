@@ -53,17 +53,17 @@ def build_srpm(specfile, save_dir):
         specfile: path to a specfile
         save_dir: path to source and build tree
     """
-    logger.info('Starting rpmbuild to build: {} SRPM.'.format(specfile))
+    logger.info('Starting rpmbuild to build: {0} SRPM.'.format(specfile))
     if save_dir != settings.DEFAULT_PKG_SAVE_PATH:
         try:
             msg = subprocess.Popen(['rpmbuild',
-                                    '--define', '_sourcedir {}'.format(save_dir),
-                                    '--define', '_builddir {}'.format(save_dir),
-                                    '--define', '_srcrpmdir {}'.format(save_dir),
-                                    '--define', '_rpmdir {}'.format(save_dir),
+                                    '--define', '_sourcedir {0}'.format(save_dir),
+                                    '--define', '_builddir {0}'.format(save_dir),
+                                    '--define', '_srcrpmdir {0}'.format(save_dir),
+                                    '--define', '_rpmdir {0}'.format(save_dir),
                                     '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
         except OSError:
-            logger.error('Rpmbuild failed for specfile: {} and save_dir: {}'.format(specfile, save_dir), exc_info=True)
+            logger.error('Rpmbuild failed for specfile: {0} and save_dir: {1}'.format(specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg
     else:
@@ -71,12 +71,12 @@ def build_srpm(specfile, save_dir):
             raise IOError('Specify folder to store a file (SAVE_DIR) or install rpmdevtools.')
         try:
             msg = subprocess.Popen(['rpmbuild',
-                                    '--define', '_sourcedir {}'.format(save_dir + '/SOURCES'),
-                                    '--define', '_builddir {}'.format(save_dir + '/BUILD'),
-                                    '--define', '_srcrpmdir {}'.format(save_dir + '/SRPMS'),
-                                    '--define', '_rpmdir {}'.format(save_dir + '/RPMS'),
+                                    '--define', '_sourcedir {0}'.format(save_dir + '/SOURCES'),
+                                    '--define', '_builddir {0}'.format(save_dir + '/BUILD'),
+                                    '--define', '_srcrpmdir {0}'.format(save_dir + '/SRPMS'),
+                                    '--define', '_rpmdir {0}'.format(save_dir + '/RPMS'),
                                     '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
         except OSError:
-            logger.error('Rpmbuild failed for specfile: {} and save_dir: {}'.format(specfile, save_dir), exc_info=True)
+            logger.error('Rpmbuild failed for specfile: {0} and save_dir: {1}'.format(specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg

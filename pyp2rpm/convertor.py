@@ -92,7 +92,7 @@ class Convertor(object):
                 self.template, os.path.abspath(self.template)))
 
             jinja_template = jinja_env.get_template(self.template)
-            logger.info('Using default template: {}.'.format(self.template))
+            logger.info('Using default template: {0}.'.format(self.template))
 
         return jinja_template.render(data=data, name_convertor=name_convertor)
 
@@ -197,7 +197,7 @@ class Convertor(object):
             transport = None
             if self.metadata_from == 'pypi':
                 if self.proxy:
-                    logger.info('Using provided proxy: {}.'.format(self.proxy))
+                    logger.info('Using provided proxy: {0}.'.format(self.proxy))
                 self._client = xmlrpclib.ServerProxy(settings.PYPI_URL, transport=transport)
                 self._client_set = True
             else:
@@ -211,7 +211,7 @@ class ProxyTransport(xmlrpclib.Transport):
     
     def request(self, host, handler, request_body, verbose):
         self.verbose = verbose
-        url = 'http://{}{}'.format(host, handler)
+        url = 'http://{0}{1}'.format(host, handler)
         request = urllib.Request(url)
         request.add_data(request_body)
         request.add_header("User-Agent", self.user_agent)

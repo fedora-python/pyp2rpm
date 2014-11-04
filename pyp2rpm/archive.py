@@ -61,7 +61,7 @@ class Archive(object):
             self.handle = self.extractor_cls.open(self.file)
         except BaseException:  # TODO: log
             self.handle = None
-            logger.error('Failed to open archive: {}.'.format(self.file), exc_info=True)
+            logger.error('Failed to open archive: {0}.'.format(self.file), exc_info=True)
 
         return self
 
@@ -92,7 +92,7 @@ class Archive(object):
             pass
             # TODO: log that file has unextractable archive suffix and we can't
             # look inside the archive
-            logger.info("Couldn't recognize archive suffix: {}.".format(self.suffix))
+            logger.info("Couldn't recognize archive suffix: {0}.".format(self.suffix))
 
         return file_cls
 

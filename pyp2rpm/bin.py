@@ -79,7 +79,7 @@ def main():
                         metavar='PROXY',
                         default=None)
 
-    register_file_log_handler('/tmp/pyp2rpm-{}.log'.format(getpass.getuser()))
+    register_file_log_handler('/tmp/pyp2rpm-{0}.log'.format(getpass.getuser()))
 
     args = parser.parse_args()
 
@@ -111,9 +111,9 @@ def main():
                           proxy=args.proxy,
                           )
 
-    logger.debug('Convertor: {} created. Trying to convert.'.format(convertor))
+    logger.debug('Convertor: {0} created. Trying to convert.'.format(convertor))
     converted = convertor.convert()
-    logger.debug('Convertor: {} succesfully converted.'.format(convertor))
+    logger.debug('Convertor: {0} succesfully converted.'.format(convertor))
 
     if args.srpm:
 
@@ -121,7 +121,7 @@ def main():
             spec_name = args.r + '.spec'
         else:
             spec_name = 'python-' + args.n + '.spec'
-        logger.info('Using name: {} for specfile.'.format(spec_name))
+        logger.info('Using name: {0} for specfile.'.format(spec_name))
         if args.d == settings.DEFAULT_PKG_SAVE_PATH:
             # default save_path is rpmbuild tree so we want to save spec
             # in  rpmbuild/SPECS/
@@ -129,10 +129,10 @@ def main():
         else:
             # if user provide save_path then save spec in provided path
             spec_path = args.d + '/' + spec_name
-        logger.debug('Opening specfile: {}.'.format(spec_path))
+        logger.debug('Opening specfile: {0}.'.format(spec_path))
         with open(spec_path, 'w') as f:
             f.write(converted)
-            logger.info('Specfile saved at: {}.'.format(spec_path))
+            logger.info('Specfile saved at: {0}.'.format(spec_path))
 
         msg = utils.build_srpm(spec_path, args.d)
         if utils.PY3:
