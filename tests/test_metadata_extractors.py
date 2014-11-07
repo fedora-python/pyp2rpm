@@ -31,7 +31,7 @@ class TestMetadataExtractor(object):
                  ]
 
     @pytest.mark.parametrize(('lst', 'expected'), [
-        ([['Requires', 'pyfoo', 'spam', 'spam']], [['Requires', 'pyfoo', 'spam', 'spam']]),
+        ([['Requires', 'pyfoo', 'spam', 'spam']], [['Requires', 'python-pyfoo', 'spam', 'spam']]),
         ([['Requires', 'foo', 'spam', 'spam']], [['Requires', 'python-foo', 'spam', 'spam']]),
         ([['Requires', 'foo-python']], [['Requires', 'python-foo']]),
         ([['Requires', 'python-foo', 'spam']], [['Requires', 'python-foo', 'spam']]),

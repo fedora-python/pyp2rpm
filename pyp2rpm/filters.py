@@ -27,8 +27,10 @@ def python_bin_for_python_version(name, version):
         return name.replace('__python2', '__python3')
 
 
-def macroed_pkg_name(name):
-    if name.startswith('python-'):
+def macroed_pkg_name(pkg_name, name):
+    if pkg_name.startswith('python') and name == pkg_name:
+        return name
+    elif pkg_name.startswith('python-'):
         return 'python-%{pypi_name}'
     else:
         return '%{pypi_name}'

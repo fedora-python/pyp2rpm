@@ -27,13 +27,19 @@ class NameConvertor(object):
         Returns:
             Versioned name or the original name if given version is None.
         """
-        if version == settings.DEFAULT_PYTHON_VERSION:
+        regexp = re.compile(r'^python(\d*|)-(.*)')
+
+        if not version or version == settings.DEFAULT_PYTHON_VERSION:
+            found = regexp.search(name)
+            if found and found.group(2)!='devel': # second check is to avoid renaming of python2-devel to python-devel
+                return 'python-{0}'.format(regexp.search(name).group(2))
             return name
 
         versioned_name = name
         if version:
-            if name.startswith('python-') or name.startswith('python2-'):
-                versioned_name = re.sub(r'^python(\d|)-', 'python{0}-'.format(version), name)
+
+            if regexp.search(name):
+                versioned_name = re.sub(r'^python(\d*|)-', 'python{0}-'.format(version), name)
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
 
@@ -50,16 +56,20 @@ class NameConvertor(object):
         """
         logger.debug('Converting name: {0} to rpm name.'.format(name))
         rpmized_name = name
-        if self.distro == 'mageia':
-            exclude_string = 'python-'
-        else:
-            exclude_string = 'py'
+
+        reg_start = re.compile(r'^python(\d*|)-')
 
         name = name.replace('.', "-")
-        if name.lower().find(exclude_string) == -1:  # name doesn't contain "py" => prefix with "python-"
+        #if name.lower().find(exclude_string) == -1:  # name doesn't contain "py" => prefix with "python-"
+        if not reg_start.search(name.lower()):
             rpmized_name = 'python-{0}'.format(name)
-        if name.endswith('-python'):  # name ends with "-python" => strip that and put it to front (I hope that's for Mageia, too)
-            rpmized_name = 'python-{0}'.format(name.replace('-python', ''))
+
+        reg_end = re.compile(r'(.*)-(python)(\d*|)$')        
+        #if name.endswith('-python'):  # name ends with "-python" => strip that and put it to front (I hope that's for Mageia, too)
+        #    rpmized_name = 'python-{0}'.format(name.replace('-python', ''))
+        found_end = reg_end.search(name.lower())
+        if found_end:
+            rpmized_name = '{0}{1}-{2}'.format('python', found_end.group(3), found_end.group(1))
         # else the name contains "py" as its part => do nothing
         # or the name is in form "python-%(name)s", which is fine, toO
         if self.distro == 'mageia':
