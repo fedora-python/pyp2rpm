@@ -142,6 +142,9 @@ def main():
 
     else:
         logger.debug('Printing specfile to stdout.')
-        print(converted)
+        if utils.PY3:
+            print(converted)
+        else:
+            print(converted.encode('utf-8'))
         logger.debug('Specfile printed.')
     logger.info("That's all folks!")
