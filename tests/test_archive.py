@@ -22,7 +22,8 @@ class TestArchive(object):
                   Archive('{0}restsh-0.1.tar.gz'.format(self.td_dir)),
                   Archive('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir)),
                   Archive('{0}unextractable-1.tar'.format(self.td_dir)),
-                  Archive('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir)),]
+                  Archive('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir)),
+                  Archive('{0}pkginfo-1.2b1.tar.gz'.format(self.td_dir)),]
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, TarFile),
@@ -64,6 +65,10 @@ class TestArchive(object):
         flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return(None)
         flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return(None)
         assert self.a[4].find_list_argument('install_requires') == []
+
+    def test_find_list_argument_nested_list(self):
+        with self.a[6] as a:
+            assert a.find_list_argument('scripts') == ['pkginfo = pkginfo.commandline:main',]
 
     @pytest.mark.parametrize(('i', 'suf', 'expected'), [
         (0, ['.spamspamspam'],  False),

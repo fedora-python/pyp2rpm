@@ -13,6 +13,30 @@ from pyp2rpm import utils
 logger = logging.getLogger(__name__)
 
 
+def generator_to_list(fn):
+    """This decorator is for flat_list function.
+    It converts returned generator to list.
+    """
+    def wrapper(*args, **kw):
+        return list(fn(*args, **kw))
+    return wrapper
+
+@generator_to_list
+def flat_list(lst):
+    """This function flatten given nested list.
+    Argument:
+        nested list
+    Returns:
+        flat list
+    """
+    if isinstance(lst, list):
+        for item in lst:
+            for i in flat_list(item):
+                yield i
+    else:
+        yield lst
+
+
 class Archive(object):
 
     """Class representing package archive. All the operations must be run using with statement.
@@ -251,7 +275,7 @@ class Archive(object):
             argument[-1] = argument[-1][:argument[-1].rfind(']') + 1]
             argument[-1] = argument[-1].rstrip().rstrip(',')
             try:
-                return eval(' '.join(argument).strip())
+                return flat_list(eval(' '.join(argument).strip()))
             except:  # something unparsable in the list - different errors can come out - function undefined, syntax error, ...
                 logger.warn('Something unparsable in the list.', exc_info=True)
                 return []
@@ -310,3 +334,6 @@ class Archive(object):
                     modules.append(re.sub('/.*', '', line))
 
         return {'modules': set(modules), 'scripts': set(scripts)}
+
+
+
