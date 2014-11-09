@@ -29,6 +29,8 @@ def python_bin_for_python_version(name, version):
 
 def macroed_pkg_name(pkg_name, name):
     if pkg_name.startswith('python') and name == pkg_name:
+        # if (pypi) name starts with python also then we can't prefix python
+        # this would lead to python3-python-foo names like
         return name
     elif pkg_name.startswith('python-'):
         return 'python-%{pypi_name}'

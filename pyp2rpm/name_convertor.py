@@ -60,18 +60,14 @@ class NameConvertor(object):
         reg_start = re.compile(r'^python(\d*|)-')
 
         name = name.replace('.', "-")
-        #if name.lower().find(exclude_string) == -1:  # name doesn't contain "py" => prefix with "python-"
-        if not reg_start.search(name.lower()):
+        if not reg_start.search(name.lower()): # prefix python before pkg name (only if it's not prefixed already)
             rpmized_name = 'python-{0}'.format(name)
 
         reg_end = re.compile(r'(.*)-(python)(\d*|)$')        
-        #if name.endswith('-python'):  # name ends with "-python" => strip that and put it to front (I hope that's for Mageia, too)
-        #    rpmized_name = 'python-{0}'.format(name.replace('-python', ''))
         found_end = reg_end.search(name.lower())
-        if found_end:
+        if found_end: # if package has -pythonXY like sufix convert it to prefix
             rpmized_name = '{0}{1}-{2}'.format('python', found_end.group(3), found_end.group(1))
-        # else the name contains "py" as its part => do nothing
-        # or the name is in form "python-%(name)s", which is fine, toO
+
         if self.distro == 'mageia':
             rpmized_name = rpmized_name.lower()
         logger.debug('Rpmized name of {0}: {1}.'.format(name, rpmized_name))
