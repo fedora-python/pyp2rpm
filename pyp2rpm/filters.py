@@ -53,7 +53,7 @@ def package_to_path(package, module):
     if package == module:
         return "%{pypi_name}"
     else:
-        return module
+        return package.replace('-','_')
 
 __all__ = [name_for_python_version,
            script_name_for_python_version,
