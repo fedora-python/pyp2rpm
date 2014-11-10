@@ -39,7 +39,11 @@ class LocalMetadataExtractor(object):
         Returns:
             list of runtime dependencies of the package
         """
-        return self.name_convert_deps_list(deps_from_pyp_format(self.archive.find_list_argument('install_requires'), runtime=True))
+        install_requires = self.archive.find_list_argument('install_requires')
+        if self.archive.has_argument('entry_points') and 'setuptools' not in install_requires:
+            install_requires.append('setuptools') # entrypoints
+            
+        return self.name_convert_deps_list(deps_from_pyp_format(install_requires, runtime=True))
 
     @property
     def build_deps_from_setup_py(self):  # setup_requires
@@ -48,7 +52,11 @@ class LocalMetadataExtractor(object):
         Returns:
             list of build dependencies of the package
         """
-        build = self.name_convert_deps_list(deps_from_pyp_format(self.archive.find_list_argument('setup_requires'), runtime=False))
+        build_requires = self.archive.find_list_argument('setup_requires')
+        if self.archive.has_argument('entry_points') and 'setuptools' not in build_requires:
+            build_requires.append('setuptools') # entrypoints
+
+        build = self.name_convert_deps_list(deps_from_pyp_format(build_requires, runtime=False))
         test = self.name_convert_deps_list(deps_from_pyp_format(self.archive.find_list_argument('tests_require'), runtime=False))
 
         return list(build + test)
