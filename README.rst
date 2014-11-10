@@ -3,7 +3,7 @@
 =======
 pyp2rpm
 =======
-Tool to convert a package from PyPI to RPM SPECFILE.
+Tool to convert a package from PyPI to RPM SPECFILE or to generate SRPM.
 Under heavy development, see TODO file for list of planned features.
 pyp2rpm currently ships with Fedora and Mageia specific templates.
 
@@ -13,7 +13,13 @@ The most simple use case is running::
 
     pyp2rpm -n package_name
 
-This downloads the package from PyPI and outputs the RPM SPECFILE or create SRPM.
+This downloads the package from PyPI and outputs the RPM SPECFILE.
+
+Or::
+
+    pyp2rpm -n package_name --srpm
+
+This downloads the package from PyPI and creates SRPM file.
 
 All of the options are (print this by running pyp2rpm -h::
 
@@ -29,7 +35,7 @@ All of the options are (print this by running pyp2rpm -h::
       -v VERSION          Version of the package to download (ignored for local files).
       -m METADATA_SOURCE  Where to get metadata from ("pypi" or "local", default: "pypi").
       -s PACKAGE_SOURCE   Where to get package from ("pypi" or "/full/path/to/local/file", default: "pypi").
-      -d SAVE_DIR         Where to save the package file (default: "/home/rkuska/rpmbuild")
+      -d SAVE_DIR         Where to save the package file (default: "~/rpmbuild")
       -r RPM_NAME         Name of rpm package (overrides calculated name)
       -t TEMPLATE         Template file (jinja2 format) to render (default: "fedora"). Search order is 1) filesystem, 2) default templates.
       -o DISTRO           Default distro whose conversion rules to use (default: "fedora"). Default templates have their rules associated and ignore this.
