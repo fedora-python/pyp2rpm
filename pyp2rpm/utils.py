@@ -11,6 +11,11 @@ logger = logging.getLogger(__name__)
 
 PY3 = sys.version > '3'
 
+if PY3:
+    str_classes = (str, bytes)
+else:
+    str_classes = (str, unicode)
+
 
 def memoize_by_args(func):
     """Memoizes return value of a func based on args."""

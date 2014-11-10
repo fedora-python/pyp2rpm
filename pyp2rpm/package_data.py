@@ -4,6 +4,7 @@ import locale
 import logging
 
 from pyp2rpm import version
+from pyp2rpm import utils
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +33,10 @@ class PackageData(object):
         return self.data.get(name, 'TODO:')
 
     def __setattr__(self, name, value):
-        if name == 'summary':
+        if name == 'summary' and isinstance(value, utils.str_classes):
             value = value.rstrip('.').replace('\n', ' ')
-        self.data[name] = value
+        if value:
+            self.data[name] = value
 
     def set_from(self, data_dict):
         for k, v in data_dict.items():

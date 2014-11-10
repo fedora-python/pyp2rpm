@@ -16,6 +16,14 @@ class TestPackageData(object):
         pd.summary = s
         assert pd.summary == expected
 
+    @pytest.mark.parametrize('name', [
+        'summary', 'description', ])
+    def test_set_none_value(self, name):
+        pd = PackageData('spam', 'spam', 'python-spam', 'spam')
+        setattr(pd, name, None)
+        actual = getattr(pd, name)
+        assert actual == 'TODO:'
+
     def test_get_nonexistent_attribute(self):
         pd = PackageData('spam', 'spam', 'python-spam', 'spam')
         assert pd.eggs == 'TODO:'
