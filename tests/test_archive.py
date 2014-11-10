@@ -7,7 +7,18 @@ import pytest
 
 from flexmock import flexmock
 
-from pyp2rpm.archive import Archive
+from pyp2rpm.archive import Archive, flat_list
+
+
+@pytest.mark.parametrize(('arg', 'expected'), [
+    (['foo'], ['foo']),
+    (['foo',['bar']], ['foo', 'bar']),
+    ([], []),
+    (['spam', ['foo', ['bar']]], ['spam', 'foo', 'bar']),
+])
+def test_flat_list_nested(arg, expected):
+    assert flat_list(arg) == expected
+    
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
