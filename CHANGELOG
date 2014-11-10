@@ -1,3 +1,10 @@
+1.1.2
+* Use python2-devel instead of python-devel
+* Support Python2.6
+* Correctly handle specialcasing; pyfoo packages are now python-pyfoo in fedora
+* Auto add setuptools as requires if entry points are used
+* Additional various bug fixes
+
 1.1.1
 * Brings back Python 2 support issue #12.
 * Change python-sphinx-build to sphinx-build.
