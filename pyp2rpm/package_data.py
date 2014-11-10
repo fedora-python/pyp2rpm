@@ -35,7 +35,7 @@ class PackageData(object):
     def __setattr__(self, name, value):
         if name == 'summary' and isinstance(value, utils.str_classes):
             value = value.rstrip('.').replace('\n', ' ')
-        if value:
+        if value is not None:
             self.data[name] = value
 
     def set_from(self, data_dict):
