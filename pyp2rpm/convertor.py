@@ -30,20 +30,16 @@ logger = logging.getLogger(__name__)
 class Convertor(object):
     """Object that takes care of the actual process of converting the package."""
 
-    def __init__(self, name=None, version=None,
+    def __init__(self, package=None, version=None,
                  save_dir=None,
                  template=settings.DEFAULT_TEMPLATE,
                  distro=settings.DEFAULT_DISTRO,
-                 source_from=settings.DEFAULT_PKG_SOURCE,
-                 metadata_from=settings.DEFAULT_METADATA_SOURCE,
                  base_python_version=settings.DEFAULT_PYTHON_VERSION,
                  python_versions=[],
                  rpm_name=None, proxy=None):
-        self.name = name
+        self.package = package
         self.version = version
         self.save_dir = save_dir
-        self.source_from = source_from
-        self.metadata_from = metadata_from
         self.base_python_version = base_python_version
         self.python_versions = python_versions
         self.template = template
@@ -52,11 +48,15 @@ class Convertor(object):
             self.template = '{0}.spec'.format(self.template)
         self.rpm_name = rpm_name
         self.proxy = proxy
+        self.pypi = True
+        if os.path.exists(self.package):
+            self.pypi = False
+
 
     def convert(self):
         """Returns RPM SPECFILE.
         Returns:
-            Rendered RPM SPECFILE.
+            endered RPM SPECFILE.
         """
         # move file into position
         try:
@@ -101,33 +101,23 @@ class Convertor(object):
         """Returns an instance of proper PackageGetter subclass. Always returns the same instance.
 
         Returns:
-            Instance of the proper PackageGetter subclass according to self.source_from.
+            Instance of the proper PackageGetter subclass according to provided argument.
         Raises:
             NoSuchSourceException if source to get the package from is unknown
             NoSuchPackageException if the package is unknown on PyPI
         """
         if not hasattr(self, '_getter'):
-            if self.source_from == 'pypi':
-                if self.name is None:
-                    raise exceptions.NameNotSpecifiedException(
-                        'Must specify package when getting from PyPI.')
-                    logger.error('Must specify package when getting form PyPI.', exc_info=True)
-                    logger.info('Pyp2rpm failed. See log for more info.')
+            if not self.pypi:
+                self._getter = package_getters.LocalFileGetter(
+                    self.package,
+                    self.save_dir)
+                logger.debug('{} doesnt exists as local file trying PyPI.'.format(self.package))
+            else:
                 self._getter = package_getters.PypiDownloader(
                     self.client,
-                    self.name,
+                    self.package,
                     self.version,
                     self.save_dir)
-            elif os.path.exists(self.source_from):
-                self._getter = package_getters.LocalFileGetter(
-                    self.source_from,
-                    self.save_dir)
-            else:
-                raise exceptions.NoSuchSourceException(
-                    '"{0}" is neither one of preset sources nor a file.'.format(self.source_from))
-                logger.error(
-                    '{0} is neither one of preset sources nor a file.'.format(self.source_from), exc_info=True)
-                logger.info('Pyp2rpm failed. See log for more info.')
 
         return self._getter
 
@@ -153,14 +143,14 @@ class Convertor(object):
         """Returns an instance of proper MetadataExtractor subclass. Always returns the same instance.
 
         Returns:
-            The proper MetadataExtractor subclass according to self.metadata_from.
+            The proper MetadataExtractor subclass according to provided argument.
         """
         if not hasattr(self, '_local_file'):
             raise AttributeError(
                 'local_file attribute must be set before calling metadata_extractor')
 
         if not hasattr(self, '_metadata_extractor'):
-            if self.metadata_from == 'pypi':
+            if self.pypi:
                 logger.info('Getting metadata from PyPI.')
                 self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(
                     self.local_file,
@@ -189,13 +179,13 @@ class Convertor(object):
         """
         # cannot use "if self._client"...
         if self.proxy:
-            proxyhandler= urllib.ProxyHandler({"http": self.proxy})
+            proxyhandler = urllib.ProxyHandler({"http": self.proxy})
             opener = urllib.build_opener(proxyhandler)
             urllib.install_opener(opener)
             transport = ProxyTransport()
         if not hasattr(self, '_client'):
             transport = None
-            if self.metadata_from == 'pypi':
+            if self.pypi:
                 if self.proxy:
                     logger.info('Using provided proxy: {0}.'.format(self.proxy))
                 self._client = xmlrpclib.ServerProxy(settings.PYPI_URL, transport=transport)

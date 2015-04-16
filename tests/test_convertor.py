@@ -13,29 +13,29 @@ class TestConvertor(object):
     client = flexmock(package_releases = lambda n: n == 'spam' and ['0.1'] or [])
     Convertor._client = client # flexmock can't mock properties yet
 
-    @pytest.mark.parametrize(('sf', 'n', 'g'), [
-        ('pypi', 'spam', PypiDownloader),
-        ('%s/test_data/restsh-0.1.tar.gz' % tests_dir, '', LocalFileGetter)
+    @pytest.mark.parametrize(('sf', 'g'), [
+        ('spam', PypiDownloader),
+        ('%s/test_data/restsh-0.1.tar.gz' % tests_dir, LocalFileGetter)
     ])
-    def test_getter_good_data(self, sf, n, g):
-        c = Convertor(source_from = sf, name = n)
+    def test_getter_good_data(self, sf, g):
+        c = Convertor(package=sf)
         assert isinstance(c.getter, g)
 
-    @pytest.mark.parametrize(('sf', 'n', 'expected'), [
-        ('pypi', 'eggs', NoSuchPackageException),
-        ('spam source', 'beans', NoSuchSourceException),
-        ('/spam/beans/eggs/ham', '', NoSuchSourceException)
+    @pytest.mark.parametrize(('sf', 'expected'), [
+        ('eggs', NoSuchPackageException),
+        ('/spam/beans/eggs/ham', NoSuchPackageException)
     ])
-    def test_getter_bad_data(self, sf, n, expected):
+    def test_getter_bad_data(self, sf, expected):
         with pytest.raises(expected):
-            c = Convertor(source_from = sf, name = n)
+            c = Convertor(package = sf)
             c.getter
 
-    @pytest.mark.parametrize(('sf', 'n', 'mf', 'expected'), [
-        ('pypi', 'spam', 'pypi', PypiMetadataExtractor),
-        ('%s/test_data/restsh-0.1.tar.gz' % tests_dir, '', 'something other than pypi', LocalMetadataExtractor)
+    @pytest.mark.parametrize(('sf', 'expected'), [
+        ('spam', PypiMetadataExtractor),
+        ('%s/test_data/restsh-0.1.tar.gz' % tests_dir, LocalMetadataExtractor)
     ])
-    def test_get_metadata_extractor(self, sf, n, mf, expected):
-        c = Convertor(source_from = sf, name = n, metadata_from = mf)
+    def test_get_metadata_extractor(self, sf, expected):
+        c = Convertor(package = sf)
         c.local_file = 'spamfile'
+        c.name = 'spam'
         assert isinstance(c.metadata_extractor, expected)
