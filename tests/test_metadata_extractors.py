@@ -51,10 +51,6 @@ class TestMetadataExtractor(object):
         flexmock(Archive).should_receive('has_argument').with_args('entry_points').and_return(True)
         assert ['Requires', 'python-setuptools'] in self.e[6].runtime_deps_from_setup_py
 
-    def test_build_deps_auto_setuptools(self):
-        flexmock(Archive).should_receive('has_argument').with_args('entry_points').and_return(True)
-        assert ['BuildRequires', 'python-setuptools'] in self.e[6].build_deps_from_setup_py
-
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, True),
         (1, True),

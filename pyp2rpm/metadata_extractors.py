@@ -53,8 +53,8 @@ class LocalMetadataExtractor(object):
             list of build dependencies of the package
         """
         build_requires = self.archive.find_list_argument('setup_requires')
-        if self.archive.has_argument('entry_points') and 'setuptools' not in build_requires:
-            build_requires.append('setuptools') # entrypoints
+        if 'setuptools' in build_requires:
+            build_requires.remove('setuptools')
 
         build = self.name_convert_deps_list(deps_from_pyp_format(build_requires, runtime=False))
         test = self.name_convert_deps_list(deps_from_pyp_format(self.archive.find_list_argument('tests_require'), runtime=False))

@@ -14,6 +14,7 @@
 {%- endif %}
 {%- if not runtime %}
 BuildRequires:  {{ 'python2-devel'|name_for_python_version(python_version) }}
+BuildRequires:  {{ 'python-setuptools'|name_for_python_version(python_version) }}
 {%- endif %}
 {%- for dep in deps -%}
 {{ one_dep(dep, python_version) }}
