@@ -44,10 +44,11 @@ setup(
     entry_points={'console_scripts': ['pyp2rpm = pyp2rpm.bin:main']},
     install_requires=['Jinja2',
                       'setuptools',
+                      'click',
                       ],
     setup_requires=['setuptools',
                     'flexmock >= 0.9.3',
-                    'pytest'
+                    'pytest',
                     ],
     cmdclass={'test': PyTest},
     classifiers=['Development Status :: 4 - Beta',
