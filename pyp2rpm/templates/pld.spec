@@ -5,14 +5,14 @@
 {%- endfor %}
 %define		pypi_name	{{ data.name }}
 Summary:	{{ data.summary }}
-Name:		{{ data.pkg_name|macroed_pkg_name|name_for_python_version(data.base_python_version) }}
+Name:		{{ data.pkg_name|name_for_python_version(data.base_python_version) }}
 Version:	{{ data.version }}
 Release:	0.1
 License:	{{ data.license }}
 Group:		Libraries/Python
-Source0:	{{ data.url|replace(data.version, '%{version}') }}
+Source0:	{{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 # Source0-md5:	-
-URL:		{{ data.release_url|replace(data.version, '%{version}') }}
+URL:		{{ data.home_page }}
 {{ dependencies(data.build_deps, False, data.base_python_version, data.base_python_version) }}
 {%- for pv in data.python_versions %}
 {{ dependencies(data.build_deps, False, pv, data.base_python_version) }}
@@ -26,11 +26,11 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 {{ data.description|truncate(400)|wordwrap }}
 {% call(pv) for_python_versions(data.python_versions) -%}
-%package -n {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}
+%package -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
 Summary:	{{ data.summary }}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
 
-%description -n {{ data.name|macroed_pkg_name|name_for_python_version(pv) }}
+%description -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
 {{ data.description|truncate(400)|wordwrap }}
 {%- endcall %}
 
@@ -100,27 +100,35 @@ cd -
 rm -rf $RPM_BUILD_ROOT
 
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name|name_for_python_version(pv) }}{% endif %}
-%defattr(644,root,root,755)
+%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}{% endif %}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 {%- if data.scripts %}
 {%- for script in data.scripts %}
-%attr(755,root,root) %{_bindir}/{{ script|script_name_for_python_version(pv) }}
+%{_bindir}/{{ script|script_name_for_python_version(pv) }}
 {%- endfor %}
-{%- endif %}
-{%- if data.has_packages %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
 {%- endif %}
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
 {%- if pv == '3' -%}
 {{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
-{% endif -%}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{% if data.name == module %}%{pypi_name}{% else %}{{ module }}{% endif %}.py{% if pv != '3'%}[co]{% endif %}
+{%- endif %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py*.egg-info
+
 {%- if data.has_extension %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- if data.has_pth %}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+{%- endif %}
+{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+{%- else %}
+{%- if data.has_packages %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- endif %}
+{%- if data.has_pth %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+{%- endif %}
+{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {%- endcall %}
