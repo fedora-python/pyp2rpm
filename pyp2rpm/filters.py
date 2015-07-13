@@ -24,7 +24,7 @@ def python_bin_for_python_version(name, version):
     if version == settings.DEFAULT_PYTHON_VERSION:
         return name
     else:
-        return name.replace('__python2', '__python3')
+        return name.replace('__python2', '__python{0}'.format(version))
 
 
 def macroed_pkg_name(pkg_name, name):
