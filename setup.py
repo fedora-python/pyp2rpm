@@ -37,7 +37,7 @@ setup(
     keywords='pypi, rpm, spec, specfile, convert',
     author='Bohuslav "Slavek" Kabrda, Robert Kuska',
     author_email='bkabrda@redhat.com, rkuska@redhat.com',
-    url='https://bitbucket.org/bkabrda/pyp2rpm/',
+    url='https://github.com/fedora-python/pyp2rpm',
     license='MIT',
     packages=['pyp2rpm', ],
     package_data={'pyp2rpm': ['templates/*.spec']},
