@@ -44,6 +44,7 @@ setup(
     entry_points={'console_scripts': ['pyp2rpm = pyp2rpm.bin:main']},
     install_requires=['Jinja2',
                       'setuptools',
+                      'argparse',
                       'click',
                       ],
     setup_requires=['setuptools',
