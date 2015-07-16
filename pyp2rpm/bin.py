@@ -25,10 +25,11 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-b',
               help='Base Python version to package for (default: "{0}").'.format(
                   settings.DEFAULT_PYTHON_VERSION),
-              default=settings.DEFAULT_PYTHON_VERSION,
+              default=None,
               metavar='BASE_PYTHON')
 @click.option('-p',
-              help='Additional Python versions to include in the specfile (e.g -p3 for %%{?with_python3}). Can be specified multiple times.',
+              help='Additional Python versions to include in the specfile (e.g -p3 for %%{0}). Can be specified multiple times (default: "{1}"). Specify additional version or use -b explicitly to disable default.'.format(
+                  '{?with_python3}', settings.DEFAULT_ADDITIONAL_VERSION),
               default=[],
               multiple=True,
               metavar='PYTHON_VERSIONS')
@@ -59,7 +60,15 @@ def main(package, v, d, r, proxy, srpm, p, b, o, t):
     PACKAGE             Provide PyPI name of the package or path to compressed source file."""
     register_file_log_handler('/tmp/pyp2rpm-{0}.log'.format(getpass.getuser()))
 
+    if not p and not b:
+        p = settings.DEFAULT_ADDITIONAL_VERSION
+    if not b:
+        b = settings.DEFAULT_PYTHON_VERSION
+    
     p = list(p)
+    if b in p:
+        p.remove(b)
+
     if srpm:
         register_console_log_handler()
 

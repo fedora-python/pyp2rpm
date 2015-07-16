@@ -1,12 +1,13 @@
 import os
 
 DEFAULT_PYTHON_VERSION = '2'
+DEFAULT_ADDITIONAL_VERSION = '3'
 DEFAULT_PKG_SOURCE = 'pypi'
 DEFAULT_METADATA_SOURCE = 'pypi'
 DEFAULT_TEMPLATE = 'fedora'
 DEFAULT_DISTRO = 'fedora'
 DEFAULT_PKG_SAVE_PATH = os.path.expanduser('~/rpmbuild')
-KNOWN_DISTROS = ['fedora', 'mageia']
+KNOWN_DISTROS = ['fedora', 'mageia', 'pld']
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2', '.gz', '.bz2', '.zip', '.egg']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
 DOC_FILES_RE = [r'readme.+', r'licens.+', r'copying.+']
