@@ -30,11 +30,13 @@ BuildRequires:  {{ 'python-setuptools'|name_for_python_version(python_version) }
 {%- macro for_python_versions(python_versions, base_python_version) %}
 {%- for pv in python_versions %}
 {%- if pv != base_python_version %}
+
 %if 0%{?with_python{{ pv }}}
 {% endif %}
 {{- caller(pv) }}
 {%- if pv != base_python_version %}
 %endif # with_python{{ pv }}
+
 {% endif %}
 {%- endfor %}
 {%- endmacro %}
