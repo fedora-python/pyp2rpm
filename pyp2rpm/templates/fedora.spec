@@ -54,19 +54,21 @@ sphinx-build{% if pv != data.base_python_version %}-{{ pv }}{% endif %} {{ data.
 rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
 {%- endcall %}
+
 %build
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
 pushd python{{ pv }}
 {% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}{{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py build
 popd
 {%- endcall %}
+
 %install
 {%- if data.python_versions|length > 0 %}
 # Must do the subpackages' install first because the scripts in /usr/bin are
 # overwritten with every setup.py install (and we want the python2 version
 # to be the default for now).
 {%- endif -%}
-{%- call(pv) for_python_versions(data.python_versions + [data.base_python_version], data.base_python_version) -%}
+{%- call(pv) for_python_versions(data.python_versions + [data.base_python_version], data.base_python_version) %}
 pushd python{{ pv }}
 {{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py install --skip-build --root %{buildroot}
 {%- if pv != data.base_python_version %}
@@ -89,7 +91,7 @@ popd
 {%- endif %}
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}{% endif %}
-%doc {% if data.sphinx_dir %}html {% endif %}python{{ pv }}/{{data.doc_files|join(' python{}/'.format(pv)) }}
+%doc {% if data.sphinx_dir %}html {% endif %} {% if data.doc_files %}python{{ pv }}/{{data.doc_files|join(' python{}/'.format(pv)) }} {%endif %}
 {%- if data.scripts %}
 {%- for script in data.scripts %}
 %{_bindir}/{{ script|script_name_for_python_version(pv) }}
