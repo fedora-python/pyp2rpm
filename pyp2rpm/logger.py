@@ -11,11 +11,11 @@ console_formatter = logging.Formatter(u'%(levelname)s  %(message)s')
 
 
 class LevelFilter(logging.Filter):
-        def __init__(self, level):
-            self.level = level
+    def __init__(self, level):
+        self.level = level
 
-        def filter(self, record):
-            return record.levelno == self.level
+    def filter(self, record):
+        return record.levelno == self.level
 
 
 def register_file_log_handler(log_file, level=logging.DEBUG, fmt=file_formatter):

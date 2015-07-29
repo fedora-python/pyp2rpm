@@ -14,11 +14,13 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-t',
-              help='Template file (jinja2 format) to render (default: "{0}"). Search order is 1) filesystem, 2) default templates.'.format(
+              help='Template file (jinja2 format) to render (default: "{0}").' 
+              'Search order is 1) filesystem, 2) default templates.'.format(
                   settings.DEFAULT_TEMPLATE),
               metavar='TEMPLATE')
 @click.option('-o',
-              help='Default distro whose conversion rules to use (default: "{0}"). Default templates have their rules associated and ignore this.'.format(
+              help='Default distro whose conversion rules to use (default:"{0}").'
+              'Default templates have their rules associated and ignore this.'.format(
                   settings.DEFAULT_DISTRO),
               type=click.Choice(settings.KNOWN_DISTROS),
               default=settings.DEFAULT_DISTRO)
@@ -28,7 +30,9 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               default=None,
               metavar='BASE_PYTHON')
 @click.option('-p',
-              help='Additional Python versions to include in the specfile (e.g -p3 for %%{0}). Can be specified multiple times (default: "{1}"). Specify additional version or use -b explicitly to disable default.'.format(
+              help='Additional Python versions to include in the specfile (e.g -p3 for %%{0}).'
+              'Can be specified multiple times (default: "{1}"). Specify additional version'
+              'or use -b explicitly to disable default.'.format(
                   '{?with_python3}', settings.DEFAULT_ADDITIONAL_VERSION),
               default=[],
               multiple=True,
@@ -52,6 +56,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('-v', help='Version of the package to download (ignored for local files).',
               metavar='VERSION')
 @click.argument('package', nargs=1)
+
 def main(package, v, d, r, proxy, srpm, p, b, o, t):
     """Convert PyPI package to RPM specfile or SRPM.
 

@@ -53,9 +53,9 @@ def deps_from_pyp_format(requires, runtime=True):
     for req in requires:
         try:
             parsed.append(Requirement.parse(req))
-        except ValueError:  # TODO: log unparsable dependency
+        except ValueError:
             logger.warn('Unparsable dependency {0}.'.format(req), exc_info=True)
-            pass
+
     in_rpm_format = []
     for dep in parsed:
         in_rpm_format.extend(dependency_to_rpm(dep, runtime))

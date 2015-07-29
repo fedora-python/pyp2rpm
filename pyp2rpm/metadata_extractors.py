@@ -33,7 +33,8 @@ class LocalMetadataExtractor(object):
     def runtime_deps_from_setup_py(self):  # install_requires
         """ Returns list of runtime dependencies of the package specified in setup.py.
 
-        Dependencies are in RPM SPECFILE format - see dependency_to_rpm() for details, but names are already
+        Dependencies are in RPM SPECFILE format - see dependency_to_rpm() for details,
+        but names are already
         transformed according to current distro.
 
         Returns:
@@ -42,7 +43,7 @@ class LocalMetadataExtractor(object):
         install_requires = self.archive.find_list_argument('install_requires')
         if self.archive.has_argument('entry_points') and 'setuptools' not in install_requires:
             install_requires.append('setuptools') # entrypoints
-            
+
         return self.name_convert_deps_list(deps_from_pyp_format(install_requires, runtime=True))
 
     @property
@@ -56,8 +57,10 @@ class LocalMetadataExtractor(object):
         if 'setuptools' in build_requires:
             build_requires.remove('setuptools')
 
-        build = self.name_convert_deps_list(deps_from_pyp_format(build_requires, runtime=False))
-        test = self.name_convert_deps_list(deps_from_pyp_format(self.archive.find_list_argument('tests_require'), runtime=False))
+        build = self.name_convert_deps_list(
+            deps_from_pyp_format(build_requires, runtime=False))
+        test = self.name_convert_deps_list(
+            deps_from_pyp_format(self.archive.find_list_argument('tests_require'), runtime=False))
 
         return list(build + test)
 
@@ -65,8 +68,8 @@ class LocalMetadataExtractor(object):
     def runtime_deps_from_egg_info(self):
         """ Returns list of runtime dependencies of the package specified in EGG-INFO/requires.txt.
 
-        Dependencies are in RPM SPECFILE format - see dependency_to_rpm() for details, but names are already
-        transformed according to current distro.
+        Dependencies are in RPM SPECFILE format - see dependency_to_rpm() for details,
+        but names are already transformed according to current distro.
 
         Returns:
             list of runtime dependencies of the package
@@ -119,7 +122,7 @@ class LocalMetadataExtractor(object):
         for doc_file_re in settings.DOC_FILES_RE:
             doc_files.extend(
                 self.archive.get_files_re(doc_file_re, ignorecase=True))
-        return list(map(lambda x: "/".join(x.split("/")[1:]), doc_files))
+        return ['/'.join(x.split('/')[1:]) for x in doc_files]
 
     @property
     def sphinx_dir(self):
@@ -242,7 +245,7 @@ class LocalMetadataExtractor(object):
 
         # for example nose has attribute `packages` but instead of name listing the packages
         # is using function to find them, that makes data.packages an empty set
-        if(data.has_packages and not data.packages):
+        if data.has_packages and not data.packages:
             data.packages.add(data.name)
 
         return data
@@ -265,9 +268,10 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
             release_urls = self.client.release_urls(self.name, self.version)
             release_data = self.client.release_data(self.name, self.version)
         except:  # some kind of error with client => return TODO: log the failure
-            logger.debug('Client: {0} Name: {1} Version: {2}.'.format(self.client, self.name, self.version))
-            logger.warn(
-                'Some kind of error while communicating with client: {0}.'.format(self.client), exc_info=True)
+            logger.debug('Client: {0} Name: {1} Version: {2}.'.format(
+                self.client, self.name, self.version))
+            logger.warn('Some kind of error while communicating with client: {0}.'.format(
+                self.client), exc_info=True)
             return PackageData(self.local_file,
                                self.name,
                                self.name_convertor.rpm_name(self.name)
@@ -306,7 +310,7 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
 
         # for example nose has attribute `packages` but instead of name listing the
         # packages is using function to find them, that makes data.packages an empty set
-        if(data.has_packages and not data.packages):
+        if data.has_packages and not data.packages:
             data.packages.add(data.name)
 
         # we usually get better license representation from trove classifiers
@@ -321,7 +325,7 @@ class _WheelMetadataExtractor(PypiMetadataExtractor):
     @property
     def json_metadata(self):
         if not hasattr(self, '_json_metadata'):
-            self._json_metadata = self.archive.json_wheel_data
+            self._json_metadata = self.archive.json_wheel_metadata
         return self._json_metadata
 
     @property
@@ -348,7 +352,7 @@ class _WheelMetadataExtractor(PypiMetadataExtractor):
         for requires in self.json_metadata.get('test_requires', []):
             build_requires.extend(requires['requires'])
 
-        return self.name_convert_deps_list(deps_from_pydit_json(build_requires), runtime=False)
+        return self.name_convert_deps_list(deps_from_pydit_json(build_requires, runtime=False))
 
     @property
     def modules(self):
