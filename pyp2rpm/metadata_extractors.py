@@ -299,6 +299,7 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
                            url)
         for data_field in settings.PYPI_USABLE_DATA:
             setattr(data, data_field, release_data.get(data_field, ''))
+        pypi_license = data.license
 
         with self.archive:
             data.set_from(self.data_from_archive)
@@ -310,7 +311,7 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
 
         # we usually get better license representation from trove classifiers
         data.license = utils.license_from_trove(
-            release_data.get('classifiers', '')) or data.license
+            release_data.get('classifiers', '')) or data.license or pypi_license
 
         return data
 
