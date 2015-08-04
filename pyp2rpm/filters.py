@@ -13,18 +13,18 @@ def script_name_for_python_version(name, version):
         return 'python{0}-{1}'.format(version, name)
 
 
-def sitedir_for_python_version(name, version):
+def sitedir_for_python_version(name, version,default_string='python2'):
     if version == settings.DEFAULT_PYTHON_VERSION:
         return name
     else:
-        return name.replace('python2', 'python{0}'.format(version))
+        return name.replace(default_string, 'python{0}'.format(version))
 
 
-def python_bin_for_python_version(name, version):
+def python_bin_for_python_version(name, version,default_string='__python2'):
     if version == settings.DEFAULT_PYTHON_VERSION:
         return name
     else:
-        return name.replace('__python2', '__python{0}'.format(version))
+        return name.replace(default_string, '__python{0}'.format(version))
 
 
 def macroed_pkg_name(pkg_name, name):
