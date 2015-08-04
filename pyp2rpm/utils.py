@@ -37,7 +37,8 @@ def license_from_trove(trove):
     Args:
         trove: list of trove classifiers
     Returns:
-        Fedora name of the package license or empty string, if no licensing information is found in trove classifiers.
+        Fedora name of the package license or empty string, if no licensing
+        information is found in trove classifiers.
     """
     license = []
     for classifier in trove:
@@ -82,6 +83,7 @@ def build_srpm(specfile, save_dir):
                                     '--define', '_rpmdir {0}'.format(save_dir + '/RPMS'),
                                     '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
         except OSError:
-            logger.error('Rpmbuild failed for specfile: {0} and save_dir: {1}'.format(specfile, save_dir), exc_info=True)
+            logger.error('Rpmbuild failed for specfile: {0} and save_dir: {1}'.format(
+                specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg

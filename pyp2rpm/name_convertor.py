@@ -31,7 +31,7 @@ class NameConvertor(object):
 
         if not version or version == settings.DEFAULT_PYTHON_VERSION:
             found = regexp.search(name)
-            if found and found.group(2)!='devel': # second check is to avoid renaming of python2-devel to python-devel
+            if found and found.group(2) != 'devel': # second check is to avoid renaming of python2-devel to python-devel
                 return 'python-{0}'.format(regexp.search(name).group(2))
             return name
 
@@ -46,7 +46,8 @@ class NameConvertor(object):
         return versioned_name
 
     def rpm_name(self, name, python_version=None):
-        """Returns name of the package coverted to (possibly) correct package name according to Packaging Guidelines.
+        """Returns name of the package coverted to (possibly) correct package 
+           name according to Packaging Guidelines.
         Args:
             name: name to convert
             python_version: python version for which to retrieve the name of the package
@@ -63,7 +64,7 @@ class NameConvertor(object):
         if not reg_start.search(name.lower()): # prefix python before pkg name (only if it's not prefixed already)
             rpmized_name = 'python-{0}'.format(name)
 
-        reg_end = re.compile(r'(.*)-(python)(\d*|)$')        
+        reg_end = re.compile(r'(.*)-(python)(\d*|)$')
         found_end = reg_end.search(name.lower())
         if found_end: # if package has -pythonXY like sufix convert it to prefix
             rpmized_name = '{0}{1}-{2}'.format('python', found_end.group(3), found_end.group(1))

@@ -77,8 +77,7 @@ class Convertor(object):
         data.python_versions = self.python_versions
         jinja_env = jinja2.Environment(loader=jinja2.ChoiceLoader([
             jinja2.FileSystemLoader(['/']),
-            jinja2.PackageLoader('pyp2rpm', 'templates'), ])
-        )
+            jinja2.PackageLoader('pyp2rpm', 'templates'), ]))
 
         for filter in filters.__all__:
             jinja_env.filters[filter.__name__] = filter
@@ -198,7 +197,7 @@ class Convertor(object):
 
 class ProxyTransport(xmlrpclib.Transport):
     """This class serves as Proxy Transport for XMLRPC server."""
-    
+
     def request(self, host, handler, request_body, verbose):
         self.verbose = verbose
         url = 'http://{0}{1}'.format(host, handler)

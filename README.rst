@@ -45,7 +45,9 @@ All of the options are (print this by running pyp2rpm -h::
                           associated and ignore this.
       -b BASE_PYTHON      Base Python version to package for (default: "2").
       -p PYTHON_VERSIONS  Additional Python versions to include in the specfile 
-                          (e.g -p3 for %{?with_python3}). Can be specified multiple times.
+                          (e.g -p3 for %{?with_python3}). Can be specified multiple times
+                          (default: "3"). Specify additional version or use -b
+                          explicitly to disable default. 
       --srpm              When used pyp2rpm will produce srpm instead of printing 
                           specfile into stdout.
       --proxy PROXY       Specify proxy in the form proxy.server:port.

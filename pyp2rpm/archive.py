@@ -83,7 +83,7 @@ class Archive(object):
     def open(self):
         try:
             self.handle = self.extractor_cls.open(self.file)
-        except BaseException:  # TODO: log
+        except BaseException:
             self.handle = None
             logger.error('Failed to open archive: {0}.'.format(self.file), exc_info=True)
 
@@ -113,9 +113,6 @@ class Archive(object):
         elif self.is_zip:
             file_cls = ZipFile
         else:
-            pass
-            # TODO: log that file has unextractable archive suffix and we can't
-            # look inside the archive
             logger.info("Couldn't recognize archive suffix: {0}.".format(self.suffix))
 
         return file_cls
@@ -135,7 +132,8 @@ class Archive(object):
         """
         if self.handle:
             for member in self.handle.getmembers():
-                if (full_path and member.name == name) or (not full_path and os.path.basename(member.name) == name):
+                if (full_path and member.name == name)\
+                or (not full_path and os.path.basename(member.name) == name):
                     extracted = self.handle.extractfile(member)
                     return extracted.read().decode(locale.getpreferredencoding())
 
@@ -146,7 +144,8 @@ class Archive(object):
         Args:
             suffixes: list of suffixes or single suffix to look for
         Returns:
-            True if there is at least one file with at least one given suffix in the archive, False otherwise (or archive can't be opened)
+            True if there is at least one file with at least one given suffix in the archive,
+            False otherwise (or archive can't be opened)
         """
         if not isinstance(suffixes, list):
             suffixes = [suffixes]
@@ -186,7 +185,8 @@ class Archive(object):
             for member in self.handle.getmembers():
                 if isinstance(member, TarInfo) and member.isdir():
                     pass  # for TarInfo files, filter out directories
-                elif (full_path and compiled_re.search(member.name)) or (not full_path and compiled_re.search(os.path.basename(member.name))):
+                elif (full_path and compiled_re.search(member.name))\
+                or (not full_path and compiled_re.search(os.path.basename(member.name))):
                     found.append(member.name)
 
         return found
@@ -215,7 +215,8 @@ class Archive(object):
         return list(found)
 
     def find_list_argument(self, setup_argument):
-        """A simple method that gets setup() function from setup.py list argument like install_requires.
+        """A simple method that gets setup() function from setup.py list argument
+           like install_requires.
 
         Will not work in all cases and might need a smarter approach.
         On the other side, it's so stupid, that it's actually smart - it gets this:
@@ -281,7 +282,8 @@ class Archive(object):
                 return []
 
     def has_argument(self, argument):
-        """A simple method that finds out if setup() function from setup.py is called with given argument.
+        """A simple method that finds out if setup() function from setup.py 
+           is called with given argument.
         Args:
             argument: argument to look for
         Returns:
@@ -334,6 +336,3 @@ class Archive(object):
                     modules.append(re.sub('/.*', '', line))
 
         return {'modules': set(modules), 'scripts': set(scripts)}
-
-
-
