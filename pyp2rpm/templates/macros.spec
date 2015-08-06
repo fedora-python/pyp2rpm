@@ -7,9 +7,10 @@
    considering the base_python_version. #}
 {# This cannot be implemented by macro for_python_versions because it needs to
    decide on its own, whether to even use the %if 0%{?with_pythonX} or not. #}
-{%- macro dependencies(deps, runtime, python_version, base_python_version) %}
+{%- macro dependencies(deps, runtime, python_version, base_python_version,
+use_with=True) %}
 {%- if deps|length > 0 or not runtime %} {# for build deps, we always have at least 1 - pythonXX-devel #}
-{%- if python_version != base_python_version %}
+{%- if python_version != base_python_version and use_with %}
 %if %{?with_python{{ python_version }}}
 {%- endif %}
 {%- if not runtime %}
@@ -19,7 +20,7 @@ BuildRequires:  {{ 'python-setuptools'|name_for_python_version(python_version) }
 {%- for dep in deps -%}
 {{ one_dep(dep, python_version) }}
 {%- endfor %}
-{%- if python_version != base_python_version%}
+{%- if python_version != base_python_version and use_with %}
 %endif # if with_python{{ python_version }}
 {%- endif %}
 {%- endif %}
@@ -30,13 +31,11 @@ BuildRequires:  {{ 'python-setuptools'|name_for_python_version(python_version) }
 {%- macro for_python_versions(python_versions, base_python_version) %}
 {%- for pv in python_versions %}
 {%- if pv != base_python_version %}
-
 %if 0%{?with_python{{ pv }}}
 {% endif %}
 {{- caller(pv) }}
 {%- if pv != base_python_version %}
 %endif # with_python{{ pv }}
-
 {% endif %}
 {%- endfor %}
 {%- endmacro %}

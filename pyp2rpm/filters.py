@@ -2,8 +2,8 @@ from pyp2rpm import settings
 from pyp2rpm import name_convertor
 
 
-def name_for_python_version(name, version):
-    return name_convertor.NameConvertor.rpm_versioned_name(name, version)
+def name_for_python_version(name, version, default_number=False):
+    return name_convertor.NameConvertor.rpm_versioned_name(name, version, default_number)
 
 
 def script_name_for_python_version(name, version):
@@ -13,14 +13,14 @@ def script_name_for_python_version(name, version):
         return 'python{0}-{1}'.format(version, name)
 
 
-def sitedir_for_python_version(name, version,default_string='python2'):
+def sitedir_for_python_version(name, version, default_string='python2'):
     if version == settings.DEFAULT_PYTHON_VERSION:
         return name
     else:
         return name.replace(default_string, 'python{0}'.format(version))
 
 
-def python_bin_for_python_version(name, version,default_string='__python2'):
+def python_bin_for_python_version(name, version, default_string='__python2'):
     if version == settings.DEFAULT_PYTHON_VERSION:
         return name
     else:

@@ -13,7 +13,7 @@ class NameConvertor(object):
         self.distro = distro
 
     @staticmethod
-    def rpm_versioned_name(name, version):
+    def rpm_versioned_name(name, version, default_number=False):
         """Properly versions the name.
         For example:
         rpm_versioned_name('python-foo', '26') will return python26-foo
@@ -29,7 +29,7 @@ class NameConvertor(object):
         """
         regexp = re.compile(r'^python(\d*|)-(.*)')
 
-        if not version or version == settings.DEFAULT_PYTHON_VERSION:
+        if not version or version == settings.DEFAULT_PYTHON_VERSION and not default_number:
             found = regexp.search(name)
             if found and found.group(2) != 'devel': # second check is to avoid renaming of python2-devel to python-devel
                 return 'python-{0}'.format(regexp.search(name).group(2))
