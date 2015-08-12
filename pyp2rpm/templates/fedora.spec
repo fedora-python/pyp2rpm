@@ -30,35 +30,43 @@ Summary:        {{ data.summary }}
 %description -n {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}
 {{ data.description|truncate(400)|wordwrap }}
 {% endfor -%}
+{%- if data.sphinx_dir %}
+%package -n python-%{pypi_name}-doc
+Summary:        {{ data.name }} documentation
+%description -n python-%{pypi_name}-doc
+Documentation for {{ data.name }}
+{%- endif %}
+
 %prep
 %autosetup -n %{pypi_name}-%{version}
 {%- if data.has_bundled_egg_info %}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 {%- endif %}
-{% for pv in ([data.base_python_version] + data.python_versions) -%}
-{%- if data.sphinx_dir-%}
-# generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...) #}
-sphinx-build{% if pv != data.base_python_version %}-{{ pv }}{% endif %} {{ data.sphinx_dir }} html
-# remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
-{%- endif %}
-{%- endfor %}
+
 %build
 {%- for pv in [data.base_python_version] + data.python_versions %}
 %py{{ pv }}_build
 {%- endfor %}
+{%- if data.sphinx_dir %}
+# generate html docs 
+{{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, False) }} {{ data.sphinx_dir }} html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+{%- endif %}
 
 %install
 {%- if data.python_versions|length > 0 %}
 # Must do the subpackages' install first because the scripts in /usr/bin are
-# overwritten with every setup.py install (and we want the python2 version
-# to be the default for now).
-{%- for pv in data.python_versions %}
-%py{{ pv }}_install
-{%- endfor -%}
+# overwritten with every setup.py install.
 {%- endif %}
-%py{{ data.base_python_version}}_install
+{%- for pv in data.python_versions + [data.base_python_version] %}
+%py{{ pv }}_install
+{% for script in data.scripts -%}
+cp %{buildroot}/%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv, True) }}
+{% endfor %}
+{%- endfor -%}
 {% if data.has_test_suite %}
 
 %check
@@ -68,12 +76,14 @@ rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
 {% for pv in [data.base_python_version] + data.python_versions %}
 %files -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }} 
-%doc {% if data.sphinx_dir %}html {% endif %}{{data.doc_files|join(' ') }}
-{%- if data.scripts %}
+%doc {{data.doc_files|join(' ') }}
 {%- for script in data.scripts %}
-%{_bindir}/{{ script|script_name_for_python_version(pv) }}
-{%- endfor %}
+{%- if pv == data.base_python_version %}
+%{_bindir}/{{ script }}
 {%- endif %}
+%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+%{_bindir}/{{ script|script_name_for_python_version(pv, True) }}
+{%- endfor %}
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
 {%- if pv == '3' -%}
@@ -101,6 +111,10 @@ rm -rf html/.{doctrees,buildinfo}
 {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {% endfor %}
+{%- if data.sphinx_dir %}
+%files -n python-%{pypi_name}-doc
+%doc html 
+{% endif %}
 %changelog
 * {{ data.changelog_date_packager }} - {{ data.version }}-1
 - Initial package.

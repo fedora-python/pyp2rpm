@@ -6,11 +6,17 @@ def name_for_python_version(name, version, default_number=False):
     return name_convertor.NameConvertor.rpm_versioned_name(name, version, default_number)
 
 
-def script_name_for_python_version(name, version):
-    if version == settings.DEFAULT_PYTHON_VERSION:
-        return name
+def script_name_for_python_version(name, version, minor=False, default_number=True):
+    if not default_number:
+        if version == settings.DEFAULT_PYTHON_VERSION:
+            return name
+    if minor:
+        if len(version) > 1:
+            return '{0}-{1}'.format(name, '.'.join(list(version)))
+        else:
+            return '{0}-%{{python{1}_version}}'.format(name, version)
     else:
-        return 'python{0}-{1}'.format(version, name)
+        return '{0}-{1}'.format(name, version[0])
 
 
 def sitedir_for_python_version(name, version, default_string='python2'):

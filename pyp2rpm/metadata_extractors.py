@@ -194,7 +194,7 @@ class LocalMetadataExtractor(object):
             else:
                 transformed.append(script[0:equal_sign].strip())
 
-        return map(os.path.basename, transformed)
+        return list(map(os.path.basename, transformed))
 
     @property
     def data_from_archive(self):
