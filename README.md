@@ -60,6 +60,12 @@ To run the unit tests, cd into the checked out directory and run::
 or run::
 
     python setup.py test
+    
+Recommended way to use:
+
+![alt tag](https://mcyprian.fedorapeople.org/pyp2rpm_guide2.gif 
+"Record of pyp2rpm usage")
+
 
 I will gladly accept any pull request or recommendation.
 With complex pull requests, please include unit tests in *pytest*, use *flexmock* if you need mocking.
