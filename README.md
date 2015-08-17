@@ -1,6 +1,4 @@
 
-
-
 ![Logo](https://rkuska.fedorapeople.org/pyp2rpm_large.png)  
 
 =======
@@ -11,21 +9,21 @@ Tool to convert a package from PyPI to RPM SPECFILE or to generate SRPM.
 Under heavy development, see TODO file for list of planned features.
 pyp2rpm currently ships with Fedora and Mageia specific templates.
 
-Usage:
+## Usage
 
-The most simple use case is running::
+The simplest use case is running:
 
     pyp2rpm package_name
 
 This downloads the package from PyPI and outputs the RPM SPECFILE.
 
-Or::
+Or:
 
     pyp2rpm package_name --srpm
 
 This downloads the package from PyPI and creates SRPM file.
 
-All of the options are (print this by running pyp2rpm -h::
+All of the options are (print this by running pyp2rpm -h):
 
     usage: pyp2rpm [-h] [-v VERSION] [-d SAVE_DIR] [-r RPM_NAME] 
                    [-t TEMPLATE] [-o DISTRO] [-b BASE_PYTHON] 
@@ -57,19 +55,21 @@ All of the options are (print this by running pyp2rpm -h::
       --proxy PROXY       Specify proxy in the form proxy.server:port.
 
 
-To run the unit tests, cd into the checked out directory and run::
+To run the unit tests, cd into the checked out directory and run:
 
     PYTHONPATH=$(pwd) py.test
 
-or run::
+or run:
 
     python setup.py test
-    
-Recommended way to use:
+
+
+## Example usage
 
 ![alt tag](https://mcyprian.fedorapeople.org/pyp2rpm_guide.gif 
 "Record of pyp2rpm usage")
 
+## Contributing
 
 I will gladly accept any pull request or recommendation.
 With complex pull requests, please include unit tests in *pytest*, use *flexmock* if you need mocking.
