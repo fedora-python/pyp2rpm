@@ -18,7 +18,6 @@ BuildArch:      noarch
 {%- for pv in data.python_versions %}
 {{ dependencies(data.build_deps, False, pv, data.base_python_version, False) }}
 {%- endfor %}
-{{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version) }}
 
 %description
 {{ data.description|truncate(400)|wordwrap }}
