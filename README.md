@@ -4,7 +4,7 @@
 pyp2rpm
 =======
 
-![Logo](https://rkuska.fedorapeople.org/pyp2rpm.png)
+![Logo](https://rkuska.fedorapeople.org/pyp2rpm.png)  
 Tool to convert a package from PyPI to RPM SPECFILE or to generate SRPM.
 Under heavy development, see TODO file for list of planned features.
 pyp2rpm currently ships with Fedora and Mageia specific templates.
