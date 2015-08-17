@@ -63,7 +63,7 @@ or run::
     
 Recommended way to use:
 
-![alt tag](https://mcyprian.fedorapeople.org/pyp2rpm_guide2.gif 
+![alt tag](https://mcyprian.fedorapeople.org/pyp2rpm_guide.gif 
 "Record of pyp2rpm usage")
 
 
