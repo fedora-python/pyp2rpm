@@ -71,7 +71,7 @@ or run:
 
 ## Contributing
 
-I will gladly accept any pull request or recommendation.
+We will gladly accept any pull request or recommendation.
 With complex pull requests, please include unit tests in *pytest*, use *flexmock* if you need mocking.
 
 pyp2rpm is licensed under MIT license.
