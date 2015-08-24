@@ -1,13 +1,17 @@
 import os
-from subprocess import Popen, PIPE
+import logging
+import locale
+from subprocess import Popen, PIPE, DEVNULL
 
 from pyp2rpm.settings import VENV_INTERPRETER
+
+logger = logging.getLogger(__name__)
 
 PYTHON_VERSION = VENV_INTERPRETER.split('/')[-1]
 
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
-    return [x for x in site_packages_list if not x.split('.')[-1] == 'dist-info']
+    return {x for x in site_packages_list if not x.split('.')[-1] == 'dist-info'}
     
 def deps_package_filter(deps_list, package):
     '''
@@ -19,16 +23,6 @@ def deps_package_filter(deps_list, package):
 def deps_wheel_filter(deps_list):
     return [x for x in deps_list if not x.split('==')[0] == 'wheel']
 
-def change_deps_format(deps_list):
-    '''
-    Changes format of runtime deps to match format of archive 
-    data runtime deps
-    '''
-    formated_deps = []
-    for dep in deps_list:
-        name, version = dep.split('==')
-    formated_deps.append(['Requires', name, '>=', version]) # TODO name_convertor
-    return formated_deps
 
 
 class DirsContent(object):
@@ -59,10 +53,13 @@ class DirsContent(object):
 
 class VirtualEnv(object):
 
-    def __init__(self, name, temp_dir):
+    def __init__(self, name, temp_dir, name_convertor):
         self.name = name
         self.temp_dir = temp_dir
-        self.create_virtualenv()
+        self.name_convertor = name_convertor
+        self.venv_install_error = False
+        if not self.create_virtualenv():
+            self.venv_install_error = True
         self.dirs_before_install = DirsContent()
         self.dirs_after_install = DirsContent()
         self.dirs_before_install.fill(self.temp_dir + '/venv/')
@@ -72,49 +69,81 @@ class VirtualEnv(object):
         '''
         Creates new virtualenv in temp_dir
         '''
-        proc = Popen(['virtualenv', '-p', VENV_INTERPRETER, self.temp_dir + '/venv/'], stdout=PIPE)
+        proc = Popen(['virtualenv', '-p', VENV_INTERPRETER, self.temp_dir + '/venv/'], 
+                stdout=DEVNULL, stderr=PIPE)
         proc.communicate()
         if proc.returncode != 0:
-            pass # TODO error handle output to log??
+            logger.error('{0}skipping venv matadata extraction.'.format(
+                proc.stderr.read().decode(locale.getpreferredencoding())))
+            return False
+        return True
 
     def install_package_to_venv(self):
         '''
         Installs package given as first argument to virtualenv
         '''
-        proc = Popen([self.temp_dir + "/venv/bin/pip", "install", "--egg", self.name], stdout=PIPE)
+        proc = Popen([self.temp_dir + "/venv/bin/pip", "install", "--egg", self.name], 
+                stdout=DEVNULL, stderr=PIPE)
         proc.communicate()
         if proc.returncode != 0:
-            pass # TODO error handle
+            logger.error('pip failed to install package: {0}skipping venv'
+                    ' metadata extraction.'.format(proc.stderr.read().decode(locale.getpreferredencoding())))
+            return False
+        return True
 
     def uninstall_deps_from_venv(self):
         '''
         Removes all dependencies from virtualenv to get only files of packages
         '''
-        proc = Popen([self.temp_dir + "/venv/bin/pip", "uninstall", "-y"] + self.installed_deps, stdout=PIPE)
+        proc = Popen([self.temp_dir + "/venv/bin/pip", "uninstall", "-y"] + self.installed_deps, 
+                stdout=DEVNULL, stderr=PIPE)
         proc.communicate()
         if proc.returncode != 0:
-            pass # TODO handle error
+            logger.error('{0}skipping venv metadata extraction.'.format(
+                proc.stderr.read().decode(locale.getpreferredencoding())))
+            return False
         self.dirs_after_install.fill(self.temp_dir + '/venv/')
+        return True
 
+    def change_deps_format(self, deps_list):
+        '''
+        Changes format of runtime deps to match format of archive 
+        data runtime deps
+        '''
+        if not deps_list:
+            return []
+        formated_deps = []
+        for dep in deps_list:
+            name, version = dep.split('==')      #TODO use version??
+        name = self.name_convertor.rpm_name(name.lower())
+        formated_deps.append(['Requires', name])
+        return formated_deps
+
+    @property
     def get_pip_freeze(self):
         '''
         Gets all packages installed to venv using pip freeze, filters package
         name and wheel to get real dependancies
         '''
         proc = Popen([self.temp_dir + '/venv/bin/pip', 'freeze'], stdout=PIPE)
-        pip_freeze = proc.stdout.read().decode('utf-8').splitlines()
+        pip_freeze = proc.stdout.read().decode(locale.getpreferredencoding()).splitlines()
         self.installed_deps = deps_package_filter(pip_freeze, self.name)
-        self.data['runtime_deps'] = change_deps_format(deps_wheel_filter(self.installed_deps))
+        return  self.change_deps_format(deps_wheel_filter(self.installed_deps))
 
+    @property
     def get_dirs_differance(self):
         diff =  self.dirs_after_install - self.dirs_before_install
-        self.data['site_packages'] = site_packages_filter(diff.lib_sitepackages)
-        self.data['scripts'] = list(diff.bindir)
+        return (site_packages_filter(diff.lib_sitepackages),
+                list(diff.bindir))
 
     @property
     def get_venv_data(self):
-        self.install_package_to_venv()
-        self.get_pip_freeze()
-        self.uninstall_deps_from_venv()
-        self.get_dirs_differance()
+        if self.venv_install_error:
+            return {}
+        if not self.install_package_to_venv():
+            return {}
+        self.data['runtime_deps'] = self.get_pip_freeze
+        if not self.uninstall_deps_from_venv():
+            return self.data
+        self.data['packages'], self.data['scripts'] = self.get_dirs_differance
         return self.data

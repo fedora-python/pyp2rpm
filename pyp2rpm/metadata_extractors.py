@@ -240,7 +240,7 @@ class LocalMetadataExtractor(object):
             dictionary containing metadata extracted from virtualenv
         """
         with tempfile.TemporaryDirectory() as temp_dir:
-            extractor = virtualenv.VirtualEnv(self.name, temp_dir)
+            extractor = virtualenv.VirtualEnv(self.name, temp_dir, self.name_convertor)
             return extractor.get_venv_data
 
     def extract_data(self):
@@ -327,7 +327,7 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
             if key != 'description':
                 print("{}   {}".format(key, value))
 
-        data.set_from(self.data_from_venv)
+        data.set_from(self.data_from_venv, update=True)
         
         print("\nAFTER VENV")
         for key, value in data.data.items():

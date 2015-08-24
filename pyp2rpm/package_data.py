@@ -38,9 +38,27 @@ class PackageData(object):
         if value is not None:
             self.data[name] = value
 
-    def set_from(self, data_dict):
+    def update_attr(self, name, value):
+        if name in self.data and value:
+            if name == 'runtime_deps': # data['runtime_deps'] is list of the lists
+                for item in value:
+                    if item not in self.data[name]:
+                        self.data[name].append(item)
+            elif isinstance(self.data[name], list):
+                if not value in self.data[name]:
+                    self.data[name] += value
+            elif isinstance(self.data[name], set):
+                self.data[name] |= value
+        elif value:
+            self.data[name] = value
+
+    def set_from(self, data_dict, update=False):
         for k, v in data_dict.items():
-            setattr(self, k, v)
+            if update:
+                self.update_attr(k, v)
+            else:
+                setattr(self, k, v)
+    
 
     def get_changelog_date_packager(self):
         """Returns part of the changelog entry, containing date and packager.
