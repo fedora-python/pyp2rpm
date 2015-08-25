@@ -12,3 +12,6 @@ class NoSuchPackageException(BaseException):
 
 class NoSuchSourceException(BaseException):
     pass
+
+class VirtualenvFailException(BaseException):
+    pass

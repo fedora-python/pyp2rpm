@@ -2,11 +2,10 @@ import logging
 import os
 import tempfile
 
-import sys
-
 from pyp2rpm import archive
 from pyp2rpm import virtualenv
 from pyp2rpm.dependency_parser import deps_from_pyp_format, deps_from_pydit_json
+from pyp2rpm.exceptions import VirtualenvFailException
 from pyp2rpm.package_data import PackageData
 from pyp2rpm import settings
 from pyp2rpm import utils
@@ -240,7 +239,11 @@ class LocalMetadataExtractor(object):
             dictionary containing metadata extracted from virtualenv
         """
         with tempfile.TemporaryDirectory() as temp_dir:
-            extractor = virtualenv.VirtualEnv(self.name, temp_dir, self.name_convertor)
+            try:
+                extractor = virtualenv.VirtualEnv(self.name, temp_dir, self.name_convertor)
+            except VirtualenvFailException:
+                logger.error("Skipping virtualenv metadata extraction")
+                return {}
             return extractor.get_venv_data
 
     def extract_data(self):
@@ -257,7 +260,7 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
-        # for example nose has attribute `packages` but instead of name listing the packages
+        # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
         if data.has_packages and not data.packages:
             data.packages.add(data.name)
@@ -322,20 +325,9 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
         with self.archive:
             data.set_from(self.data_from_archive)
 
-        print("AFTER ARCHIVE")
-        for key, value in data.data.items():
-            if key != 'description':
-                print("{}   {}".format(key, value))
-
         data.set_from(self.data_from_venv, update=True)
         
-        print("\nAFTER VENV")
-        for key, value in data.data.items():
-            if key != 'description':
-                print("{}   {}".format(key, value))
-
-        sys.exit(1)
-        # for example nose has attribute `packages` but instead of name listing the
+                # for example nose has attribute `packages` but instead of name listing the
         # packages is using function to find them, that makes data.packages an empty set
         if data.has_packages and not data.packages:
             data.packages.add(data.name)

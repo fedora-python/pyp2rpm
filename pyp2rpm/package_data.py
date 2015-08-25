@@ -8,6 +8,13 @@ from pyp2rpm import utils
 
 logger = logging.getLogger(__name__)
 
+def get_deps_names(runtime_deps_list):
+    '''
+    data['runtime_deps'] has format:
+    [['Requires', 'name', '>=', 'version'], ...]
+    this function creates list of lowercase deps names
+    '''
+    return [x[1].lower() for x in runtime_deps_list]
 
 class PackageData(object):
     credit_line = '# Created by pyp2rpm-{0}'.format(version.version)
@@ -40,13 +47,14 @@ class PackageData(object):
 
     def update_attr(self, name, value):
         if name in self.data and value:
-            if name == 'runtime_deps': # data['runtime_deps'] is list of the lists
+            if name == 'runtime_deps':  # compare lowercase names of deps
+                for item in value:
+                    if not item[1].lower() in get_deps_names(self.data[name]):
+                        self.data[name].append(item)
+            elif isinstance(self.data[name], list):
                 for item in value:
                     if item not in self.data[name]:
                         self.data[name].append(item)
-            elif isinstance(self.data[name], list):
-                if not value in self.data[name]:
-                    self.data[name] += value
             elif isinstance(self.data[name], set):
                 self.data[name] |= value
         elif value:
