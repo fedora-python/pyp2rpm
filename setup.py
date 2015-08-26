@@ -45,6 +45,7 @@ setup(
     install_requires=['Jinja2',
                       'setuptools',
                       'click',
+                      'virtualenv-api',
                       ],
     setup_requires=['setuptools',
                     'flexmock >= 0.9.3',

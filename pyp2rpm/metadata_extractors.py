@@ -326,8 +326,8 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
             data.set_from(self.data_from_archive)
 
         data.set_from(self.data_from_venv, update=True)
-        
-                # for example nose has attribute `packages` but instead of name listing the
+      
+        # for example nose has attribute `packages` but instead of name listing the
         # packages is using function to find them, that makes data.packages an empty set
         if data.has_packages and not data.packages:
             data.packages.add(data.name)

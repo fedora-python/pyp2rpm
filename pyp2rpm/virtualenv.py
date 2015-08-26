@@ -1,14 +1,14 @@
 import os
+import glob
 import logging
-import locale
-from subprocess import Popen, PIPE, DEVNULL
+from virtualenvapi.manage import VirtualEnvironment
+import virtualenvapi.exceptions as ve
 
-from pyp2rpm.settings import VENV_INTERPRETER
+from pyp2rpm.settings import DEFAULT_PYTHON_VERSION
 from pyp2rpm.exceptions import VirtualenvFailException
 
 logger = logging.getLogger(__name__)
 
-PYTHON_VERSION = VENV_INTERPRETER.split('/')[-1]
 
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
@@ -19,13 +19,13 @@ def deps_package_filter(deps_list, package):
     Removes package name from all installed packages to
     get dependencies
     '''
-    return [x for x in deps_list if not x.split('==')[0].lower() == package.lower()]
+    return [x for x in deps_list if not x[0].lower() == package.lower()]
 
 def deps_wheel_filter(deps_list):
     '''
     Removes wheel package from list of installed packages
     '''
-    return [x for x in deps_list if not x.split('==')[0] == 'wheel']
+    return [x for x in deps_list if not x[0] == 'wheel']
 
 
 class DirsContent(object):
@@ -42,7 +42,7 @@ class DirsContent(object):
         Scans content of directories
         '''
         self.bindir = set(os.listdir(path + 'bin/'))
-        self.lib_sitepackages = set(os.listdir(path + 'lib/' + PYTHON_VERSION + '/site-packages/'))
+        self.lib_sitepackages = set(os.listdir(glob.glob(path + 'lib/python?.?/site-packages/')[0]))
 
     def __sub__(self, other):
         '''
@@ -60,45 +60,39 @@ class VirtualEnv(object):
         self.name = name
         self.temp_dir = temp_dir
         self.name_convertor = name_convertor
-        self.create_virtualenv()
+        python_version = 'python' + DEFAULT_PYTHON_VERSION
+        self.env = VirtualEnvironment(temp_dir + '/venv', python=python_version)
+        try:
+            self.env.open_or_create()
+        except (ve.VirtualenvCreationException, ve.VirtualenvReadonlyException):
+            logger.error('Failed to create virtualenv')
+            raise VirtualenvFailException('Failed to create virtualenv')
         self.dirs_before_install = DirsContent()
         self.dirs_after_install = DirsContent()
-        self.dirs_before_install.fill(self.temp_dir + '/venv/')
+        self.dirs_before_install.fill(temp_dir + '/venv/')
         self.data = {}
-
-    def create_virtualenv(self):
-        '''
-        Creates new virtualenv in temp_dir
-        '''
-        proc = Popen(['virtualenv', '-p', VENV_INTERPRETER, self.temp_dir + '/venv/'],
-                     stdout=DEVNULL, stderr=PIPE)
-        stream_data = proc.communicate()
-        if proc.returncode != 0:
-            logger.error(stream_data[1].decode(locale.getpreferredencoding())[:-1])
-            raise VirtualenvFailException(
-                'Failed to create virtualenv in temp_dir {}'.format(self.temp_dir))
 
     def install_package_to_venv(self):
         '''
         Installs package given as first argument to virtualenv using pip
         '''
-        proc = Popen([self.temp_dir + "/venv/bin/pip", "install", "--egg", self.name],
-                     stdout=DEVNULL, stderr=PIPE)
-        stream_data = proc.communicate()
-        if proc.returncode != 0:
-            logger.error(stream_data[1].decode(locale.getpreferredencoding())[:-1])
+        try:
+            self.env.install(self.name)
+        except (ve.PackageInstallationException, ve.VirtualenvReadonlyException):
+            logger.error('Failed to install package to virtualenv')
             raise VirtualenvFailException('Failed to install package to virtualenv')
 
     def uninstall_deps_from_venv(self):
         '''
-        Removes all dependencies from virtualenv to get only site_pacakges file of package
+        Removes all dependencies from virtualenv and scans contents of
+        directories
         '''
-        proc = Popen([self.temp_dir + "/venv/bin/pip", "uninstall", "-y"] + self.installed_deps,
-                     stdout=DEVNULL, stderr=PIPE)
-        stream_data = proc.communicate()
-        if proc.returncode != 0:
-            logger.error(stream_data[1].decode(locale.getpreferredencoding())[:-1])
-            raise VirtualenvFailException('Failed to uninstall dependancies')
+        try:
+            for dep in self.installed_deps:
+                self.env.uninstall(dep)
+        except ve.PackageRemovalException:
+            logger.error('Failed to uninstall some of runtime_deps packages')
+            raise VirtualenvFailException('Failed to uninstall some of runtime_deps packages')
         self.dirs_after_install.fill(self.temp_dir + '/venv/')
 
     def change_deps_format(self, deps_list):
@@ -110,7 +104,7 @@ class VirtualEnv(object):
             return []
         formated_deps = []
         for dep in deps_list:
-            name, version = dep.split('==')      #TODO use version??
+            name = dep[0]
         name = self.name_convertor.rpm_name(name)
         formated_deps.append(['Requires', name])
         return formated_deps
@@ -118,15 +112,10 @@ class VirtualEnv(object):
     @property
     def get_pip_freeze(self):
         '''
-        Gets all packages installed to venv using pip freeze, filters package
-        name and wheel to get real dependancies
+        Gets all packages installed to venv, filters package name and wheel
+        to get real dependancies
         '''
-        proc = Popen([self.temp_dir + '/venv/bin/pip', 'freeze'], stdout=PIPE, stderr=PIPE)
-        stream_data = proc.communicate()
-        if proc.returncode != 0:
-            logger.error(stream_data[1].decode(locale.getpreferredencoding())[:-1])
-            return []
-        pip_freeze = stream_data[0].decode(locale.getpreferredencoding()).splitlines()
+        pip_freeze = self.env.installed_packages
         self.installed_deps = deps_package_filter(pip_freeze, self.name)
         runtime_deps = self.change_deps_format(deps_wheel_filter(self.installed_deps))
         logger.debug('Runtime dependancies from pip freeze: {0}.'.format(runtime_deps))
@@ -155,5 +144,4 @@ class VirtualEnv(object):
             self.data['packages'], self.data['scripts'] = self.get_dirs_differance
         except VirtualenvFailException:
             logger.error("Skipping virtualenv metadata extraction")
-        finally:
-            return self.data
+        return self.data
