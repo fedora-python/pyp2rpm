@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
-    return {x for x in site_packages_list if not x.split('.')[-1] == 'dist-info'}
+    return set([x for x in site_packages_list if not x.split('.')[-1] ==
+        'dist-info'])
 
 def deps_package_filter(deps_list, package):
     '''
