@@ -1,6 +1,7 @@
 import logging
 import os
 import tempfile
+import shutil
 
 from pyp2rpm import archive
 from pyp2rpm import virtualenv
@@ -238,13 +239,15 @@ class LocalMetadataExtractor(object):
         Returns:
             dictionary containing metadata extracted from virtualenv
         """
-        with tempfile.TemporaryDirectory() as temp_dir:
-            try:
-                extractor = virtualenv.VirtualEnv(self.name, temp_dir, self.name_convertor)
-            except VirtualenvFailException:
-                logger.error("Skipping virtualenv metadata extraction")
-                return {}
+        temp_dir = tempfile.mkdtemp()
+        try:
+            extractor = virtualenv.VirtualEnv(self.name, temp_dir, self.name_convertor)
             return extractor.get_venv_data
+        except VirtualenvFailException:
+             logger.error("Skipping virtualenv metadata extraction")
+             return {}
+        finally:
+            shutil.rmtree(temp_dir)
 
     def extract_data(self):
         """Extracts data from archive.
