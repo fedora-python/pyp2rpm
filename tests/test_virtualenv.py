@@ -40,17 +40,17 @@ class TestUtils(object):
 
 class TestDirsContent(object):
     @pytest.mark.parametrize(('before', 'after', 'expected'), [
-        ({'activate', 'pip'}, {'activate', 'pip', 'foo'}, {'foo'}),
-        ({'activate', 'pip'}, {'activate', 'pip'}, set()),
+        (set(['activate', 'pip']), set(['activate', 'pip', 'foo']), set(['foo'])),
+        (set(['activate', 'pip']), set(['activate', 'pip']), set()),
     ])
     def test_sub_bin(self, before, after, expected):
         result = DirsContent(bindir=after) - DirsContent(bindir=before)
         assert result.bindir == expected
      
     @pytest.mark.parametrize(('before', 'after', 'expected'), [
-        ({'setuptools', 'pip'}, {'setuptools', 'pip', 'foo'}, {'foo'}),
-        ({'wheel', 'pip'}, {'foo', 'pip'}, {'foo'}),
-        ({'wheel', 'pip'}, {'pip'}, set()),
+        (set(['setuptools', 'pip']), set(['setuptools', 'pip', 'foo']), set(['foo'])),
+        (set(['wheel', 'pip']), set(['foo', 'pip']), set(['foo'])),
+        (set(['wheel', 'pip']), set(['pip']), set()),
     ])
     def test_sub_sitepackages(self, before, after, expected):
         result = DirsContent(lib_sitepackages=after) - DirsContent(lib_sitepackages=before)
