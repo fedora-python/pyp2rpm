@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
-    return set([x for x in site_packages_list if not x.split('.')[-1] ==
-        'dist-info'])
+    return set([x for x in site_packages_list if not x.split('.')[-1] == 'dist-info'])
 
 def deps_package_filter(deps_list, package):
     '''
@@ -34,7 +33,7 @@ class DirsContent(object):
     Object to store and compare directory content before and
     after instalation of package.
     '''
-    def __init__(self, bindir=set(), lib_sitepackages=set()):
+    def __init__(self, bindir=None, lib_sitepackages=None):
         self.bindir = bindir
         self.lib_sitepackages = lib_sitepackages
 
@@ -49,6 +48,9 @@ class DirsContent(object):
         '''
         Makes differance of DirsContents objects attributes
         '''
+        if any([self.bindir == None, self.lib_sitepackages == None,
+                other.bindir == None, other.lib_sitepackages == None]):
+            raise ValueError("Some of the attributes is uninicialized")
         result = DirsContent(
             self.bindir - other.bindir,
             self.lib_sitepackages - other.lib_sitepackages)
@@ -71,6 +73,7 @@ class VirtualEnv(object):
         self.dirs_before_install = DirsContent()
         self.dirs_after_install = DirsContent()
         self.dirs_before_install.fill(temp_dir + '/venv/')
+        self.installed_deps = []
         self.data = {}
 
     def install_package_to_venv(self):
@@ -127,7 +130,10 @@ class VirtualEnv(object):
         Makes final versions of site_packages and scripts using DirsContent
         sub method and filters
         '''
-        diff = self.dirs_after_install - self.dirs_before_install
+        try:
+            diff = self.dirs_after_install - self.dirs_before_install
+        except ValueError:
+            raise VirtualenvFailException("Some of the DirsContent attributes is uninicialized")
         site_packages = site_packages_filter(diff.lib_sitepackages)
         logger.debug('Site_packages from files differance in virtualenv: {0}.'.format(
             site_packages))
