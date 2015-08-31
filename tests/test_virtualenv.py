@@ -70,3 +70,12 @@ class TestVirtualEnv(object):
         flexmock(NameConvertor).should_receive('rpm_name').replace_with(lambda
                 x: 'python-' + x)
         assert self.venv.change_deps_format(input) == expected
+
+    @pytest.mark.parametrize(('bin_diff', 'package_diff', 'expected'), [
+        (set(['foo']), set(['foo']), (set(['foo']), ['foo'])),
+        (set([]), set(['foo', 'foo2']), (set(['foo', 'foo2']), [])),
+        (set(['foo']), set([]), (set([]), ['foo'])),
+    ])
+    def test_get_dirs_defferance(self, bin_diff, package_diff, expected):
+        flexmock(DirsContent).should_receive('__sub__').and_return(DirsContent(bin_diff, package_diff))
+        assert self.venv.get_dirs_differance == expected
