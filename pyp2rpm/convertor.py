@@ -49,7 +49,9 @@ class Convertor(object):
         self.rpm_name = rpm_name
         self.proxy = proxy
         self.pypi = True
-        if os.path.exists(self.package):
+        suffix = os.path.splitext(self.package)[1]
+        if os.path.exists(self.package) and suffix in settings.ARCHIVE_SUFFIXES\
+            and not os.path.isdir(self.package):
             self.pypi = False
 
 
