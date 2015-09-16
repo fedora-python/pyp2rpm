@@ -1,3 +1,10 @@
+2.0.0
+* Added default python3 subpackage, testing tools tox and travis
+* Small change in command line switches
+* Improved documentation
+* Updated fedora template to comply with newest packaging guidelines
+* Old template renamed to fedora_subdirs.spec
+
 1.1.2
 * Use python2-devel instead of python-devel
 * Support Python2.6
