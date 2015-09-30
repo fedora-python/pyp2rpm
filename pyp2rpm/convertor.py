@@ -41,7 +41,8 @@ class Convertor(object):
         self.version = version
         self.save_dir = save_dir
         self.base_python_version = base_python_version
-        self.python_versions = python_versions
+        self.python_versions = [v for v in python_versions
+                                if not v == base_python_version]
         self.template = template
         self.name_convertor = name_convertor.NameConvertor(distro)
         if not self.template.endswith('.spec'):
@@ -73,8 +74,10 @@ class Convertor(object):
 
         self.local_file = local_file
         data = self.metadata_extractor.extract_data()
-        data.base_python_version = self.base_python_version
-        data.python_versions = self.python_versions
+        if self.base_python_version:
+            data.base_python_version = self.base_python_version
+        if self.python_versions:
+            data.python_versions = self.python_versions
         jinja_env = jinja2.Environment(loader=jinja2.ChoiceLoader([
             jinja2.FileSystemLoader(['/']),
             jinja2.PackageLoader('pyp2rpm', 'templates'), ]))

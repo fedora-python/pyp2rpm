@@ -65,14 +65,6 @@ def main(package, v, d, r, proxy, srpm, p, b, o, t):
     PACKAGE             Provide PyPI name of the package or path to compressed source file."""
     register_file_log_handler('/tmp/pyp2rpm-{0}.log'.format(getpass.getuser()))
 
-    if not p and not b:
-        p = settings.DEFAULT_ADDITIONAL_VERSION
-    if not b:
-        b = settings.DEFAULT_PYTHON_VERSION
-    
-    p = list(p)
-    if b in p:
-        p.remove(b)
 
     if srpm:
         register_console_log_handler()
