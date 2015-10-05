@@ -87,6 +87,20 @@ class TestMetadataExtractor(object):
         with self.e[i].archive:
             assert self.e[i].sphinx_dir == expected
 
+    @pytest.mark.parametrize(('i', 'expected'), [
+        (0, ['2', ['3']]),
+        (1, ['3', []]),
+        (2, ['2', ['3']]),
+        (3, ['2', ['3']]),
+        (5, ['2', ['3']]),
+        (6, ['2', ['3']]),
+    ])
+    def test_extract_versions(self, i, expected):
+        with self.e[i].archive:
+            pkgdata = self.e[i].extract_data()
+            assert [pkgdata.data['base_python_version'],
+                    pkgdata.data['python_versions']] == expected
+
 class TestPypiMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
     client = flexmock(
