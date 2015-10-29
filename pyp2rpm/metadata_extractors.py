@@ -329,6 +329,7 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
             data.set_from(self.data_from_archive)
 
         data.set_from(self.data_from_venv, update=True)
+        setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
       
         # for example nose has attribute `packages` but instead of name listing the
         # packages is using function to find them, that makes data.packages an empty set

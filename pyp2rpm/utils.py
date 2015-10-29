@@ -3,6 +3,7 @@ import logging
 import os
 import subprocess
 import sys
+import re
 
 from pyp2rpm import settings
 
@@ -87,3 +88,8 @@ def build_srpm(specfile, save_dir):
                 specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg
+
+def remove_major_minor_suffix(scripts):
+    """Checks if executables already contain a "-MAJOR.MINOR" suffix. """
+    minor_major_regex = re.compile("-\d.?\d?$")
+    return [x for x in scripts if not minor_major_regex.search(x)]

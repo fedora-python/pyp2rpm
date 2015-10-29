@@ -109,7 +109,7 @@ class VirtualEnv(object):
         formated_deps = []
         for dep in deps_list:
             name = self.name_convertor.rpm_name(dep[0])
-            formated_deps.append(['Requires', name])
+            formated_deps.append(['Requires', name.lower()])
         return formated_deps
 
     @property
