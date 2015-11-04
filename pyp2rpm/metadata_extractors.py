@@ -2,6 +2,7 @@ import logging
 import os
 import tempfile
 import shutil
+import itertools
 
 from pyp2rpm import archive
 from pyp2rpm import virtualenv
@@ -330,7 +331,11 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
 
         data.set_from(self.data_from_venv, update=True)
         setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
-      
+        
+        data.data['build_deps'] += utils.runtime_to_build(data.data['runtime_deps'])
+        setattr(data, "build_deps", utils.unique_deps(data.data['build_deps']))
+        # Append all runtime deps to build deps and unique the result
+
         # for example nose has attribute `packages` but instead of name listing the
         # packages is using function to find them, that makes data.packages an empty set
         if data.has_packages and not data.packages:
