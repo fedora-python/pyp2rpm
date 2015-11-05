@@ -70,10 +70,13 @@ class PypiDownloader(PackageGetter):
     @property
     def url(self):
         urls = self.client.release_urls(self.name, self.version)
-        for url in urls:
-            if url['url'].endswith(".tar.gz"):
-                return url['url']
-        return urls[0]['url']
+        if urls:
+            for url in urls:
+                if url['url'].endswith(".tar.gz"):
+                    return url['url']
+            return urls[0]['url']
+        return self.client.release_data(self.name, self.version)['release_url'] 
+
 
     def get(self):
         """Downloads the package from PyPI.
