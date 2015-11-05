@@ -13,10 +13,6 @@ use_with=True) %}
 {%- if python_version != base_python_version and use_with %}
 %if %{?with_python{{ python_version }}}
 {%- endif %}
-{%- if not runtime %}
-BuildRequires:  {{ 'python2-devel'|name_for_python_version(python_version) }}
-BuildRequires:  {{ 'python-setuptools'|name_for_python_version(python_version) }}
-{%- endif %}
 {%- for dep in deps -%}
 {{ one_dep(dep, python_version) }}
 {%- endfor %}

@@ -1,8 +1,13 @@
 import logging
 import os
+import tempfile
+import shutil
+import itertools
 
 from pyp2rpm import archive
+from pyp2rpm import virtualenv
 from pyp2rpm.dependency_parser import deps_from_pyp_format, deps_from_pydit_json
+from pyp2rpm.exceptions import VirtualenvFailException
 from pyp2rpm.package_data import PackageData
 from pyp2rpm import settings
 from pyp2rpm import utils
@@ -209,10 +214,14 @@ class LocalMetadataExtractor(object):
         archive_data['has_pth'] = self.has_pth
         if self.archive.is_egg:
             archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
-            archive_data['build_deps'] = self.build_deps_from_egg_info
+            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                          ['BuildRequires', 'python-setuptools']]\
+                                         + self.build_deps_from_egg_info
         else:
             archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
-            archive_data['build_deps'] = self.build_deps_from_setup_py
+            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                          ['BuildRequires', 'python-setuptools']]\
+                                         + self.build_deps_from_setup_py
 
         sphinx_dir = self.sphinx_dir
         if sphinx_dir:
@@ -229,6 +238,24 @@ class LocalMetadataExtractor(object):
 
         return archive_data
 
+    @property
+    def data_from_venv(self):
+        """Returns all metadata extractable from virtualenv object.
+        Returns:
+            dictionary containing metadata extracted from virtualenv
+        """
+        temp_dir = tempfile.mkdtemp()
+        try:
+            extractor = virtualenv.VirtualEnv(self.name, temp_dir,
+                                              self.name_convertor, 
+                                              self.base_python_version)
+            return extractor.get_venv_data
+        except VirtualenvFailException:
+             logger.error("Skipping virtualenv metadata extraction")
+             return {}
+        finally:
+            shutil.rmtree(temp_dir)
+
     def extract_data(self):
         """Extracts data from archive.
         Returns:
@@ -243,7 +270,9 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
-        # for example nose has attribute `packages` but instead of name listing the packages
+        data.data['build_deps'] += utils.runtime_to_build(data.data['runtime_deps'])
+        setattr(data, "build_deps", utils.unique_deps(data.data['build_deps']))
+        # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
         if data.has_packages and not data.packages:
             data.packages.add(data.name)
@@ -254,10 +283,11 @@ class LocalMetadataExtractor(object):
 class PypiMetadataExtractor(LocalMetadataExtractor):
 
     def __init__(self, local_file, name, name_convertor, version, client,
-                 rpm_file=None):
+                 rpm_file=None, base_python_version=settings.DEFAULT_PYTHON_VERSION):
         super(PypiMetadataExtractor, self).__init__(
             local_file, name, name_convertor, version, rpm_file)
         self.client = client
+        self.base_python_version = base_python_version
 
     def extract_data(self):
         """Extracts data from PyPI and archive.
@@ -307,6 +337,13 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
 
         with self.archive:
             data.set_from(self.data_from_archive)
+
+        data.set_from(self.data_from_venv, update=True)
+        setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
+        
+        data.data['build_deps'] += utils.runtime_to_build(data.data['runtime_deps'])
+        setattr(data, "build_deps", utils.unique_deps(data.data['build_deps']))
+        # Append all runtime deps to build deps and unique the result
 
         # for example nose has attribute `packages` but instead of name listing the
         # packages is using function to find them, that makes data.packages an empty set
@@ -381,7 +418,9 @@ class _WheelMetadataExtractor(PypiMetadataExtractor):
         archive_data['doc_files'] = self.doc_files
         archive_data['has_pth'] = self.has_pth
         archive_data['runtime_deps'] = self.runtime_deps
-        archive_data['build_deps'] = self.build_deps
+        archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                      ['BuildRequires', 'python-setuptools']]\
+                                     + self.build_deps
         sphinx_dir = self.sphinx_dir
         if sphinx_dir:
             archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])

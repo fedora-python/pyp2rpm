@@ -3,6 +3,9 @@ import logging
 import os
 import subprocess
 import sys
+import re
+import copy
+import itertools
 
 from pyp2rpm import settings
 
@@ -87,3 +90,21 @@ def build_srpm(specfile, save_dir):
                 specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg
+
+def remove_major_minor_suffix(scripts):
+    """Checks if executables already contain a "-MAJOR.MINOR" suffix. """
+    minor_major_regex = re.compile("-\d.?\d?$")
+    return [x for x in scripts if not minor_major_regex.search(x)]
+
+def runtime_to_build(runtime_deps):
+    """Adds all runtime deps to build deps"""
+    build_deps = copy.deepcopy(runtime_deps)
+    for dep in build_deps:
+        if len(dep) > 0:
+            dep[0] = 'BuildRequires'
+    return build_deps
+
+def unique_deps(deps):
+    """Remove duplicities from deps list of the lists"""
+    deps.sort()
+    return list(k for k, _ in itertools.groupby(deps))

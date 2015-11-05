@@ -49,7 +49,9 @@ class Convertor(object):
         self.rpm_name = rpm_name
         self.proxy = proxy
         self.pypi = True
-        if os.path.exists(self.package):
+        suffix = os.path.splitext(self.package)[1]
+        if os.path.exists(self.package) and suffix in settings.ARCHIVE_SUFFIXES\
+            and not os.path.isdir(self.package):
             self.pypi = False
 
 
@@ -157,7 +159,8 @@ class Convertor(object):
                     self.name_convertor,
                     self.version,
                     self.client,
-                    self.rpm_name)
+                    self.rpm_name,
+                    self.base_python_version)
             else:
                 logger.info('Getting metadata from local file.')
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(
