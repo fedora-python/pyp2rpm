@@ -5,7 +5,7 @@ import tempfile
 from flexmock import flexmock
 from pyp2rpm.virtualenv import *
 from pyp2rpm.name_convertor import NameConvertor
-from pyp2rpm.settings import DEFAULT_DISTRO
+from pyp2rpm.settings import DEFAULT_DISTRO, DEFAULT_PYTHON_VERSION
 
 class TestUtils(object):
     @pytest.mark.parametrize(('input', 'expected'), [
@@ -70,7 +70,9 @@ class TestDirsContent(object):
 class TestVirtualEnv(object):
     def setup_method(self, method):
         self.temp_dir = tempfile.mkdtemp()
-        self.venv = VirtualEnv(None, self.temp_dir, NameConvertor(DEFAULT_DISTRO))
+        self.venv = VirtualEnv(None, self.temp_dir,
+                               NameConvertor(DEFAULT_DISTRO),
+                               DEFAULT_PYTHON_VERSION)
 
     def teardown_method(self, method):
         shutil.rmtree(self.temp_dir)

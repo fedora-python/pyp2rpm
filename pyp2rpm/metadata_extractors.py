@@ -246,7 +246,9 @@ class LocalMetadataExtractor(object):
         """
         temp_dir = tempfile.mkdtemp()
         try:
-            extractor = virtualenv.VirtualEnv(self.name, temp_dir, self.name_convertor)
+            extractor = virtualenv.VirtualEnv(self.name, temp_dir,
+                                              self.name_convertor, 
+                                              self.base_python_version)
             return extractor.get_venv_data
         except VirtualenvFailException:
              logger.error("Skipping virtualenv metadata extraction")
@@ -281,10 +283,11 @@ class LocalMetadataExtractor(object):
 class PypiMetadataExtractor(LocalMetadataExtractor):
 
     def __init__(self, local_file, name, name_convertor, version, client,
-                 rpm_file=None):
+                 rpm_file=None, base_python_version=settings.DEFAULT_PYTHON_VERSION):
         super(PypiMetadataExtractor, self).__init__(
             local_file, name, name_convertor, version, rpm_file)
         self.client = client
+        self.base_python_version = base_python_version
 
     def extract_data(self):
         """Extracts data from PyPI and archive.

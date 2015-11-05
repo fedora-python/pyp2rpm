@@ -4,7 +4,6 @@ import logging
 from virtualenvapi.manage import VirtualEnvironment
 import virtualenvapi.exceptions as ve
 
-from pyp2rpm.settings import DEFAULT_PYTHON_VERSION
 from pyp2rpm.exceptions import VirtualenvFailException
 
 logger = logging.getLogger(__name__)
@@ -64,11 +63,11 @@ class DirsContent(object):
 
 class VirtualEnv(object):
 
-    def __init__(self, name, temp_dir, name_convertor):
+    def __init__(self, name, temp_dir, name_convertor, base_python_version):
         self.name = name
         self.temp_dir = temp_dir
         self.name_convertor = name_convertor
-        python_version = 'python' + DEFAULT_PYTHON_VERSION
+        python_version = 'python' + base_python_version
         self.env = VirtualEnvironment(temp_dir + '/venv', python=python_version)
         try:
             self.env.open_or_create()

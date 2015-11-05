@@ -159,7 +159,8 @@ class Convertor(object):
                     self.name_convertor,
                     self.version,
                     self.client,
-                    self.rpm_name)
+                    self.rpm_name,
+                    self.base_python_version)
             else:
                 logger.info('Getting metadata from local file.')
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(
