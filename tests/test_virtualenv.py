@@ -36,6 +36,16 @@ class TestUtils(object):
     def test_deps_wheel_filter(self, input, expected):
         assert deps_wheel_filter(input) == expected
 
+    @pytest.mark.parametrize(('input', 'expected'), [
+        (['script', 'script2'], ['script', 'script2']),
+        (['script.py', 'script2'], ['script.py', 'script2']),
+        (['script.pyc', 'script2'], ['script2']),
+        (['script.pyc'], []),
+        ([], []),
+    ])
+    def test_scripts_filter(self, input, expected):
+        assert scripts_filter(input) == expected
+
 
 class TestDirsContent(object):
     @pytest.mark.parametrize(('before', 'after', 'expected'), [

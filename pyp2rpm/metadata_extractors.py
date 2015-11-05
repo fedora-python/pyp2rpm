@@ -214,10 +214,14 @@ class LocalMetadataExtractor(object):
         archive_data['has_pth'] = self.has_pth
         if self.archive.is_egg:
             archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
-            archive_data['build_deps'] = self.build_deps_from_egg_info
+            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                          ['BuildRequires', 'python-setuptools']]\
+                                         + self.build_deps_from_egg_info
         else:
             archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
-            archive_data['build_deps'] = self.build_deps_from_setup_py
+            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                          ['BuildRequires', 'python-setuptools']]\
+                                         + self.build_deps_from_setup_py
 
         sphinx_dir = self.sphinx_dir
         if sphinx_dir:
@@ -264,6 +268,8 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
+        data.data['build_deps'] += utils.runtime_to_build(data.data['runtime_deps'])
+        setattr(data, "build_deps", utils.unique_deps(data.data['build_deps']))
         # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
         if data.has_packages and not data.packages:
@@ -409,7 +415,9 @@ class _WheelMetadataExtractor(PypiMetadataExtractor):
         archive_data['doc_files'] = self.doc_files
         archive_data['has_pth'] = self.has_pth
         archive_data['runtime_deps'] = self.runtime_deps
-        archive_data['build_deps'] = self.build_deps
+        archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                      ['BuildRequires', 'python-setuptools']]\
+                                     + self.build_deps
         sphinx_dir = self.sphinx_dir
         if sphinx_dir:
             archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])

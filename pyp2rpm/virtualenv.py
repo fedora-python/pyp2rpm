@@ -27,6 +27,11 @@ def deps_wheel_filter(deps_list):
     '''
     return [x for x in deps_list if not x[0] == 'wheel']
 
+def scripts_filter(scripts):
+    '''
+    Removes .pyc files from scripts
+    '''
+    return [x for x in scripts if not x.split('.')[-1] == 'pyc']
 
 class DirsContent(object):
     '''
@@ -137,7 +142,7 @@ class VirtualEnv(object):
         site_packages = site_packages_filter(diff.lib_sitepackages)
         logger.debug('Site_packages from files differance in virtualenv: {0}.'.format(
             site_packages))
-        scripts = list(diff.bindir)
+        scripts = scripts_filter(list(diff.bindir))
         logger.debug('Scripts from files differance in virtualenv: {0}.'.format(scripts))
         return (site_packages, scripts)
 
