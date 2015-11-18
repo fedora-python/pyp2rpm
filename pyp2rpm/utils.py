@@ -53,6 +53,22 @@ def license_from_trove(trove):
                 license.append(settings.TROVE_LICENSES[stripped])
     return ' and '.join(license)
 
+def versions_from_trove(trove):
+    """Finds out python version from list of trove classifiers.
+    Args:
+        trove: list of trove classifiers
+    Returns:
+        python version string
+    """
+    versions = set()
+    for classifier in trove:
+        if 'Programming Language :: Python ::' in classifier:
+            ver = classifier.split('::')[-1]
+            major = ver.split('.')[0].strip()
+            if major:
+                versions.add(major)
+    return sorted(versions)
+
 
 def build_srpm(specfile, save_dir):
     """Builds a srpm from given specfile using rpmbuild.

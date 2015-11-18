@@ -165,6 +165,14 @@ class LocalMetadataExtractor(object):
         return utils.license_from_trove(self.archive.get_content_of_file('EGG-INFO/PKG-INFO', True).splitlines())
 
     @property
+    def versions_from_archive(self):
+        if self.local_file.endswith('.egg'):
+            trove = self.archive.get_content_of_file('EGG-INFO/PKG-INFO', True).splitlines()
+        else:
+            trove = self.archive.find_list_argument('classifiers')
+        return utils.versions_from_trove(trove)
+
+    @property
     def has_packages(self):
         return self.archive.has_argument('packages')
 
@@ -235,6 +243,11 @@ class LocalMetadataExtractor(object):
         archive_data['license'] = self.license_from_archive
         archive_data['packages'] = self.packages
         archive_data['has_test_suite'] = self.has_test_suite
+        py_vers = self.versions_from_archive
+        archive_data['base_python_version'] = py_vers[0] if py_vers \
+                                        else settings.DEFAULT_PYTHON_VERSION
+        archive_data['python_versions'] = py_vers[1:] if py_vers \
+                                        else [settings.DEFAULT_ADDITIONAL_VERSION]
 
         return archive_data
 

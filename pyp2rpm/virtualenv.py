@@ -5,6 +5,7 @@ from virtualenvapi.manage import VirtualEnvironment
 import virtualenvapi.exceptions as ve
 
 from pyp2rpm.exceptions import VirtualenvFailException
+from pyp2rpm.settings import DEFAULT_PYTHON_VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,8 @@ class VirtualEnv(object):
         self.name = name
         self.temp_dir = temp_dir
         self.name_convertor = name_convertor
+        if not base_python_version:
+            base_python_version = DEFAULT_PYTHON_VERSION
         python_version = 'python' + base_python_version
         self.env = VirtualEnvironment(temp_dir + '/venv', python=python_version)
         try:
