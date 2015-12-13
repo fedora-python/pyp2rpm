@@ -70,7 +70,7 @@ class Archive(object):
 
     @property
     def is_tar(self):
-        return self.suffix in ['.tar', '.gz', '.bz2']
+        return self.suffix in ['.tar', '.gz', '.bz2', '.tgz']
 
     @property
     def is_egg(self):
