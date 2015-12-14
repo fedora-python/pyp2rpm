@@ -20,13 +20,16 @@ class LocalMetadataExtractor(object):
     """Base class for metadata extractors"""
 
     def __init__(self, local_file, name, name_convertor, version,
-                 rpm_name=None):
+                 rpm_name=None, venv=True,
+                 base_python_version=settings.DEFAULT_PYTHON_VERSION):
         self.local_file = local_file
         self.archive = archive.Archive(local_file)
         self.name = name
         self.name_convertor = name_convertor
         self.version = version
         self.rpm_name = rpm_name
+        self.venv = venv
+        self.base_python_version=base_python_version
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
@@ -257,6 +260,9 @@ class LocalMetadataExtractor(object):
         Returns:
             dictionary containing metadata extracted from virtualenv
         """
+        if not self.venv:
+            return {}
+
         temp_dir = tempfile.mkdtemp()
         try:
             extractor = virtualenv.VirtualEnv(self.name, temp_dir,
@@ -283,6 +289,7 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
+        data.set_from(self.data_from_venv, update=True)
         data.data['build_deps'] += utils.runtime_to_build(data.data['runtime_deps'])
         setattr(data, "build_deps", utils.unique_deps(data.data['build_deps']))
         # for example nose has attribute `packages` but instead of name listing the pacakges
@@ -296,13 +303,12 @@ class LocalMetadataExtractor(object):
 class PypiMetadataExtractor(LocalMetadataExtractor):
 
     def __init__(self, local_file, name, name_convertor, version, client,
-                 rpm_file=None, base_python_version=settings.DEFAULT_PYTHON_VERSION, 
-                 venv=True):
+                 rpm_file=None, venv=True,
+                 base_python_version=settings.DEFAULT_PYTHON_VERSION):
         super(PypiMetadataExtractor, self).__init__(
-            local_file, name, name_convertor, version, rpm_file)
+            local_file, name, name_convertor, version, rpm_file, venv,
+            base_python_version)
         self.client = client
-        self.base_python_version = base_python_version
-        self.venv = venv
 
     def extract_data(self):
         """Extracts data from PyPI and archive.
@@ -353,8 +359,7 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
         with self.archive:
             data.set_from(self.data_from_archive)
         
-        if self.venv:
-            data.set_from(self.data_from_venv, update=True)
+        data.set_from(self.data_from_venv, update=True)
 
         setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
         
