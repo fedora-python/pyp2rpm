@@ -118,8 +118,8 @@ class Convertor(object):
                 self._getter = package_getters.LocalFileGetter(
                     self.package,
                     self.save_dir)
-                logger.debug('{0} doesnt exists as local file trying PyPI.'.format(self.package))
             else:
+                logger.debug('{0} doesnt exists as local file trying PyPI.'.format(self.package))
                 self._getter = package_getters.PypiDownloader(
                     self.client,
                     self.package,
