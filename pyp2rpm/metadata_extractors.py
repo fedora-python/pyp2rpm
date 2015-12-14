@@ -296,11 +296,13 @@ class LocalMetadataExtractor(object):
 class PypiMetadataExtractor(LocalMetadataExtractor):
 
     def __init__(self, local_file, name, name_convertor, version, client,
-                 rpm_file=None, base_python_version=settings.DEFAULT_PYTHON_VERSION):
+                 rpm_file=None, base_python_version=settings.DEFAULT_PYTHON_VERSION, 
+                 venv=True):
         super(PypiMetadataExtractor, self).__init__(
             local_file, name, name_convertor, version, rpm_file)
         self.client = client
         self.base_python_version = base_python_version
+        self.venv = venv
 
     def extract_data(self):
         """Extracts data from PyPI and archive.
@@ -350,8 +352,10 @@ class PypiMetadataExtractor(LocalMetadataExtractor):
 
         with self.archive:
             data.set_from(self.data_from_archive)
+        
+        if self.venv:
+            data.set_from(self.data_from_venv, update=True)
 
-        data.set_from(self.data_from_venv, update=True)
         setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
         
         data.data['build_deps'] += utils.runtime_to_build(data.data['runtime_deps'])

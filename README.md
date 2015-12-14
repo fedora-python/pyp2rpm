@@ -53,6 +53,8 @@ All of the options are (print this by running pyp2rpm -h):
       --srpm              When used pyp2rpm will produce srpm instead of printing 
                           specfile into stdout.
       --proxy PROXY       Specify proxy in the form proxy.server:port.
+      --venv / --no-venv  Enable / disable metadata extraction from virtualenv
+
 
 
 To run the unit tests, cd into the checked out directory and run:

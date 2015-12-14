@@ -36,7 +36,7 @@ class Convertor(object):
                  distro=settings.DEFAULT_DISTRO,
                  base_python_version=settings.DEFAULT_PYTHON_VERSION,
                  python_versions=[],
-                 rpm_name=None, proxy=None):
+                 rpm_name=None, proxy=None, venv=True):
         self.package = package
         self.version = version
         self.save_dir = save_dir
@@ -48,6 +48,7 @@ class Convertor(object):
             self.template = '{0}.spec'.format(self.template)
         self.rpm_name = rpm_name
         self.proxy = proxy
+        self.venv = venv
         self.pypi = True
         suffix = os.path.splitext(self.package)[1]
         if os.path.exists(self.package) and suffix in settings.ARCHIVE_SUFFIXES\
@@ -166,7 +167,8 @@ class Convertor(object):
                     self.version,
                     self.client,
                     self.rpm_name,
-                    self.base_python_version)
+                    self.base_python_version,
+                    self.venv)
             else:
                 logger.info('Getting metadata from local file.')
                 self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(
