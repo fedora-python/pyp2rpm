@@ -5,7 +5,13 @@ python:
 - '2.7'
 - '3.4'
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/virtualenv/python$TRAVIS_PYTHON_VERSION/lib/python$TRAVIS_PYTHON_VERSION/site-packages
+    - $HOME/virtualenv/python$TRAVIS_PYTHON_VERSION/bin
+
 install:
-    - pip install tox tox-travis
+    - pip install --upgrade tox tox-travis
 
 script: tox
