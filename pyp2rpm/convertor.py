@@ -75,7 +75,7 @@ class Convertor(object):
         self.name, self.version = self.getter.get_name_version()
 
         self.local_file = local_file
-        data = self.metadata_extractor.extract_data()
+        data = self.metadata_extractor.extract_data(self.client)
         
         if self.base_python_version or self.python_versions:
             data.base_python_version = self.base_python_version
@@ -160,12 +160,11 @@ class Convertor(object):
         if not hasattr(self, '_metadata_extractor'):
             if self.pypi:
                 logger.info('Getting metadata from PyPI.')
-                self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(
+                self._metadata_extractor = metadata_extractors.SetupPyMetadataExtractor(
                     self.local_file,
                     self.name,
                     self.name_convertor,
                     self.version,
-                    self.client,
                     self.rpm_name,
                     self.venv,
                     self.base_python_version)

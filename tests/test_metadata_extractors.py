@@ -6,9 +6,13 @@ from zipfile import ZipFile
 import pytest
 
 from flexmock import flexmock
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 
 from pyp2rpm.archive import Archive
-from pyp2rpm.metadata_extractors import *
+from pyp2rpm.metadata_extractors import WheelMetadataExtractor, SetupPyMetadataExtractor
 from pyp2rpm.name_convertor import NameConvertor
 from pyp2rpm import settings
 
@@ -21,13 +25,13 @@ class TestMetadataExtractor(object):
         # create fresh extractors for every test
 
         self.nc = NameConvertor('fedora')
-        self.e = [LocalMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
-                  LocalMetadataExtractor('{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3'),
-                  LocalMetadataExtractor('{0}restsh-0.1.tar.gz'.format(self.td_dir), 'restsh', self.nc, '0.1'),
-                  LocalMetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3'),
-                  LocalMetadataExtractor('{0}unextractable-1.tar'.format(self.td_dir), 'unextractable', self.nc, '1'),
-                  LocalMetadataExtractor('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
-                  LocalMetadataExtractor('{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
+        self.e = [SetupPyMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
+                  SetupPyMetadataExtractor('{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3'),
+                  SetupPyMetadataExtractor('{0}restsh-0.1.tar.gz'.format(self.td_dir), 'restsh', self.nc, '0.1'),
+                  SetupPyMetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3'),
+                  SetupPyMetadataExtractor('{0}unextractable-1.tar'.format(self.td_dir), 'unextractable', self.nc, '1'),
+                  SetupPyMetadataExtractor('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
+                  SetupPyMetadataExtractor('{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
                  ]
 
     @pytest.mark.parametrize(('lst', 'expected'), [
@@ -101,7 +105,7 @@ class TestMetadataExtractor(object):
             assert [pkgdata.data['base_python_version'],
                     pkgdata.data['python_versions']] == expected
 
-class TestPypiMetadataExtractor(object):
+class TestSetupPyMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
     client = flexmock(
         release_urls = lambda n, v: [{'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
@@ -122,7 +126,7 @@ class TestPypiMetadataExtractor(object):
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
         # we will only test getting stuff from the client => pass spam as file
-        self.e = PypiMetadataExtractor('spam', 'restsh', self.nc, '0.1', self.client)
+        self.e = SetupPyMetadataExtractor('spam', 'restsh', self.nc, '0.1')
 
     @pytest.mark.parametrize(('what', 'expected'), [
         ('description', 'UNKNOWN'),
@@ -132,16 +136,16 @@ class TestPypiMetadataExtractor(object):
         ('summary', 'A simple rest shell client')
     ])
     def test_extract(self, what, expected):
-        data = self.e.extract_data()
+        data = self.e.extract_data(self.client)
         assert getattr(data, what) == expected
 
-class TestLocalMetadataExtractor(object):
+class TestSetupPyMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
 
     def setup_method(self, method): # test for non-egg and egg
         self.nc = NameConvertor('fedora')
-        self.e = [LocalMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
-                  LocalMetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3')
+        self.e = [SetupPyMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
+                  SetupPyMetadataExtractor('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3')
                  ]
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
@@ -151,4 +155,37 @@ class TestLocalMetadataExtractor(object):
     ])
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()
+        assert getattr(data, what) == expected
+
+class TestWheelMetadataExtractor(object):
+    td_dir = '{0}/test_data/'.format(tests_dir)
+    client = flexmock(
+        release_urls = lambda n, v: [{'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
+                                      'url': 'http://pypi.python.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
+        release_data = lambda n, v: {'description': 'UNKNOWN',
+                                     'release_url': 'http://pypi.python.org/pypi/restsh/0.1',
+                                     'classifiers': ['Development Status :: 4 - Beta',
+                                                     'Intended Audience :: Developers',
+                                                     'License :: OSI Approved :: BSD License',
+                                                     'Operating System :: OS Independent'
+                                                     ],
+                                     'license': 'BSD',
+                                     'summary': 'A simple rest shell client',
+                                     'spam': 'eggs and beans'
+                                    }
+    )
+
+    def setup_method(self, method):
+        self.nc = NameConvertor('fedora')
+        self.e = (WheelMetadataExtractor('{0}setuptools-19.6-py2.py3-none-any.whl'.format(
+            self.td_dir), 'setuptools', self.nc, '19.6.2', self.client))
+
+    @pytest.mark.parametrize(('what', 'expected'), [
+        ('doc_files', set(['DESCRIPTION.rst'])),
+        ('has_test_suite', True),
+        ('py_modules', set(['_markerlib', 'pkg_resources', 'setuptools'])),
+        ('runtime_deps', [['Requires', 'python-certifi', '==', '2015.11.20']])
+    ])
+    def test_extract(self, what, expected):
+        data = self.e.extract_data()
         assert getattr(data, what) == expected

@@ -139,6 +139,21 @@ class Archive(object):
 
         return None
 
+    def extract_file(self, name, full_path=False, directory="."):
+        """Extract a member from the archive to the specified working directory.
+        Behaviour of name and pull_path is the same as in function get_content_of_file.
+        """
+        if self.handle:
+            for member in self.handle.getmembers():
+                if (full_path and member.name == name or 
+                    not full_path and os.path.basename(member.name) == name):
+                    self.handle.extract(member, path=directory)   # TODO handle KeyError exception
+
+    def extract_all(self, directory=".", members=None):
+        """Extract all member from the archive to the specified working directory."""
+        if self.handle:
+            self.handle.extractall(path=directory, members=members) 
+
     def has_file_with_suffix(self, suffixes):  # TODO: maybe implement this using get_files_re
         """Finds out if there is a file with one of suffixes in the archive.
         Args:
@@ -306,12 +321,19 @@ class Archive(object):
 
     @property
     def json_wheel_metadata(self):
-        """Simple getter that get content of pydist.json file in .whl archive
+        """Simple getter that get content of metadata.json file in .whl archive
         Returns:
-            metadata from pydist.json in json format
+            metadata from metadata.json in json format
         """
+        try:
+            json_file = json.loads(self.get_content_of_file('metadata.json'))
+        except TypeError:
+            json_file = json.loads(self.get_content_of_file('pydist.json'))
+        return json_file
 
-        return json.loads(self.get_content_of_file('pydist.json'))
+    def wheel_description(self):
+        """Get content of DESCRIPTION file in .whl archive"""
+        return self.get_content_of_file('DESCRIPTION.rst')
 
     @property
     def record(self):
@@ -325,7 +347,7 @@ class Archive(object):
         if self.get_content_of_file('RECORD'):
             lines = self.get_content_of_file('RECORD').splitlines()
             for line in lines:
-                if 'dist-info' in line:
+                if 'dist-info' in line or not '/' in line:
                     continue
                 elif '.data/scripts' in line:
                     script = line.split(',', 1)[0]

@@ -31,7 +31,7 @@ class TestConvertor(object):
             c.getter
 
     @pytest.mark.parametrize(('sf', 'expected'), [
-        ('spam', PypiMetadataExtractor),
+        ('spam', SetupPyMetadataExtractor),
         ('%s/test_data/restsh-0.1.tar.gz' % tests_dir, LocalMetadataExtractor)
     ])
     def test_get_metadata_extractor(self, sf, expected):
