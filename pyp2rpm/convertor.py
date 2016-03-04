@@ -157,27 +157,15 @@ class Convertor(object):
             raise AttributeError(
                 'local_file attribute must be set before calling metadata_extractor')
 
-        if not hasattr(self, '_metadata_extractor'):
-            if self.pypi:
-                logger.info('Getting metadata from PyPI.')
-                self._metadata_extractor = metadata_extractors.SetupPyMetadataExtractor(
-                    self.local_file,
-                    self.name,
-                    self.name_convertor,
-                    self.version,
-                    self.rpm_name,
-                    self.venv,
-                    self.base_python_version)
-            else:
-                logger.info('Getting metadata from local file.')
-                self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(
-                    self.local_file,
-                    self.name,
-                    self.name_convertor,
-                    self.version,
-                    self.rpm_name,
-                    self.venv,
-                    self.base_python_version)
+        logger.info('Getting metadata from setup.py using DistMetadataExtractor.')
+        self._metadata_extractor = metadata_extractors.DistMetadataExtractor(
+            self.local_file,
+            self.name,
+            self.name_convertor,
+            self.version,
+            self.rpm_name,
+            self.venv,
+           self.base_python_version)
 
         return self._metadata_extractor
 

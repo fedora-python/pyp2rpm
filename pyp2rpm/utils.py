@@ -19,6 +19,21 @@ if PY3:
 else:
     str_classes = (str, unicode)
 
+class ChangeDir(object):
+    """Class to store current directory change cwd to new_path 
+    and return to previous path at exit, must be run using with statement.
+    """
+    def __init__(self, new_path):
+        self.primary_path = os.getcwd()
+        self.new_path = new_path
+
+    def __enter__(self):
+        os.chdir(self.new_path)
+        return self
+
+    def __exit__(self, type, value, traceback): #TODO handle exception
+        os.chdir(self.primary_path)
+
 
 def memoize_by_args(func):
     """Memoizes return value of a func based on args."""
@@ -67,7 +82,7 @@ def versions_from_trove(trove):
             major = ver.split('.')[0].strip()
             if major:
                 versions.add(major)
-    return sorted(versions)
+    return sorted([v for v in versions if v.replace('.', '', 1).isdigit()])
 
 
 def build_srpm(specfile, save_dir):
@@ -124,3 +139,4 @@ def unique_deps(deps):
     """Remove duplicities from deps list of the lists"""
     deps.sort()
     return list(k for k, _ in itertools.groupby(deps))
+

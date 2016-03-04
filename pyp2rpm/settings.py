@@ -14,6 +14,13 @@ DOC_FILES_RE = [r'readme.+', r'licens.+', r'copying.+']
 SPHINX_DIR_RE = r'[^/]+/doc.?'
 PYPI_URL = 'http://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'home_page', 'requires']
+DEFAULT_PREP = '%autosetup -n %{upstream_name}-%{unmangled_version}'
+DEFAULT_BUILD = '%{py2_build}'
+DEFAULT_INSTALL = '%{py3_install \--record=.python3-installfiles.txt}'
+DEFAULT_CLEAN = 'rm -rf $RPM_BUILD_ROOT'
+
+
+
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
                   'License :: OSI Approved :: Apache Software License': 'ASL %(TODO: version)s',
                   'License :: OSI Approved :: Apple Public Source License': 'APSL %(TODO: version)s',

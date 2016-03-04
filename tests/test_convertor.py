@@ -29,13 +29,3 @@ class TestConvertor(object):
         with pytest.raises(expected):
             c = Convertor(package = sf)
             c.getter
-
-    @pytest.mark.parametrize(('sf', 'expected'), [
-        ('spam', SetupPyMetadataExtractor),
-        ('%s/test_data/restsh-0.1.tar.gz' % tests_dir, LocalMetadataExtractor)
-    ])
-    def test_get_metadata_extractor(self, sf, expected):
-        c = Convertor(package = sf)
-        c.local_file = 'spamfile'
-        c.name = 'spam'
-        assert isinstance(c.metadata_extractor, expected)

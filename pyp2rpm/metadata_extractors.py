@@ -3,6 +3,7 @@ import os
 import tempfile
 import shutil
 import itertools
+import glob
 from abc import ABCMeta
 try:
     import xmlrpclib
@@ -16,6 +17,7 @@ from pyp2rpm.exceptions import VirtualenvFailException
 from pyp2rpm.package_data import PackageData
 from pyp2rpm import settings
 from pyp2rpm import utils
+from pyp2rpm import bdist_fedora
 
 logger = logging.getLogger(__name__)
 
@@ -326,29 +328,26 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         """
         archive_data = {}
 
-        if not self.metadata_extension: # Extracting these data only if wheel archive is missing
-            archive_data['license'] = self.license_from_archive
-            archive_data['has_pth'] = self.has_pth
-            archive_data['scripts'] = self.scripts
-            archive_data['has_extension'] = self.has_extension
+        archive_data['license'] = self.license_from_archive
+        archive_data['has_pth'] = self.has_pth
+        archive_data['scripts'] = self.scripts
+        archive_data['has_extension'] = self.has_extension
 
-            if self.archive.is_egg:
-                archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
-                archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
-                                              ['BuildRequires', 'python-setuptools']]
-            else:
-                archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
-                archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
-                                              ['BuildRequires', 'python-setuptools']]\
-                                             + self.build_deps_from_setup_py
-
-            py_vers = self.versions_from_archive
-            archive_data['base_python_version'] = py_vers[0] if py_vers \
-                                            else settings.DEFAULT_PYTHON_VERSION
-            archive_data['python_versions'] = py_vers[1:] if py_vers \
-                                            else [settings.DEFAULT_ADDITIONAL_VERSION]
+        if self.archive.is_egg:
+            archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
+            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                          ['BuildRequires', 'python-setuptools']]
         else:
-            archive_data['build_deps'] = []
+            archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
+            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
+                                          ['BuildRequires', 'python-setuptools']]\
+                                         + self.build_deps_from_setup_py
+
+        py_vers = self.versions_from_archive
+        archive_data['base_python_version'] = py_vers[0] if py_vers \
+                                        else settings.DEFAULT_PYTHON_VERSION
+        archive_data['python_versions'] = py_vers[1:] if py_vers \
+                                            else [settings.DEFAULT_ADDITIONAL_VERSION]
 
         archive_data['doc_files'] = self.doc_files
         archive_data['py_modules'] = self.py_modules
@@ -363,6 +362,91 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             archive_data['build_deps'].append(
                 ['BuildRequires', 'python-sphinx'])
 
+        return archive_data
+
+
+class DistMetadataExtractor(SetupPyMetadataExtractor):
+    """Metadata extractor based on bdist_rpm distutils command"""
+
+    def __init__(self, *args, **kwargs):
+        super(DistMetadataExtractor, self).__init__(*args, **kwargs)
+       
+        temp_dir = tempfile.mkdtemp()
+        try:
+            with self.archive as a:
+                a.extract_all(directory=temp_dir)
+                try:
+                    setup_py = glob.glob(temp_dir + "/{}*/".format(self.name) + 'setup.py')[0]
+                except IndexError:
+                    print("setup.py not found; maybe local_file is not proper source archive")
+                    logger.error("setup.py not found, metadata extraction failed.")
+                    raise SystemExit(3)
+
+                with utils.ChangeDir(os.path.dirname(setup_py)):
+                    bdist_fedora.run_setup(setup_py, 'bdist_rpm', '--source',
+                                                     '--quiet', '--dist-dir', os.getcwd())
+
+                self.distribution = bdist_fedora.__builtins__['distribution']
+        finally:
+            shutil.rmtree(temp_dir)
+    
+    @property
+    def license_from_archive(self):
+        return  self.distribution.get_license()
+
+    @property
+    def runtime_deps_from_setup_py(self):
+        return self.name_convert_deps_list(deps_from_pyp_format(self.distribution.run_requires))
+
+    @property
+    def build_deps_from_setup_py(self):
+        return self.name_convert_deps_list(deps_from_pyp_format(self.distribution.build_requires))
+    
+    @property
+    def conflicts(self):
+        return self.name_convert_deps_list(self.distribution.conflicts)
+ 
+    @property
+    def versions_from_archive(self):
+        return utils.versions_from_trove(self.distribution.metadata.classifiers)
+    
+    @property
+    def long_description(self):
+        """Shorten description on first newline after approx 10 lines"""
+        if not self.distribution.metadata.long_description:
+            return ''
+        cut = self.distribution.metadata.long_description.find('\n', 80*8)
+        if cut > -1:
+            return self.distribution.metadata.long_description[:cut] + '\n...'
+        else:
+            return self.distribution.metadata.long_description
+
+
+    @property
+    def data_from_archive(self):
+        """Returns all metadata extractable from distutils distribution object
+        Returns:
+            dictionary containing extracted metadata
+        """
+        archive_data = super(DistMetadataExtractor, self).data_from_archive
+        
+        if not self.distribution.force_arch:
+            if not self.distribution.has_ext_modules():
+                archive_data['build_arch'] = 'noarch'
+        else:
+            archive_data['build_arch'] = self.distribution.force_arch
+
+        archive_data['description'] = self.long_description
+        archive_data['summary'] = self.distribution.get_description()
+        archive_data['url'] = self.distribution.get_url()
+        archive_data['distribution'] = self.distribution.distribution_name
+        archive_data['icon'] = getattr(self.distribution, 'icon', None)
+
+        archive_data['prep_cmd'] = getattr(self.distribution, 'prep', settings.DEFAULT_PREP)
+        archive_data['build_cmd'] = getattr(self.distribution, 'build', settings.DEFAULT_BUILD)
+        archive_data['install_cmd'] = getattr(self.distribution, 'install', settings.DEFAULT_INSTALL)
+        archive_data['clean_cmd'] = getattr(self.distribution, 'clean', settings.DEFAULT_CLEAN)
+                        
         return archive_data
 
 
@@ -471,3 +555,6 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
         archive_data['description'] = self.description
         return archive_data
+
+
+
