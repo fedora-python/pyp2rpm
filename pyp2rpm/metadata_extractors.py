@@ -15,9 +15,10 @@ from pyp2rpm import virtualenv
 from pyp2rpm.dependency_parser import deps_from_pyp_format, deps_from_pydit_json
 from pyp2rpm.exceptions import VirtualenvFailException
 from pyp2rpm.package_data import PackageData
+from pyp2rpm.logger import LoggerWriter
 from pyp2rpm import settings
 from pyp2rpm import utils
-from pyp2rpm import bdist_fedora
+from pyp2rpm import extract_distribution
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,6 @@ def pypi_metadata_extension(extraction_fce):
                 if release_url['url'].endswith("tar.gz"):
                     url = release_url['url']
                     md5_digest = release_url['md5_digest']
-            if url == '':
                 url = release_urls[0]['url']
                 md5_digest = release_urls[0]['md5_digest']
         elif release_data:
@@ -381,12 +381,13 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
                     print("setup.py not found; maybe local_file is not proper source archive")
                     logger.error("setup.py not found, metadata extraction failed.")
                     raise SystemExit(3)
-
+                
                 with utils.ChangeDir(os.path.dirname(setup_py)):
-                    bdist_fedora.run_setup(setup_py, 'bdist_rpm', '--source',
-                                                     '--quiet', '--dist-dir', os.getcwd())
+                    with utils.RedirectStdStreams(stdout=os.devnull,
+                                                  stderr=LoggerWriter(logger.warning)):
+                        extract_distribution.run_setup(setup_py, 'bdist_rpm')
 
-                self.distribution = bdist_fedora.__builtins__['distribution']
+                self.distribution = extract_distribution.__builtins__['distribution']
         finally:
             shutil.rmtree(temp_dir)
     
@@ -438,8 +439,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
 
         archive_data['description'] = self.long_description
         archive_data['summary'] = self.distribution.get_description()
-        archive_data['url'] = self.distribution.get_url()
-        archive_data['distribution'] = self.distribution.distribution_name
+        archive_data['home_page'] = self.distribution.get_url()
         archive_data['icon'] = getattr(self.distribution, 'icon', None)
 
         archive_data['prep_cmd'] = getattr(self.distribution, 'prep', settings.DEFAULT_PREP)
@@ -465,7 +465,7 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
                                                      .get('python.details', {})
                                                      .get('document_names', {}).values()])
     @property
-    def url(self):
+    def home_page(self):
         urls = [url for url in self.json_metadata.get('extensions', {})
                                                  .get('python.details', {})
                                                  .get('project_urls', {}).values()]
@@ -536,6 +536,7 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
         archive_data = {}
         archive_data['license'] = self.license
         archive_data['summary'] = self.summary
+        archive_data['home_page'] = self.home_page
         archive_data['doc_files'] = self.doc_files
         archive_data['has_pth'] = self.has_pth
         archive_data['runtime_deps'] = utils.unique_deps(self.runtime_deps)

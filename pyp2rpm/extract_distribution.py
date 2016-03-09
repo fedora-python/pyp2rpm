@@ -4,22 +4,24 @@ distributions) to be able of automatic rebuild in Fedora's COPR and
 fit better to Fedora packaging Guidlines.
 """
 
-import distutils.command
 import distutils.command.bdist_rpm
-from distutils.debug import DEBUG
 import glob
 import re
 import time
-import pprint
 import sys
+import os.path
+import runpy
 
 bdist_rpm_orig = distutils.command.bdist_rpm.bdist_rpm
 
 
-class bdist_fedora (bdist_rpm_orig):
-    def finalize_package_data (self):
+class extract_distribution(bdist_rpm_orig):
 
-        bdist_rpm_orig.finalize_package_data(self)
+    def finalize_package_data (self):
+        """This method is executed before run method. Only distribution attribute is
+        stored to class attribute during metadata extraction so all interesting data must
+        be added to distribution here.
+        """
         self.distribution.force_arch = self.force_arch
 
         self.distribution.build_requires = self.build_requires or (
@@ -53,9 +55,6 @@ class bdist_fedora (bdist_rpm_orig):
     def run(self):
         __builtins__['distribution'] = self.distribution
 
-    def _get_license(self):
-        return self.distribution.get_license()
-
     @staticmethod
     def _list(var):
         if var is None:
@@ -64,14 +63,10 @@ class bdist_fedora (bdist_rpm_orig):
             raise DistutilsOptionError("{} is not a list".format(var))
         return var 
 
-distutils.command.bdist_rpm.bdist_rpm = bdist_fedora
+# extract_distribution command is executed instead of bdist_rpm thanks to this assignment
+distutils.command.bdist_rpm.bdist_rpm = extract_distribution
 
 def run_setup(setup, *args):
-    import os.path
-    import runpy
-    import sys
-    import pprint
-
     dirname = os.path.dirname(setup)
     filename = os.path.basename(setup)
     if filename.endswith('.py'):

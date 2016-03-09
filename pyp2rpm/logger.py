@@ -9,6 +9,19 @@ logger.setLevel(logging.DEBUG)
 file_formatter = logging.Formatter(u'%(asctime)s::%(name)s::%(levelname)s::%(message)s')
 console_formatter = logging.Formatter(u'%(levelname)s  %(message)s')
 
+class LoggerWriter(object):
+    """Allows to redirect stream to logger"""
+    def __init__(self, level):
+        self.level = level
+        self.errors = None
+
+    def write(self, message):
+        if message != '\n':
+            self.level(message)
+
+    def flush(self):
+        self.level(sys.stderr)
+
 
 class LevelFilter(logging.Filter):
     def __init__(self, level):

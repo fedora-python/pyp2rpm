@@ -19,6 +19,7 @@ if PY3:
 else:
     str_classes = (str, unicode)
 
+
 class ChangeDir(object):
     """Class to store current directory change cwd to new_path 
     and return to previous path at exit, must be run using with statement.
@@ -33,6 +34,32 @@ class ChangeDir(object):
 
     def __exit__(self, type, value, traceback): #TODO handle exception
         os.chdir(self.primary_path)
+
+
+class RedirectStdStreams(object):
+    """Temporarily redirect stdout/stderr"""
+    def __init__(self, stdout=None, stderr=None):
+        if isinstance(stdout, str):
+            stdout = self.stdout_descriptor = open(stdout, "w")
+        if isinstance(stderr, str):
+            stderr = self.stdout_descriptor = open(stderr, "w")
+
+        self._stdout = stdout or sys.stdout
+        self._stderr = stderr or sys.stderr
+
+    def __enter__(self):
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+        self.old_stdout.flush(); self.old_stderr.flush()
+        sys.stdout, sys.stderr = self._stdout, self._stderr
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._stdout.flush(); self._stderr.flush()
+        sys.stdout = self.old_stdout
+        sys.stderr = self.old_stderr
+        if hasattr(self, 'stdout_descriptor'):
+            self.stdout_descriptor.close()
+        if hasattr(self, 'stderr_descriptor'):
+            self.stderr_descriptor.close()
 
 
 def memoize_by_args(func):
