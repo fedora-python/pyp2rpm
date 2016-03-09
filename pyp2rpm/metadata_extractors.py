@@ -50,12 +50,17 @@ def pypi_metadata_extension(extraction_fce):
         md5_digest = None
     
         if len(release_urls):
+            zip_url = zip_md5 = ''
             for release_url in release_urls:
                 if release_url['url'].endswith("tar.gz"):
                     url = release_url['url']
                     md5_digest = release_url['md5_digest']
-                url = release_urls[0]['url']
-                md5_digest = release_urls[0]['md5_digest']
+                if release_url['url'].endswith(".zip"):
+                    zip_url = release_url['url']
+                    zip_md5 = release_url['md5_digest']
+            if url == '':
+                url = zip_url or release_urls[0]['url']
+                md5_digest = zip_md5 or release_urls[0]['md5_digest']
         elif release_data:
             url = release_data['download_url']
         

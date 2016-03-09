@@ -81,10 +81,13 @@ class PypiDownloader(PackageGetter):
         urls = self.client.release_urls(self.name, self.version)
         if not wheel:
             if urls:
+                zip_url = ''
                 for url in urls:
                     if url['url'].endswith((".tar.gz")):
                         return url['url']
-                return urls[0]['url']
+                    if url['url'].endswith((".zip")):
+                        zip_url = url['url']
+                return zip_url or urls[0]['url']
             return self.client.release_data(self.name, self.version)['release_url'] 
         else:
             for url in urls:

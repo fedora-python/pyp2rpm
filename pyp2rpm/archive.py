@@ -36,6 +36,30 @@ def flat_list(lst):
     else:
         yield lst
 
+     
+class ZipWrapper(object):
+    """wrapps ZipFile to behave like TarFile"""
+
+    def __init__(self, obj):
+        if not isinstance(obj, ZipFile):
+            raise TypeError("Object must be ZipFile, type of {} is {}".format(
+                obj, type(obj)))
+        self._wrapped_obj = obj
+    
+    def __getattr__(self, attr):
+        if attr in self.__dict__:
+            return getattr(self, attr)
+        return getattr(self._wrapped_obj, attr)
+
+    def getmembers(self, *args, **kwargs):
+        return self._wrapped_obj.infolist(*args, **kwargs)
+
+    def extractfile(self, *args, **kwargs):
+        return self._wrapped_obj.open(*args, **kwargs)
+
+    def open(self, *args, **kwargs):
+        return self._wrapped_obj(*args, **kwargs)
+
 
 class Archive(object):
 
@@ -46,23 +70,12 @@ class Archive(object):
     with archive as a:
         a.get_contents_of_file('spam.py')
     """
-    monkey_patched_zip = False
-
-    @classmethod
-    def monkey_patch_zip(cls):
-        if not cls.monkey_patched_zip:
-            # monkey patch ZipFile to behave like TarFile
-            ZipFile.getmembers = ZipFile.infolist
-            ZipFile.extractfile = ZipFile.open
-            ZipFile.open = ZipFile
-            ZipInfo.name = ZipInfo.filename
-            cls.monkey_patched_zip = True
 
     def __init__(self, local_file):
         self.file = local_file
         self.name, self.suffix = os.path.splitext(local_file)
         self.handle = None
-        self.monkey_patch_zip()
+        ZipInfo.name = ZipInfo.filename
 
     @property
     def is_zip(self):
@@ -82,7 +95,10 @@ class Archive(object):
 
     def open(self):
         try:
-            self.handle = self.extractor_cls.open(self.file)
+            if self.extractor_cls == ZipFile:
+                self.handle = ZipWrapper(self.extractor_cls(self.file))
+            else:
+                self.handle = self.extractor_cls.open(self.file)
         except BaseException:
             self.handle = None
             logger.error('Failed to open archive: {0}.'.format(self.file), exc_info=True)
