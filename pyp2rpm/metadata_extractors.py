@@ -381,7 +381,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
             with self.archive as a:
                 a.extract_all(directory=temp_dir)
                 try:
-                    setup_py = glob.glob(temp_dir + "/{}*/".format(self.name) + 'setup.py')[0]
+                    setup_py = glob.glob(temp_dir + "/{0}*/".format(self.name) + 'setup.py')[0]
                 except IndexError:
                     print("setup.py not found; maybe local_file is not proper source archive")
                     logger.error("setup.py not found, metadata extraction failed.")
