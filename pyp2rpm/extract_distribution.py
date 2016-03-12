@@ -53,6 +53,9 @@ class extract_distribution(bdist_rpm_orig):
             if val:
                 setattr(self.distribution, rpm_opt, val) 
 
+        if self.distribution.metadata.classifiers is None:
+            self.distribution.metadata.classifiers = []
+
     def run(self):
         extract_distribution.class_distribution = self.distribution
 
