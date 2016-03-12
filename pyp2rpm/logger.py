@@ -16,11 +16,11 @@ class LoggerWriter(object):
         self.errors = None
 
     def write(self, message):
-        if message != '\n':
-            self.level(message)
+        if message not in ('\n', ''):
+            self.level(message.rstrip('\n'))
 
     def flush(self):
-        self.level(sys.stderr)
+        pass
 
 
 class LevelFilter(logging.Filter):

@@ -388,7 +388,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
                     raise SystemExit(3)
                 
                 with utils.ChangeDir(os.path.dirname(setup_py)):
-                    with utils.RedirectStdStreams(stdout=os.devnull,
+                    with utils.RedirectStdStreams(stdout=LoggerWriter(logger.debug),
                                                   stderr=LoggerWriter(logger.warning)):
                         extract_distribution.run_setup(setup_py, 'bdist_rpm')
 
