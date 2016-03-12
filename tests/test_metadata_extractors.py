@@ -180,16 +180,20 @@ class TestDistMetadataExtractor(object):
 
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
-        self.e = (DistMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum',
-            self.nc, '0.9.0'))
+        self.e = [DistMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir), 'plumbum', self.nc, '0.9.0'),
+                  DistMetadataExtractor('{0}coverage_pth-0.0.1.tar.gz'.format(self.td_dir),
+                      'coverage_pth', self.nc, '0.0.1')]
 
-    @pytest.mark.parametrize(('what', 'expected'), [
-        ('doc_files', ['README.rst', 'LICENSE']),
-        ('has_test_suite', False),
-        ('license', 'MIT'),
-        ('build_cmd', '%{py2_build}'),
-        ('runtime_deps', [['Requires', 'python-six']])
+
+    @pytest.mark.parametrize(('i', 'what', 'expected'), [
+        (0, 'doc_files', ['README.rst', 'LICENSE']),
+        (0, 'has_test_suite', False),
+        (0, 'license', 'MIT'),
+        (0, 'build_cmd', '%{py2_build}'),
+        (0, 'runtime_deps', [['Requires', 'python-six']]),
+        (1, 'runtime_deps', [['Requires', 'python-coverage']]),
+        (1, 'python_versions', ['3'])
     ])
-    def test_extract(self, what, expected):
-        data = self.e.extract_data()
+    def test_extract(self, i, what, expected):
+        data = self.e[i].extract_data()
         assert getattr(data, what) == expected
