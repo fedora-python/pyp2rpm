@@ -392,7 +392,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
                                                   stderr=LoggerWriter(logger.warning)):
                         extract_distribution.run_setup(setup_py, 'bdist_rpm')
 
-                self.distribution = extract_distribution.__builtins__['distribution']
+                self.distribution = extract_distribution.extract_distribution.class_distribution
         finally:
             shutil.rmtree(temp_dir)
     

@@ -16,6 +16,7 @@ bdist_rpm_orig = distutils.command.bdist_rpm.bdist_rpm
 
 
 class extract_distribution(bdist_rpm_orig):
+    class_distribution = None
 
     def finalize_package_data (self):
         """This method is executed before run method. Only distribution attribute is
@@ -53,7 +54,7 @@ class extract_distribution(bdist_rpm_orig):
                 setattr(self.distribution, rpm_opt, val) 
 
     def run(self):
-        __builtins__['distribution'] = self.distribution
+        extract_distribution.class_distribution = self.distribution
 
     @staticmethod
     def _list(var):
