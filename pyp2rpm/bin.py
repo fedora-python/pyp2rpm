@@ -37,6 +37,10 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               default=[],
               multiple=True,
               metavar='PYTHON_VERSIONS')
+@click.option('-s',
+              help='Spec file ~/rpmbuild/SPECS/python-package_name.spec will be created (default: '
+              'prints spec file to stdout).',
+              is_flag=True)
 @click.option('--srpm',
               help='When used pyp2rpm will produce srpm instead of printing specfile into stdout.',
               is_flag=True)
@@ -60,7 +64,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               help='Enable / disable metadata extraction from virtualenv')
 @click.argument('package', nargs=1)
 
-def main(package, v, d, r, proxy, srpm, p, b, o, t, venv):
+def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
     """Convert PyPI package to RPM specfile or SRPM.
 
     \b
@@ -95,8 +99,7 @@ def main(package, v, d, r, proxy, srpm, p, b, o, t, venv):
     converted = convertor.convert()
     logger.debug('Convertor: {0} succesfully converted.'.format(convertor))
 
-    if srpm:
-
+    if srpm or s:
         if r:
             spec_name = r + '.spec'
         else:
@@ -113,12 +116,13 @@ def main(package, v, d, r, proxy, srpm, p, b, o, t, venv):
         with open(spec_path, 'w') as f:
             f.write(converted)
             logger.info('Specfile saved at: {0}.'.format(spec_path))
-
-        msg = utils.build_srpm(spec_path, d)
-        if utils.PY3:
-            logger.info(msg.decode('utf-8'))
-        else:
-            logger.info(msg)
+        
+        if srpm:
+            msg = utils.build_srpm(spec_path, d)
+            if utils.PY3:
+                logger.info(msg.decode('utf-8'))
+            else:
+                logger.info(msg)
 
     else:
         logger.debug('Printing specfile to stdout.')
