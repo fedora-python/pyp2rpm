@@ -131,9 +131,9 @@ class LocalMetadataExtractor(object):
                                               self.name_convertor, 
                                               self.base_python_version)
             return extractor.get_venv_data
-        except VirtualenvFailException:
-             logger.error("Skipping virtualenv metadata extraction")
-             return {}
+        except VirtualenvFailException as e:
+            logger.error("{}, skipping virtualenv metadata extraction".format(e))
+            return {}
         finally:
             shutil.rmtree(temp_dir)
     
