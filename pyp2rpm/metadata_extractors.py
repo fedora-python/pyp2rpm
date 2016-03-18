@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def pypi_metadata_extension(extraction_fce):
-    """Extracts data from PyPI and appends them to data returned from 
+    """Extracts data from PyPI and appends them to data returned from
     given data extraction method.
     """
 
@@ -42,14 +42,14 @@ def pypi_metadata_extension(extraction_fce):
                 client, self.name, self.version))
             logger.warn('Some kind of error while communicating with client: {0}.'.format(
                 client), exc_info=True)
-            failure_dict = {'md5' : 'FAILED TO EXTRACT FROM PYPI',
-                            'url' : 'FAILED TO EXTRACT FROM PYPI'}
+            failure_dict = {'md5': 'FAILED TO EXTRACT FROM PYPI',
+                            'url': 'FAILED TO EXTRACT FROM PYPI'}
             data.set_from(failure_dict, update=True)
             return data
-    
+
         url = ''
         md5_digest = None
-    
+
         if len(release_urls):
             zip_url = zip_md5 = ''
             for release_url in release_urls:
@@ -64,22 +64,22 @@ def pypi_metadata_extension(extraction_fce):
                 md5_digest = zip_md5 or release_urls[0]['md5_digest']
         elif release_data:
             url = release_data['download_url']
-        
-        data_dict = {'md5' : md5_digest, 'url' : url}
-    
+
+        data_dict = {'md5': md5_digest, 'url': url}
+
         for data_field in settings.PYPI_USABLE_DATA:
-            data_dict[data_field]  = release_data.get(data_field, '')
-        
+            data_dict[data_field] = release_data.get(data_field, '')
+
         # we usually get better license representation from trove classifiers
         data_dict["license"] = utils.license_from_trove(release_data.get('classifiers', ''))
         data.set_from(data_dict, update=True)
         return data
     return inner
-    
+
 
 class LocalMetadataExtractor(object):
 
-    """Abstract base class for metadata extractors, does not provide 
+    """Abstract base class for metadata extractors, does not provide
     implementation of main method to extract data.
     """
 
@@ -96,7 +96,7 @@ class LocalMetadataExtractor(object):
         self.version = version
         self.rpm_name = rpm_name
         self.venv = venv
-        self.base_python_version=base_python_version
+        self.base_python_version = base_python_version
         self.metadata_extension = metadata_extension
 
     def name_convert_deps_list(self, deps_list):
@@ -118,7 +118,6 @@ class LocalMetadataExtractor(object):
         """
         return self.archive.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
-
     @property
     def data_from_venv(self):
         """Returns all metadata extractable from virtualenv object.
@@ -131,7 +130,7 @@ class LocalMetadataExtractor(object):
         temp_dir = tempfile.mkdtemp()
         try:
             extractor = virtualenv.VirtualEnv(self.name, temp_dir,
-                                              self.name_convertor, 
+                                              self.name_convertor,
                                               self.base_python_version)
             return extractor.get_venv_data
         except VirtualenvFailException as e:
@@ -139,7 +138,7 @@ class LocalMetadataExtractor(object):
             return {}
         finally:
             shutil.rmtree(temp_dir)
-    
+
     @pypi_metadata_extension
     def extract_data(self):
         """Extracts data from archive.
@@ -155,7 +154,7 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
-        if not self.metadata_extension: # Venv data were extracted during first call
+        if not self.metadata_extension:  # Venv data were extracted during first call
             data.set_from(self.data_from_venv, update=True)
 
         if "scripts" in data.data:
@@ -166,7 +165,7 @@ class LocalMetadataExtractor(object):
             data.packages = set([data.name])
 
         return data
-    
+
     @property
     @abstractmethod
     def data_from_archive(self):
@@ -189,7 +188,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         """
         install_requires = self.archive.find_list_argument('install_requires')
         if self.archive.has_argument('entry_points') and 'setuptools' not in install_requires:
-            install_requires.append('setuptools') # entrypoints
+            install_requires.append('setuptools')  # entrypoints
 
         return self.name_convert_deps_list(deps_from_pyp_format(install_requires, runtime=True))
 
@@ -286,7 +285,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def license_from_egg_info(self):
-        return utils.license_from_trove(self.archive.get_content_of_file('EGG-INFO/PKG-INFO', True).splitlines())
+        return utils.license_from_trove(self.archive.get_content_of_file(
+            'EGG-INFO/PKG-INFO', True).splitlines())
 
     @property
     def versions_from_archive(self):
@@ -354,13 +354,13 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
             archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
                                           ['BuildRequires', 'python-setuptools']]\
-                                         + self.build_deps_from_setup_py
+                + self.build_deps_from_setup_py
 
         py_vers = self.versions_from_archive
         archive_data['base_python_version'] = py_vers[0] if py_vers \
-                                        else settings.DEFAULT_PYTHON_VERSION
+            else settings.DEFAULT_PYTHON_VERSION
         archive_data['python_versions'] = py_vers[1:] if py_vers \
-                                            else [settings.DEFAULT_ADDITIONAL_VERSION]
+            else [settings.DEFAULT_ADDITIONAL_VERSION]
 
         archive_data['doc_files'] = self.doc_files
         archive_data['py_modules'] = self.py_modules
@@ -368,7 +368,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
         archive_data['has_packages'] = self.has_packages
         archive_data['packages'] = self.packages
-        
+
         sphinx_dir = self.sphinx_dir
         if sphinx_dir:
             archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])
@@ -383,7 +383,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
 
     def __init__(self, *args, **kwargs):
         super(DistMetadataExtractor, self).__init__(*args, **kwargs)
-       
+
         temp_dir = tempfile.mkdtemp()
         try:
             with self.archive as a:
@@ -391,9 +391,10 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
                 try:
                     setup_py = glob.glob(temp_dir + "/{0}*/".format(self.name) + 'setup.py')[0]
                 except IndexError:
-                    sys.stderr.write("setup.py not found, maybe local_file is not proper source archive.\n")
+                    sys.stderr.write(
+                        "setup.py not found, maybe local_file is not proper source archive.\n")
                     raise SystemExit(3)
-                
+
                 with utils.ChangeDir(os.path.dirname(setup_py)):
                     with utils.RedirectStdStreams(stdout=LoggerWriter(logger.debug),
                                                   stderr=LoggerWriter(logger.warning)):
@@ -402,10 +403,10 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
                 self.distribution = extract_distribution.extract_distribution.class_distribution
         finally:
             shutil.rmtree(temp_dir)
-    
+
     @property
     def license_from_archive(self):
-        return  self.distribution.get_license()
+        return self.distribution.get_license()
 
     @property
     def runtime_deps_from_setup_py(self):
@@ -414,26 +415,25 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
     @property
     def build_deps_from_setup_py(self):
         return self.name_convert_deps_list(deps_from_pyp_format(self.distribution.build_requires))
-    
+
     @property
     def conflicts(self):
         return self.name_convert_deps_list(self.distribution.conflicts)
- 
+
     @property
     def versions_from_archive(self):
         return utils.versions_from_trove(self.distribution.metadata.classifiers)
-    
+
     @property
     def long_description(self):
         """Shorten description on first newline after approx 10 lines"""
         if not self.distribution.metadata.long_description:
             return ''
-        cut = self.distribution.metadata.long_description.find('\n', 80*8)
+        cut = self.distribution.metadata.long_description.find('\n', 80 * 8)
         if cut > -1:
             return self.distribution.metadata.long_description[:cut] + '\n...'
         else:
             return self.distribution.metadata.long_description
-
 
     @property
     def data_from_archive(self):
@@ -442,7 +442,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
             dictionary containing extracted metadata
         """
         archive_data = super(DistMetadataExtractor, self).data_from_archive
-        
+
         if not self.distribution.force_arch:
             if not self.distribution.has_ext_modules():
                 archive_data['build_arch'] = 'noarch'
@@ -456,9 +456,10 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
 
         archive_data['prep_cmd'] = getattr(self.distribution, 'prep', settings.DEFAULT_PREP)
         archive_data['build_cmd'] = getattr(self.distribution, 'build', settings.DEFAULT_BUILD)
-        archive_data['install_cmd'] = getattr(self.distribution, 'install', settings.DEFAULT_INSTALL)
+        archive_data['install_cmd'] = getattr(
+            self.distribution, 'install', settings.DEFAULT_INSTALL)
         archive_data['clean_cmd'] = getattr(self.distribution, 'clean', settings.DEFAULT_CLEAN)
-                        
+
         return archive_data
 
 
@@ -476,6 +477,7 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
         return set([doc for doc in self.json_metadata.get('extensions', {})
                                                      .get('python.details', {})
                                                      .get('document_names', {}).values()])
+
     @property
     def home_page(self):
         urls = [url for url in self.json_metadata.get('extensions', {})
@@ -521,11 +523,11 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def scripts(self):
-        return self.archive.record.get('scripts', []) 
+        return self.archive.record.get('scripts', [])
 
     @property
     def has_test_suite(self):
-        return self.json_metadata.get('test_requires', False) != False
+        return self.json_metadata.get('test_requires', False) is not False
 
     @property
     def classifiers(self):
@@ -553,21 +555,18 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
         archive_data['has_pth'] = self.has_pth
         archive_data['runtime_deps'] = utils.unique_deps(self.runtime_deps)
         archive_data['build_deps'] = utils.unique_deps([['BuildRequires', 'python2-devel'],
-                                                        ['BuildRequires', 'python-setuptools']]\
-                                                        + self.build_deps)
+                                                        ['BuildRequires', 'python-setuptools']]
+                                                       + self.build_deps)
         archive_data['py_modules'] = self.modules
         archive_data['scripts'] = self.scripts
         archive_data['has_test_suite'] = self.has_test_suite
         archive_data['has_extension'] = self.has_extension
-        
+
         py_vers = self.versions_from_archive
         archive_data['base_python_version'] = py_vers[0] if py_vers \
-                                        else settings.DEFAULT_PYTHON_VERSION
+            else settings.DEFAULT_PYTHON_VERSION
         archive_data['python_versions'] = py_vers[1:] if py_vers \
-                                        else [settings.DEFAULT_ADDITIONAL_VERSION]
+            else [settings.DEFAULT_ADDITIONAL_VERSION]
 
         archive_data['description'] = self.description
         return archive_data
-
-
-

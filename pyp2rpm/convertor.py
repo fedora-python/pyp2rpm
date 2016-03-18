@@ -52,9 +52,8 @@ class Convertor(object):
         self.pypi = True
         suffix = os.path.splitext(self.package)[1]
         if os.path.exists(self.package) and suffix in settings.ARCHIVE_SUFFIXES\
-            and not os.path.isdir(self.package):
+                and not os.path.isdir(self.package):
             self.pypi = False
-
 
     def convert(self):
         """Returns RPM SPECFILE.
@@ -76,10 +75,10 @@ class Convertor(object):
 
         self.local_file = local_file
         data = self.metadata_extractor.extract_data(self.client)
-        
+
         if self.base_python_version or self.python_versions:
             data.base_python_version = self.base_python_version
-            data.python_versions = [v for v in self.python_versions 
+            data.python_versions = [v for v in self.python_versions
                                     if not v == data.base_python_version]
         elif data.base_python_version in data.python_versions:
             data.python_versions.remove(data.base_python_version)
@@ -148,10 +147,11 @@ class Convertor(object):
 
     @property
     def metadata_extractor(self):
-        """Returns an instance of proper MetadataExtractor subclass. Always returns the same instance.
+        """Returns an instance of proper MetadataExtractor subclass. 
+        Always returns the same instance.
 
         Returns:
-            The proper MetadataExtractor subclass according to provided argument.
+            The proper MetadataExtractor subclass according to local file suffix.
         """
         if not hasattr(self, '_local_file'):
             raise AttributeError(

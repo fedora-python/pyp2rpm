@@ -21,6 +21,7 @@ def generator_to_list(fn):
         return list(fn(*args, **kw))
     return wrapper
 
+
 @generator_to_list
 def flat_list(lst):
     """This function flatten given nested list.
@@ -36,7 +37,7 @@ def flat_list(lst):
     else:
         yield lst
 
-     
+
 class ZipWrapper(object):
     """wrapps ZipFile to behave like TarFile"""
 
@@ -45,7 +46,7 @@ class ZipWrapper(object):
             raise TypeError("Object must be ZipFile, type of {} is {}".format(
                 obj, type(obj)))
         self._wrapped_obj = obj
-    
+
     def __getattr__(self, attr):
         if attr in self.__dict__:
             return getattr(self, attr)
@@ -149,7 +150,7 @@ class Archive(object):
         if self.handle:
             for member in self.handle.getmembers():
                 if (full_path and member.name == name)\
-                or (not full_path and os.path.basename(member.name) == name):
+                        or (not full_path and os.path.basename(member.name) == name):
                     extracted = self.handle.extractfile(member)
                     return extracted.read().decode(locale.getpreferredencoding())
 
@@ -161,14 +162,14 @@ class Archive(object):
         """
         if self.handle:
             for member in self.handle.getmembers():
-                if (full_path and member.name == name or 
-                    not full_path and os.path.basename(member.name) == name):
+                if (full_path and member.name == name or
+                        not full_path and os.path.basename(member.name) == name):
                     self.handle.extract(member, path=directory)   # TODO handle KeyError exception
 
     def extract_all(self, directory=".", members=None):
         """Extract all member from the archive to the specified working directory."""
         if self.handle:
-            self.handle.extractall(path=directory, members=members) 
+            self.handle.extractall(path=directory, members=members)
 
     def has_file_with_suffix(self, suffixes):  # TODO: maybe implement this using get_files_re
         """Finds out if there is a file with one of suffixes in the archive.
@@ -217,7 +218,7 @@ class Archive(object):
                 if isinstance(member, TarInfo) and member.isdir():
                     pass  # for TarInfo files, filter out directories
                 elif (full_path and compiled_re.search(member.name))\
-                or (not full_path and compiled_re.search(os.path.basename(member.name))):
+                        or (not full_path and compiled_re.search(os.path.basename(member.name))):
                     found.append(member.name)
 
         return found
@@ -233,14 +234,17 @@ class Archive(object):
 
         if self.handle:
             for member in self.handle.getmembers():
-                if isinstance(member, ZipInfo):  # zipfiles only list directories => have to work around that
+                # zipfiles only list directories => have to work around that
+                if isinstance(member, ZipInfo):
                     to_match = os.path.dirname(member.name)
-                elif isinstance(member, TarInfo) and member.isdir():  # tarfiles => only match directories
+                # tarfiles => only match directories
+                elif isinstance(member, TarInfo) and member.isdir():
                     to_match = member.name
                 else:
                     to_match = None
                 if to_match:
-                    if (full_path and compiled_re.search(to_match)) or (not full_path and compiled_re.search(os.path.basename(to_match))):
+                    if ((full_path and compiled_re.search(to_match))
+                            or (not full_path and compiled_re.search(os.path.basename(to_match)))):
                         found.add(to_match)
 
         return list(found)
@@ -257,9 +261,11 @@ class Archive(object):
         as 'scripts', which is very nice :)
 
         Args:
-            setup_argument: name of the argument of setup() function to get value of
+            setup_argument: name of the argument of setup() function
+                            to get value of
         Returns:
-            The requested setup() argument or empty list, if setup.py can't be open (or argument is not present).
+            The requested setup() argument or empty list, if setup.py
+            can't be open (or argument is not present).
         """
         argument = []
         cont = False
@@ -308,12 +314,14 @@ class Archive(object):
             argument[-1] = argument[-1].rstrip().rstrip(',')
             try:
                 return flat_list(eval(' '.join(argument).strip()))
-            except:  # something unparsable in the list - different errors can come out - function undefined, syntax error, ...
+            # something unparsable in the list - different errors can come out -
+            # function undefined, syntax error, ...
+            except:
                 logger.warn('Something unparsable in the list.', exc_info=True)
                 return []
 
     def has_argument(self, argument):
-        """A simple method that finds out if setup() function from setup.py 
+        """A simple method that finds out if setup() function from setup.py
            is called with given argument.
         Args:
             argument: argument to look for
@@ -363,7 +371,7 @@ class Archive(object):
         if self.get_content_of_file('RECORD'):
             lines = self.get_content_of_file('RECORD').splitlines()
             for line in lines:
-                if 'dist-info' in line or not '/' in line:
+                if 'dist-info' in line or '/' not in line:
                     continue
                 elif '.data/scripts' in line:
                     script = line.split(',', 1)[0]

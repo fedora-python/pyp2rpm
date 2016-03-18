@@ -10,10 +10,11 @@ from pyp2rpm.exceptions import *
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
+
 class TestPypiFileGetter(object):
     client = flexmock(
-        package_releases = lambda n: n == 'spam' and ['2', '1'] or [],
-        release_urls = lambda n, v: n == 'spam' and v in ['2', '1'] and [{'url': 'spam'}] or []
+        package_releases=lambda n: n == 'spam' and ['2', '1'] or [],
+        release_urls=lambda n, v: n == 'spam' and v in ['2', '1'] and [{'url': 'spam'}] or []
     )
 
     @pytest.mark.parametrize(('name', 'version'), [
@@ -44,7 +45,7 @@ class TestLocalFileGetter(object):
                   LocalFileGetter('{0}py2exe-0.9.2.2-py33.py34-none-any.whl'.format(self.td_dir)),
                   LocalFileGetter('python-foo-1.tar'),
                   LocalFileGetter('python-many-dashes-foo-1.tar'),
-                 ]
+                  ]
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, 'plumbum-0.9.0'),
@@ -94,5 +95,6 @@ class TestLocalFileGetter(object):
     def test_get_to_same_location(self):
         tmpdir = tempfile.gettempdir()
         self.l[1].save_dir = self.td_dir
-        assert os.path.samefile(self.l[1].get(), os.path.join(self.td_dir, 'Sphinx-1.1.3-py2.6.egg'))
+        assert os.path.samefile(self.l[1].get(), os.path.join(
+            self.td_dir, 'Sphinx-1.1.3-py2.6.egg'))
         assert not os.path.exists(os.path.join(tmpdir, 'Sphinx-1.1.3-py2.6.egg'))

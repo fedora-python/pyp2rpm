@@ -14,17 +14,20 @@ def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
     return set([x for x in site_packages_list if not x.split('.')[-1] == 'dist-info'])
 
+
 def scripts_filter(scripts):
     '''
     Removes .pyc files from scripts
     '''
     return [x for x in scripts if not x.split('.')[-1] == 'pyc']
 
+
 class DirsContent(object):
     '''
     Object to store and compare directory content before and
     after instalation of package.
     '''
+
     def __init__(self, bindir=None, lib_sitepackages=None):
         self.bindir = bindir
         self.lib_sitepackages = lib_sitepackages
@@ -40,8 +43,8 @@ class DirsContent(object):
         '''
         Makes differance of DirsContents objects attributes
         '''
-        if any([self.bindir == None, self.lib_sitepackages == None,
-                other.bindir == None, other.lib_sitepackages == None]):
+        if any([self.bindir is None, self.lib_sitepackages is None,
+                other.bindir is None, other.lib_sitepackages is None]):
             raise ValueError("Some of the attributes is uninicialized")
         result = DirsContent(
             self.bindir - other.bindir,

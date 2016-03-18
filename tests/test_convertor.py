@@ -9,10 +9,11 @@ from pyp2rpm.package_getters import *
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
+
 class TestConvertor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
-    client = flexmock(package_releases = lambda n: n == 'spam' and ['0.1'] or [])
-    Convertor._client = client # flexmock can't mock properties yet
+    client = flexmock(package_releases=lambda n: n == 'spam' and ['0.1'] or [])
+    Convertor._client = client  # flexmock can't mock properties yet
 
     @pytest.mark.parametrize(('sf', 'g'), [
         ('spam', PypiDownloader),
@@ -28,7 +29,7 @@ class TestConvertor(object):
     ])
     def test_getter_bad_data(self, sf, expected):
         with pytest.raises(expected):
-            c = Convertor(package = sf)
+            c = Convertor(package=sf)
             c.getter
 
     @pytest.mark.parametrize(('sf', 'expected'), [
@@ -36,7 +37,7 @@ class TestConvertor(object):
         ('{0}setuptools-19.6-py2.py3-none-any.whl'.format(td_dir), WheelMetadataExtractor)
     ])
     def test_get_metadata_extractor(self, sf, expected):
-        c = Convertor(package = sf)
+        c = Convertor(package=sf)
         c.local_file = sf
         c.name = 'plumbum'
         assert isinstance(c.metadata_extractor, expected)

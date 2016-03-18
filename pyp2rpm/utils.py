@@ -21,9 +21,10 @@ else:
 
 
 class ChangeDir(object):
-    """Class to store current directory change cwd to new_path 
+    """Class to store current directory change cwd to new_path
     and return to previous path at exit, must be run using with statement.
     """
+
     def __init__(self, new_path):
         self.primary_path = os.getcwd()
         self.new_path = new_path
@@ -32,12 +33,13 @@ class ChangeDir(object):
         os.chdir(self.new_path)
         return self
 
-    def __exit__(self, type, value, traceback): #TODO handle exception
+    def __exit__(self, type, value, traceback):  # TODO handle exception
         os.chdir(self.primary_path)
 
 
 class RedirectStdStreams(object):
     """Temporarily redirect stdout/stderr"""
+
     def __init__(self, stdout=None, stderr=None):
         if isinstance(stdout, str):
             stdout = self.stdout_descriptor = open(stdout, "w")
@@ -49,11 +51,13 @@ class RedirectStdStreams(object):
 
     def __enter__(self):
         self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-        self.old_stdout.flush(); self.old_stderr.flush()
+        self.old_stdout.flush()
+        self.old_stderr.flush()
         sys.stdout, sys.stderr = self._stdout, self._stderr
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._stdout.flush(); self._stderr.flush()
+        self._stdout.flush()
+        self._stderr.flush()
         sys.stdout = self.old_stdout
         sys.stderr = self.old_stderr
         if hasattr(self, 'stdout_descriptor'):
@@ -95,6 +99,7 @@ def license_from_trove(trove):
                 license.append(settings.TROVE_LICENSES[stripped])
     return ' and '.join(license)
 
+
 def versions_from_trove(trove):
     """Finds out python version from list of trove classifiers.
     Args:
@@ -130,7 +135,8 @@ def build_srpm(specfile, save_dir):
                                     '--define', '_rpmdir {0}'.format(save_dir),
                                     '-bs', specfile], stdout=subprocess.PIPE).communicate()[0].strip()
         except OSError:
-            logger.error('Rpmbuild failed for specfile: {0} and save_dir: {1}'.format(specfile, save_dir), exc_info=True)
+            logger.error('Rpmbuild failed for specfile: {0} and save_dir: {1}'.format(
+                specfile, save_dir), exc_info=True)
             msg = 'Rpmbuild failed. See log for more info.'
         return msg
     else:
@@ -149,10 +155,12 @@ def build_srpm(specfile, save_dir):
             msg = 'Rpmbuild failed. See log for more info.'
         return msg
 
+
 def remove_major_minor_suffix(scripts):
     """Checks if executables already contain a "-MAJOR.MINOR" suffix. """
     minor_major_regex = re.compile("-\d.?\d?$")
     return [x for x in scripts if not minor_major_regex.search(x)]
+
 
 def runtime_to_build(runtime_deps):
     """Adds all runtime deps to build deps"""
@@ -162,8 +170,8 @@ def runtime_to_build(runtime_deps):
             dep[0] = 'BuildRequires'
     return build_deps
 
+
 def unique_deps(deps):
     """Remove duplicities from deps list of the lists"""
     deps.sort()
     return list(k for k, _ in itertools.groupby(deps))
-

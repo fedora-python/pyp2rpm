@@ -8,7 +8,8 @@ DEFAULT_TEMPLATE = 'fedora'
 DEFAULT_DISTRO = 'fedora'
 DEFAULT_PKG_SAVE_PATH = os.path.expanduser('~/rpmbuild')
 KNOWN_DISTROS = ['fedora', 'mageia', 'pld']
-ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2', '.gz', '.bz2', '.xz', '.zip', '.egg', '.whl']
+ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2',
+                    '.gz', '.bz2', '.xz', '.zip', '.egg', '.whl']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
 DOC_FILES_RE = [r'readme.+', r'licens.+', r'copying.+']
 SPHINX_DIR_RE = r'[^/]+/doc.?'
@@ -18,7 +19,6 @@ DEFAULT_PREP = '%autosetup -n %{upstream_name}-%{unmangled_version}'
 DEFAULT_BUILD = '%{py2_build}'
 DEFAULT_INSTALL = '%{py3_install \--record=.python3-installfiles.txt}'
 DEFAULT_CLEAN = 'rm -rf $RPM_BUILD_ROOT'
-
 
 
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
@@ -73,4 +73,4 @@ TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL
                   'License :: Other/Proprietary License': 'Proprietary shit - BAD',
                   'License :: Public Domain': 'Public Domain',
                   'License :: Repoze Public License': 'Repoze Public License - ???'
-                 }
+                  }

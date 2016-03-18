@@ -51,10 +51,14 @@ class PypiDownloader(PackageGetter):
 
         self.version = version or self.versions[0]
 
-        if version and self.client.release_urls(name, version) == []:  # if version is specified, will check if such version exists
+        # if version is specified, will check if such version exists
+        if version and self.client.release_urls(name, version) == []:
             raise exceptions.NoSuchPackageException(
-                'Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(name, version))
-            logger.error('Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(name, version))
+                'Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(
+                    name, version))
+            logger.error(
+                'Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(
+                    name, version))
 
         self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
         if self.save_dir == settings.DEFAULT_PKG_SAVE_PATH:
@@ -88,7 +92,7 @@ class PypiDownloader(PackageGetter):
                     if url['url'].endswith((".zip")):
                         zip_url = url['url']
                 return zip_url or urls[0]['url']
-            return self.client.release_data(self.name, self.version)['release_url'] 
+            return self.client.release_data(self.name, self.version)['release_url']
         else:
             for url in urls:
                 if url['url'].endswith("none-any.whl"):
@@ -117,7 +121,6 @@ class PypiDownloader(PackageGetter):
 
     def get_name_version(self):
         return (self.name, self.version)
-
 
 
 class LocalFileGetter(PackageGetter):

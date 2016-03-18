@@ -12,15 +12,16 @@ from pyp2rpm.archive import Archive, flat_list
 
 @pytest.mark.parametrize(('arg', 'expected'), [
     (['foo'], ['foo']),
-    (['foo',['bar']], ['foo', 'bar']),
+    (['foo', ['bar']], ['foo', 'bar']),
     ([], []),
     (['spam', ['foo', ['bar']]], ['spam', 'foo', 'bar']),
 ])
 def test_flat_list_nested(arg, expected):
     assert flat_list(arg) == expected
-    
+
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
+
 
 class TestArchive(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
@@ -34,7 +35,7 @@ class TestArchive(object):
                   Archive('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir)),
                   Archive('{0}unextractable-1.tar'.format(self.td_dir)),
                   Archive('{0}bitarray-0.8.0.tar.gz'.format(self.td_dir)),
-                  Archive('{0}pkginfo-1.2b1.tar.gz'.format(self.td_dir)),]
+                  Archive('{0}pkginfo-1.2b1.tar.gz'.format(self.td_dir)), ]
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, TarFile),
@@ -47,7 +48,8 @@ class TestArchive(object):
         assert self.a[i].extractor_cls == expected
 
     @pytest.mark.parametrize(('i', 'n', 'abs', 'expected'), [
-        (0, 'setup.cfg', False, '[egg_info]\r\ntag_build = \r\ntag_date = 0\r\ntag_svn_revision = 0\r\n\r\n'),
+        (0, 'setup.cfg', False,
+         '[egg_info]\r\ntag_build = \r\ntag_date = 0\r\ntag_svn_revision = 0\r\n\r\n'),
         (1, 'requires.txt', False, 'py>=1.4.7.dev2'),
         (1, 'pytest-2.2.3/pytest.egg-info/requires.txt', True, 'py>=1.4.7.dev2'),
         (2, 'does_not_exist.dne', False,  None),
@@ -58,28 +60,36 @@ class TestArchive(object):
             assert a.get_content_of_file(n, abs) == expected
 
     def test_find_list_argument_not_present(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return('install_requires=["spam",\n"eggs"]')
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return('install_requires=["spam",\n"eggs"]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
+            'setup.cfg').and_return('install_requires=["spam",\n"eggs"]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
+            'setup.py').and_return('install_requires=["spam",\n"eggs"]')
         assert self.a[4].find_list_argument('setup_requires') == []
 
     def test_find_list_argument_present(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return('setup_requires=["spam"]')
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return('install_requires=["beans",\n"spam"]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
+            'setup.cfg').and_return('setup_requires=["spam"]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
+            'setup.py').and_return('install_requires=["beans",\n"spam"]')
         assert self.a[4].find_list_argument('install_requires') == ['beans', 'spam']
 
     def test_find_list_argument_not_evaluable(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return('install_requires=[some_function()]')
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return('install_requires=[some_function()]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
+            'setup.cfg').and_return('install_requires=[some_function()]')
+        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
+            'setup.py').and_return('install_requires=[some_function()]')
         assert self.a[4].find_list_argument('install_requires') == []
 
     def test_find_list_argument_unopenable_file(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.cfg').and_return(None)
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args('setup.py').and_return(None)
+        flexmock(self.a[4]).should_receive(
+            'get_content_of_file').with_args('setup.cfg').and_return(None)
+        flexmock(self.a[4]).should_receive(
+            'get_content_of_file').with_args('setup.py').and_return(None)
         assert self.a[4].find_list_argument('install_requires') == []
 
     def test_find_list_argument_nested_list(self):
         with self.a[6] as a:
-            assert a.find_list_argument('scripts') == ['pkginfo = pkginfo.commandline:main',]
+            assert a.find_list_argument('scripts') == ['pkginfo = pkginfo.commandline:main', ]
 
     @pytest.mark.parametrize(('i', 'suf', 'expected'), [
         (0, ['.spamspamspam'],  False),
@@ -91,28 +101,32 @@ class TestArchive(object):
             assert a.has_file_with_suffix(suf) == expected
 
     @pytest.mark.parametrize(('i', 'r', 'f', 'c', 'expected'), [
-        (0, r'PKG-INFO', False, False, ['plumbum-0.9.0/PKG-INFO', 'plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'PKG-INFO', False, False, ['plumbum-0.9.0/PKG-INFO',
+                                        'plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
         (0, r'[a-z]/PKG-INFO', True, False, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
         (0, r'[a-z]/pKg-InfO', True, True, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
         (0, r'spam/PKG-INFO', True, False, []),
-        (0, r'plumbum-0.9.0$', True, False, []), # should ignore directory in tarfile
+        (0, r'plumbum-0.9.0$', True, False, []),  # should ignore directory in tarfile
     ])
     def test_get_files_re(self, i, r, f, c, expected):
         with self.a[i] as a:
             assert set(a.get_files_re(r, f, c)) == set(expected)
 
     @pytest.mark.parametrize(('i', 'r', 'f', 'c', 'expected'), [
-        (0, r'plumbum.*', False, False, ['plumbum-0.9.0', 'plumbum-0.9.0/plumbum.egg-info', 'plumbum-0.9.0/plumbum']),
+        (0, r'plumbum.*', False, False, ['plumbum-0.9.0',
+                                         'plumbum-0.9.0/plumbum.egg-info',
+                                         'plumbum-0.9.0/plumbum']),
         (0, r'[0-9]/plumbum$', True, False, ['plumbum-0.9.0/plumbum']),
         (0, r'[0-9]/pLuMbUm$', True, True, ['plumbum-0.9.0/plumbum']),
         (0, r'spam/plumbum.*', True, False, []),
-        (0, r'setup.py', True, False, []), # should ignore file
+        (0, r'setup.py', True, False, []),  # should ignore file
         # test for zipfile separately - some more logic going on there...
-        (1, r'pytest.*', False, False, ['pytest-2.2.3', 'pytest-2.2.3/pytest.egg-info', 'pytest-2.2.3/_pytest']),
+        (1, r'pytest.*', False, False, ['pytest-2.2.3',
+                                        'pytest-2.2.3/pytest.egg-info', 'pytest-2.2.3/_pytest']),
         (1, r't/assertion$', True, False, ['pytest-2.2.3/_pytest/assertion']),
         (1, r'[0-9]/_pYtEsT$', True, True, ['pytest-2.2.3/_pytest']),
         (1, r'spam/.*_pytest.*', True, False, []),
-        (1, r'setup.py', True, False, []), # should ignore file
+        (1, r'setup.py', True, False, []),  # should ignore file
     ])
     def test_get_directories_re(self, i, r, f, c, expected):
         with self.a[i] as a:

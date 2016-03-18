@@ -14,7 +14,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('-t',
-              help='Template file (jinja2 format) to render (default: "{0}").' 
+              help='Template file (jinja2 format) to render (default: "{0}").'
               'Search order is 1) filesystem, 2) default templates.'.format(
                   settings.DEFAULT_TEMPLATE),
               metavar='TEMPLATE')
@@ -63,7 +63,6 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               default=True,
               help='Enable / disable metadata extraction from virtualenv')
 @click.argument('package', nargs=1)
-
 def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
     """Convert PyPI package to RPM specfile or SRPM.
 
@@ -71,7 +70,6 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
     \b\bArguments:
     PACKAGE             Provide PyPI name of the package or path to compressed source file."""
     register_file_log_handler('/tmp/pyp2rpm-{0}.log'.format(getpass.getuser()))
-
 
     if srpm:
         register_console_log_handler()
@@ -116,7 +114,7 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
         with open(spec_path, 'w') as f:
             f.write(converted)
             logger.info('Specfile saved at: {0}.'.format(spec_path))
-        
+
         if srpm:
             msg = utils.build_srpm(spec_path, d)
             if utils.PY3:

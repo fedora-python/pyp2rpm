@@ -76,16 +76,16 @@ def deps_from_pydit_json(requires, runtime=True):
     """
     parsed = []
     for req in requires:
-    # req looks like 'some-name (>=X.Y,!=Y.X)' or 'someme-name' where 'some-name' is the
-    # name of required package and '(>=X.Y,!=Y.X)' are specs
+        # req looks like 'some-name (>=X.Y,!=Y.X)' or 'someme-name' where 'some-name' is the
+        # name of required package and '(>=X.Y,!=Y.X)' are specs
         name, specs = None, None
-        reqs = req.split(' ') # len(reqs) == 1 if there are not specified versions, 2 otherwise
+        reqs = req.split(' ')  # len(reqs) == 1 if there are not specified versions, 2 otherwise
         name = reqs[0]
         if len(reqs) == 2:
             specs = reqs[1]
-            #try if there are more specs in spec part of the requires
+            # try if there are more specs in spec part of the requires
             specs = specs.split(",")
-            #strip brackets
+            # strip brackets
             specs = [re.sub('[()]', '', spec) for spec in specs]
             # this will divide (>=0.1.2) to ['>=', '0', '.1.2']
             # or (0.1.2) into ['', '0', '.1.2']
