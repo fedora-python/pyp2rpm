@@ -1,10 +1,11 @@
 import logging
 import os
+import sys
 import tempfile
 import shutil
 import itertools
 import glob
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 try:
     import xmlrpclib
 except ImportError:
@@ -78,7 +79,9 @@ def pypi_metadata_extension(extraction_fce):
 
 class LocalMetadataExtractor(object):
 
-    """Base class for metadata extractors"""
+    """Abstract base class for metadata extractors, does not provide 
+    implementation of main method to extract data.
+    """
 
     __metaclass__ = ABCMeta
 
@@ -163,6 +166,11 @@ class LocalMetadataExtractor(object):
             data.packages = set([data.name])
 
         return data
+    
+    @property
+    @abstractmethod
+    def data_from_archive(self):
+        pass
 
 
 class SetupPyMetadataExtractor(LocalMetadataExtractor):
@@ -383,8 +391,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
                 try:
                     setup_py = glob.glob(temp_dir + "/{0}*/".format(self.name) + 'setup.py')[0]
                 except IndexError:
-                    print("setup.py not found; maybe local_file is not proper source archive")
-                    logger.error("setup.py not found, metadata extraction failed.")
+                    sys.stderr.write("setup.py not found, maybe local_file is not proper source archive.\n")
                     raise SystemExit(3)
                 
                 with utils.ChangeDir(os.path.dirname(setup_py)):
