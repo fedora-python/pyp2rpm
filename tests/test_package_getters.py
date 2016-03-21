@@ -1,5 +1,6 @@
 import os
 import tempfile
+import shutil
 
 import pytest
 
@@ -46,6 +47,11 @@ class TestLocalFileGetter(object):
                   LocalFileGetter('python-foo-1.tar'),
                   LocalFileGetter('python-many-dashes-foo-1.tar'),
                   ]
+
+    def teardown_method(self, method):
+        for file_getter in self.l:
+            if hasattr(file_getter, 'temp_dir'):
+                shutil.rmtree(file_getter.temp_dir)
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, 'plumbum-0.9.0'),
