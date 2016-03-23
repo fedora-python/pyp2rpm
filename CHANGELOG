@@ -1,3 +1,9 @@
+3.0.0
+* Metadata extraction from setup.py based on distutils command
+* Completely independent wheel metadata extractor
+* Improves scripts and site-packages metadata extraction using virtualenv
+* Python version extraction
+
 2.0.0
 * Added default python3 subpackage, testing tools tox and travis
 * Small change in command line switches
