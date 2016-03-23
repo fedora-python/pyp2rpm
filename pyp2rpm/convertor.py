@@ -52,9 +52,8 @@ class Convertor(object):
         self.pypi = True
         suffix = os.path.splitext(self.package)[1]
         if os.path.exists(self.package) and suffix in settings.ARCHIVE_SUFFIXES\
-            and not os.path.isdir(self.package):
+                and not os.path.isdir(self.package):
             self.pypi = False
-
 
     def convert(self):
         """Returns RPM SPECFILE.
@@ -75,11 +74,11 @@ class Convertor(object):
         self.name, self.version = self.getter.get_name_version()
 
         self.local_file = local_file
-        data = self.metadata_extractor.extract_data()
-        
+        data = self.metadata_extractor.extract_data(self.client)
+
         if self.base_python_version or self.python_versions:
             data.base_python_version = self.base_python_version
-            data.python_versions = [v for v in self.python_versions 
+            data.python_versions = [v for v in self.python_versions
                                     if not v == data.base_python_version]
         elif data.base_python_version in data.python_versions:
             data.python_versions.remove(data.base_python_version)
@@ -148,37 +147,31 @@ class Convertor(object):
 
     @property
     def metadata_extractor(self):
-        """Returns an instance of proper MetadataExtractor subclass. Always returns the same instance.
+        """Returns an instance of proper MetadataExtractor subclass. 
+        Always returns the same instance.
 
         Returns:
-            The proper MetadataExtractor subclass according to provided argument.
+            The proper MetadataExtractor subclass according to local file suffix.
         """
         if not hasattr(self, '_local_file'):
             raise AttributeError(
                 'local_file attribute must be set before calling metadata_extractor')
 
-        if not hasattr(self, '_metadata_extractor'):
-            if self.pypi:
-                logger.info('Getting metadata from PyPI.')
-                self._metadata_extractor = metadata_extractors.PypiMetadataExtractor(
-                    self.local_file,
-                    self.name,
-                    self.name_convertor,
-                    self.version,
-                    self.client,
-                    self.rpm_name,
-                    self.venv,
-                    self.base_python_version)
-            else:
-                logger.info('Getting metadata from local file.')
-                self._metadata_extractor = metadata_extractors.LocalMetadataExtractor(
-                    self.local_file,
-                    self.name,
-                    self.name_convertor,
-                    self.version,
-                    self.rpm_name,
-                    self.venv,
-                    self.base_python_version)
+        if self.local_file.endswith('.whl'):
+            logger.info('Getting metadata from wheel using WheelMetadataExtractor.')
+            extractor_cls = metadata_extractors.WheelMetadataExtractor
+        else:
+            logger.info('Getting metadata from setup.py using DistMetadataExtractor.')
+            extractor_cls = metadata_extractors.DistMetadataExtractor
+
+        self._metadata_extractor = extractor_cls(
+            self.local_file,
+            self.name,
+            self.name_convertor,
+            self.version,
+            self.rpm_name,
+            self.venv,
+            self.base_python_version)
 
         return self._metadata_extractor
 

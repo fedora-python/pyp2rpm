@@ -7,21 +7,6 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
 
-
-class PyTest(TestCommand):
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = ['tests', '-v']
-        self.test_suite = True
-
-    def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
-        import pytest
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
-
-
 description = """Convert Python packages to RPM SPECFILES. The packages can be downloaded from
 PyPI and the produced SPEC is in line with Fedora Packaging Guidelines or Mageia Python Policy.
 
@@ -49,9 +34,9 @@ setup(
                       ],
     setup_requires=['setuptools',
                     'flexmock >= 0.9.3',
-                    'pytest',
+                    'pytest-runner',
                     ],
-    cmdclass={'test': PyTest},
+    tests_require=['pytest'],
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',
                  'Intended Audience :: Developers',

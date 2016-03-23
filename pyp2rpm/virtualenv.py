@@ -14,17 +14,20 @@ def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
     return set([x for x in site_packages_list if not x.split('.')[-1] == 'dist-info'])
 
+
 def scripts_filter(scripts):
     '''
     Removes .pyc files from scripts
     '''
     return [x for x in scripts if not x.split('.')[-1] == 'pyc']
 
+
 class DirsContent(object):
     '''
     Object to store and compare directory content before and
     after instalation of package.
     '''
+
     def __init__(self, bindir=None, lib_sitepackages=None):
         self.bindir = bindir
         self.lib_sitepackages = lib_sitepackages
@@ -40,8 +43,8 @@ class DirsContent(object):
         '''
         Makes differance of DirsContents objects attributes
         '''
-        if any([self.bindir == None, self.lib_sitepackages == None,
-                other.bindir == None, other.lib_sitepackages == None]):
+        if any([self.bindir is None, self.lib_sitepackages is None,
+                other.bindir is None, other.lib_sitepackages is None]):
             raise ValueError("Some of the attributes is uninicialized")
         result = DirsContent(
             self.bindir - other.bindir,
@@ -62,7 +65,6 @@ class VirtualEnv(object):
         try:
             self.env.open_or_create()
         except (ve.VirtualenvCreationException, ve.VirtualenvReadonlyException):
-            logger.error('Failed to create virtualenv')
             raise VirtualenvFailException('Failed to create virtualenv')
         self.dirs_before_install = DirsContent()
         self.dirs_after_install = DirsContent()
@@ -77,7 +79,6 @@ class VirtualEnv(object):
         try:
             self.env.install(self.name, options=["--no-deps"])
         except (ve.PackageInstallationException, ve.VirtualenvReadonlyException):
-            logger.error('Failed to install package to virtualenv')
             raise VirtualenvFailException('Failed to install package to virtualenv')
         self.dirs_after_install.fill(self.temp_dir + '/venv/')
 
@@ -100,9 +101,6 @@ class VirtualEnv(object):
 
     @property
     def get_venv_data(self):
-        try:
-            self.install_package_to_venv()
-            self.data['packages'], self.data['scripts'] = self.get_dirs_differance
-        except VirtualenvFailException:
-            logger.error("Skipping virtualenv metadata extraction")
+        self.install_package_to_venv()
+        self.data['packages'], self.data['scripts'] = self.get_dirs_differance
         return self.data

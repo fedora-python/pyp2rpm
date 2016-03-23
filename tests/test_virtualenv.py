@@ -7,7 +7,9 @@ from pyp2rpm.virtualenv import *
 from pyp2rpm.name_convertor import NameConvertor
 from pyp2rpm.settings import DEFAULT_DISTRO, DEFAULT_PYTHON_VERSION
 
+
 class TestUtils(object):
+
     @pytest.mark.parametrize(('input', 'expected'), [
         (['foo', 'foo-1.0.0.dist-info'], set(['foo'])),
         (['foo', 'foo-1.0.0.dist-info', 'foo2'], set(['foo', 'foo2'])),
@@ -31,13 +33,14 @@ class TestUtils(object):
 
 
 class TestDirsContent(object):
+
     @pytest.mark.parametrize(('before', 'after', 'expected'), [
         (set(['activate', 'pip']), set(['activate', 'pip', 'foo']), set(['foo'])),
         (set(['activate', 'pip']), set(['activate', 'pip']), set()),
     ])
     def test_sub_bin(self, before, after, expected):
         result = DirsContent(bindir=after, lib_sitepackages=set([])) -\
-        DirsContent(bindir=before, lib_sitepackages=set([]))
+            DirsContent(bindir=before, lib_sitepackages=set([]))
         assert result.bindir == expected
 
     @pytest.mark.parametrize(('before', 'after', 'expected'), [
@@ -47,10 +50,12 @@ class TestDirsContent(object):
     ])
     def test_sub_sitepackages(self, before, after, expected):
         result = DirsContent(lib_sitepackages=after, bindir=set([])) -\
-        DirsContent(lib_sitepackages=before, bindir=set([]))
+            DirsContent(lib_sitepackages=before, bindir=set([]))
         assert result.lib_sitepackages == expected
 
+
 class TestVirtualEnv(object):
+
     def setup_method(self, method):
         self.temp_dir = tempfile.mkdtemp()
         self.venv = VirtualEnv(None, self.temp_dir,
@@ -66,5 +71,6 @@ class TestVirtualEnv(object):
         (set(['foo']), set([]), (set([]), ['foo'])),
     ])
     def test_get_dirs_defferance(self, bin_diff, package_diff, expected):
-        flexmock(DirsContent).should_receive('__sub__').and_return(DirsContent(bin_diff, package_diff))
+        flexmock(DirsContent).should_receive('__sub__').and_return(
+            DirsContent(bin_diff, package_diff))
         assert self.venv.get_dirs_differance == expected

@@ -8,6 +8,7 @@ from pyp2rpm import utils
 
 logger = logging.getLogger(__name__)
 
+
 def get_deps_names(runtime_deps_list):
     '''
     data['runtime_deps'] has format:
@@ -15,6 +16,7 @@ def get_deps_names(runtime_deps_list):
     this function creates list of lowercase deps names
     '''
     return [x[1].lower() for x in runtime_deps_list]
+
 
 class PackageData(object):
     credit_line = '# Created by pyp2rpm-{0}'.format(version.version)
@@ -47,7 +49,7 @@ class PackageData(object):
 
     def update_attr(self, name, value):
         if name in self.data and value:
-            if name == 'runtime_deps':  # compare lowercase names of deps
+            if name in ['runtime_deps', 'build_deps']:  # compare lowercase names of deps
                 for item in value:
                     if not item[1].lower() in get_deps_names(self.data[name]):
                         self.data[name].append(item)
@@ -56,8 +58,12 @@ class PackageData(object):
                     if item not in self.data[name]:
                         self.data[name].append(item)
             elif isinstance(self.data[name], set):
+                if not isinstance(value, set):
+                    value = set(value)
                 self.data[name] |= value
-        elif value:
+            elif not self.data[name] and self.data[name] is not False:
+                self.data[name] = value
+        elif name not in self.data and value is not None:
             self.data[name] = value
 
     def set_from(self, data_dict, update=False):
@@ -66,7 +72,6 @@ class PackageData(object):
                 self.update_attr(k, v)
             else:
                 setattr(self, k, v)
-    
 
     def get_changelog_date_packager(self):
         """Returns part of the changelog entry, containing date and packager.

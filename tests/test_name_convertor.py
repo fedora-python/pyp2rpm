@@ -3,7 +3,9 @@ import pytest
 from pyp2rpm.name_convertor import NameConvertor
 from pyp2rpm import settings
 
+
 class TestUtils(object):
+
     def setup_method(self, method):
         self.ncf = NameConvertor('fedora')
         self.ncm = NameConvertor('mageia')

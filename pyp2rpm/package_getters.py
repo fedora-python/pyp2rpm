@@ -2,6 +2,9 @@ import logging
 import os
 import shutil
 import subprocess
+import tempfile
+import shutil
+import re
 try:
     import urllib.request as request
 except ImportError:
@@ -9,6 +12,7 @@ except ImportError:
 
 from pyp2rpm import settings
 from pyp2rpm import exceptions
+
 
 logger = logger = logging.getLogger(__name__)
 
@@ -27,6 +31,10 @@ class PackageGetter(object):
         """
         pass
 
+    def __del__(self):
+        if hasattr(self, "temp_dir"):
+            shutil.rmtree(self.temp_dir)
+
 
 class PypiDownloader(PackageGetter):
 
@@ -43,10 +51,14 @@ class PypiDownloader(PackageGetter):
 
         self.version = version or self.versions[0]
 
-        if version and self.client.release_urls(name, version) == []:  # if version is specified, will check if such version exists
+        # if version is specified, will check if such version exists
+        if version and self.client.release_urls(name, version) == []:
             raise exceptions.NoSuchPackageException(
-                'Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(name, version))
-            logger.error('Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(name, version))
+                'Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(
+                    name, version))
+            logger.error(
+                'Package with name "{0}" and version "{1}" could not be found on PyPI.'.format(
+                    name, version))
 
         self.save_dir = save_dir or settings.DEFAULT_PKG_SAVE_PATH
         if self.save_dir == settings.DEFAULT_PKG_SAVE_PATH:
@@ -67,26 +79,43 @@ class PypiDownloader(PackageGetter):
                     logger.warn('Specify folder to store a file (SAVE_DIR) or install rpmdevtools.')
         logger.info('Using {0} as directory to save source.'.format(self.save_dir))
 
-    @property
-    def url(self):
+        self.temp_dir = tempfile.mkdtemp()
+
+    def url(self, wheel=False):
         urls = self.client.release_urls(self.name, self.version)
-        if urls:
+        if not wheel:
+            if urls:
+                zip_url = ''
+                for url in urls:
+                    if url['url'].endswith((".tar.gz")):
+                        return url['url']
+                    if url['url'].endswith((".zip")):
+                        zip_url = url['url']
+                return zip_url or urls[0]['url']
+            return self.client.release_data(self.name, self.version)['release_url']
+        else:
             for url in urls:
-                if url['url'].endswith(".tar.gz"):
+                if url['url'].endswith("none-any.whl"):
                     return url['url']
-            return urls[0]['url']
-        return self.client.release_data(self.name, self.version)['release_url'] 
+            return None
 
-
-    def get(self):
+    def get(self, wheel=False):
         """Downloads the package from PyPI.
         Returns:
             Full path of the downloaded file.
         Raises:
             PermissionError if the save_dir is not writable.
         """
-        save_file = '{0}/{1}'.format(self.save_dir, self.url.split('/')[-1])
-        request.urlretrieve(self.url, save_file)
+        url = self.url(wheel)
+        if not url:
+            return None
+        if wheel:
+            save_dir = self.temp_dir
+        else:
+            save_dir = self.save_dir
+
+        save_file = '{0}/{1}'.format(save_dir, url.split('/')[-1])
+        request.urlretrieve(url, save_file)
         logger.info('Downloaded package from PyPI: {0}.'.format(save_file))
         return save_file
 
@@ -102,6 +131,8 @@ class LocalFileGetter(PackageGetter):
         if self.save_dir == settings.DEFAULT_PKG_SAVE_PATH:
             self.save_dir += '/SOURCES'
 
+        self.name_version_pattern = re.compile("(^.*?)-(\d+\.?\d*\.?\d*\.?\d*).*$")
+
         if not os.path.exists(self.save_dir):
             if self.save_dir != settings.DEFAULT_PKG_SAVE_PATH:
                 os.makedirs(self.save_dir)
@@ -116,6 +147,8 @@ class LocalFileGetter(PackageGetter):
                         self.save_dir, self.local_file))
                     logger.warn('Specify folder to store a file or install rpmdevtools.')
 
+        self.temp_dir = tempfile.mkdtemp()
+
     def get(self):
         """Copies file from local filesystem to self.save_dir.
         Returns:
@@ -123,11 +156,16 @@ class LocalFileGetter(PackageGetter):
         Raises:
             EnvironmentError if the file can't be found or the save_dir is not writable.
         """
-        save_file = '{0}/{1}'.format(
-            self.save_dir, os.path.basename(self.local_file))
+        if self.local_file.endswith('.whl'):
+            save_dir = self.temp_dir
+        else:
+            save_dir = self.save_dir
+
+        save_file = '{0}/{1}'.format(save_dir, os.path.basename(self.local_file))
         if not os.path.exists(save_file) or not os.path.samefile(self.local_file, save_file):
             shutil.copy2(self.local_file, save_file)
         logger.info('Local file: {0} copyed to {1}.'.format(self.local_file, save_file))
+
         return save_file
 
     @property
@@ -151,10 +189,7 @@ class LocalFileGetter(PackageGetter):
             logger.info('Rpmbuild failed. See log for more info.')
 
     def get_name_version(self):
-        split_name_version = self._stripped_name_version.rsplit('-', 2)
-        if len(split_name_version) == 3:
-            if not split_name_version[2].startswith('py'):
-                split_name_version[0] = '-'.join(split_name_version[0:2])
-                split_name_version[1] = split_name_version[2]
-
-        return (split_name_version[0], split_name_version[1])
+        name, version = self.name_version_pattern.search(self._stripped_name_version).groups()
+        if version[-1] == '.':
+            version = version[:-1]
+        return (name, version)

@@ -21,6 +21,7 @@ def generator_to_list(fn):
         return list(fn(*args, **kw))
     return wrapper
 
+
 @generator_to_list
 def flat_list(lst):
     """This function flatten given nested list.
@@ -37,6 +38,30 @@ def flat_list(lst):
         yield lst
 
 
+class ZipWrapper(object):
+    """wrapps ZipFile to behave like TarFile"""
+
+    def __init__(self, obj):
+        if not isinstance(obj, ZipFile):
+            raise TypeError("Object must be ZipFile, type of {} is {}".format(
+                obj, type(obj)))
+        self._wrapped_obj = obj
+
+    def __getattr__(self, attr):
+        if attr in self.__dict__:
+            return getattr(self, attr)
+        return getattr(self._wrapped_obj, attr)
+
+    def getmembers(self, *args, **kwargs):
+        return self._wrapped_obj.infolist(*args, **kwargs)
+
+    def extractfile(self, *args, **kwargs):
+        return self._wrapped_obj.open(*args, **kwargs)
+
+    def open(self, *args, **kwargs):
+        return self._wrapped_obj(*args, **kwargs)
+
+
 class Archive(object):
 
     """Class representing package archive. All the operations must be run using with statement.
@@ -46,23 +71,12 @@ class Archive(object):
     with archive as a:
         a.get_contents_of_file('spam.py')
     """
-    monkey_patched_zip = False
-
-    @classmethod
-    def monkey_patch_zip(cls):
-        if not cls.monkey_patched_zip:
-            # monkey patch ZipFile to behave like TarFile
-            ZipFile.getmembers = ZipFile.infolist
-            ZipFile.extractfile = ZipFile.open
-            ZipFile.open = ZipFile
-            ZipInfo.name = ZipInfo.filename
-            cls.monkey_patched_zip = True
 
     def __init__(self, local_file):
         self.file = local_file
         self.name, self.suffix = os.path.splitext(local_file)
         self.handle = None
-        self.monkey_patch_zip()
+        ZipInfo.name = ZipInfo.filename
 
     @property
     def is_zip(self):
@@ -82,7 +96,10 @@ class Archive(object):
 
     def open(self):
         try:
-            self.handle = self.extractor_cls.open(self.file)
+            if self.extractor_cls == ZipFile:
+                self.handle = ZipWrapper(self.extractor_cls(self.file))
+            else:
+                self.handle = self.extractor_cls.open(self.file)
         except BaseException:
             self.handle = None
             logger.error('Failed to open archive: {0}.'.format(self.file), exc_info=True)
@@ -133,11 +150,26 @@ class Archive(object):
         if self.handle:
             for member in self.handle.getmembers():
                 if (full_path and member.name == name)\
-                or (not full_path and os.path.basename(member.name) == name):
+                        or (not full_path and os.path.basename(member.name) == name):
                     extracted = self.handle.extractfile(member)
                     return extracted.read().decode(locale.getpreferredencoding())
 
         return None
+
+    def extract_file(self, name, full_path=False, directory="."):
+        """Extract a member from the archive to the specified working directory.
+        Behaviour of name and pull_path is the same as in function get_content_of_file.
+        """
+        if self.handle:
+            for member in self.handle.getmembers():
+                if (full_path and member.name == name or
+                        not full_path and os.path.basename(member.name) == name):
+                    self.handle.extract(member, path=directory)   # TODO handle KeyError exception
+
+    def extract_all(self, directory=".", members=None):
+        """Extract all member from the archive to the specified working directory."""
+        if self.handle:
+            self.handle.extractall(path=directory, members=members)
 
     def has_file_with_suffix(self, suffixes):  # TODO: maybe implement this using get_files_re
         """Finds out if there is a file with one of suffixes in the archive.
@@ -186,7 +218,7 @@ class Archive(object):
                 if isinstance(member, TarInfo) and member.isdir():
                     pass  # for TarInfo files, filter out directories
                 elif (full_path and compiled_re.search(member.name))\
-                or (not full_path and compiled_re.search(os.path.basename(member.name))):
+                        or (not full_path and compiled_re.search(os.path.basename(member.name))):
                     found.append(member.name)
 
         return found
@@ -202,14 +234,17 @@ class Archive(object):
 
         if self.handle:
             for member in self.handle.getmembers():
-                if isinstance(member, ZipInfo):  # zipfiles only list directories => have to work around that
+                # zipfiles only list directories => have to work around that
+                if isinstance(member, ZipInfo):
                     to_match = os.path.dirname(member.name)
-                elif isinstance(member, TarInfo) and member.isdir():  # tarfiles => only match directories
+                # tarfiles => only match directories
+                elif isinstance(member, TarInfo) and member.isdir():
                     to_match = member.name
                 else:
                     to_match = None
                 if to_match:
-                    if (full_path and compiled_re.search(to_match)) or (not full_path and compiled_re.search(os.path.basename(to_match))):
+                    if ((full_path and compiled_re.search(to_match))
+                            or (not full_path and compiled_re.search(os.path.basename(to_match)))):
                         found.add(to_match)
 
         return list(found)
@@ -226,9 +261,11 @@ class Archive(object):
         as 'scripts', which is very nice :)
 
         Args:
-            setup_argument: name of the argument of setup() function to get value of
+            setup_argument: name of the argument of setup() function
+                            to get value of
         Returns:
-            The requested setup() argument or empty list, if setup.py can't be open (or argument is not present).
+            The requested setup() argument or empty list, if setup.py
+            can't be open (or argument is not present).
         """
         argument = []
         cont = False
@@ -277,12 +314,14 @@ class Archive(object):
             argument[-1] = argument[-1].rstrip().rstrip(',')
             try:
                 return flat_list(eval(' '.join(argument).strip()))
-            except:  # something unparsable in the list - different errors can come out - function undefined, syntax error, ...
+            # something unparsable in the list - different errors can come out -
+            # function undefined, syntax error, ...
+            except:
                 logger.warn('Something unparsable in the list.', exc_info=True)
                 return []
 
     def has_argument(self, argument):
-        """A simple method that finds out if setup() function from setup.py 
+        """A simple method that finds out if setup() function from setup.py
            is called with given argument.
         Args:
             argument: argument to look for
@@ -306,12 +345,19 @@ class Archive(object):
 
     @property
     def json_wheel_metadata(self):
-        """Simple getter that get content of pydist.json file in .whl archive
+        """Simple getter that get content of metadata.json file in .whl archive
         Returns:
-            metadata from pydist.json in json format
+            metadata from metadata.json in json format
         """
+        try:
+            json_file = json.loads(self.get_content_of_file('metadata.json'))
+        except TypeError:
+            json_file = json.loads(self.get_content_of_file('pydist.json'))
+        return json_file
 
-        return json.loads(self.get_content_of_file('pydist.json'))
+    def wheel_description(self):
+        """Get content of DESCRIPTION file in .whl archive"""
+        return self.get_content_of_file('DESCRIPTION.rst')
 
     @property
     def record(self):
@@ -325,7 +371,7 @@ class Archive(object):
         if self.get_content_of_file('RECORD'):
             lines = self.get_content_of_file('RECORD').splitlines()
             for line in lines:
-                if 'dist-info' in line:
+                if 'dist-info' in line or '/' not in line:
                     continue
                 elif '.data/scripts' in line:
                     script = line.split(',', 1)[0]

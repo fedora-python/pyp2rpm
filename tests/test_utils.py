@@ -3,7 +3,9 @@ import pytest
 from pyp2rpm import utils
 from pyp2rpm import settings
 
+
 class TestUtils(object):
+
     def test_memoize_by_args(self):
         assert self.memoized(1) == 1
         assert hasattr(self, 'memoized_called')
@@ -22,7 +24,8 @@ class TestUtils(object):
         ([], ""),
         (['License :: OSI Approved :: Python Software Foundation License'], 'Python'),
         (['Classifier: License :: OSI Approved :: Python Software Foundation License'], 'Python'),
-        (['License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)', 'License :: OSI Approved :: MIT License'], 'GPLv2+ and MIT'),
+        (['License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
+          'License :: OSI Approved :: MIT License'], 'GPLv2+ and MIT'),
     ])
     def test_license_from_trove(self, input, expected):
         assert utils.license_from_trove(input) == expected
@@ -40,11 +43,11 @@ class TestUtils(object):
     @pytest.mark.parametrize(('input', 'expected'), [
         ([['Requires', 'pkg'], ['Requires', 'pkg2']],
          [['BuildRequires', 'pkg'], ['BuildRequires', 'pkg2']]),
-        ([['Requires', 'pkg', '>=', '1.4.29'], ['Requires', 'python-setuptools']], 
+        ([['Requires', 'pkg', '>=', '1.4.29'], ['Requires', 'python-setuptools']],
          [['BuildRequires', 'pkg', '>=', '1.4.29'], ['BuildRequires',
-             'python-setuptools']]),
-         ([], []),
-         ([[], []], [[], []]),
+                                                     'python-setuptools']]),
+        ([], []),
+        ([[], []], [[], []]),
     ])
     def test_runtime_to_build(self, input, expected):
         assert utils.runtime_to_build(input) == expected
@@ -60,9 +63,3 @@ class TestUtils(object):
     ])
     def test_unique_deps(self, input, expected):
         assert utils.unique_deps(input) == expected
-
-
-
-
-
-
