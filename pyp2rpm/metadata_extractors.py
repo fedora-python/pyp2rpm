@@ -352,9 +352,9 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
                                           ['BuildRequires', 'python-setuptools']]
         else:
             archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
-            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
-                                          ['BuildRequires', 'python-setuptools']]\
-                + self.build_deps_from_setup_py
+            archive_data['build_deps'] = utils.unique_deps([['BuildRequires', 'python2-devel'],
+                                                            ['BuildRequires', 'python-setuptools']]
+                                                            + self.build_deps_from_setup_py)
 
         py_vers = self.versions_from_archive
         archive_data['base_python_version'] = py_vers[0] if py_vers \
@@ -414,7 +414,8 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
 
     @property
     def build_deps_from_setup_py(self):
-        return self.name_convert_deps_list(deps_from_pyp_format(self.distribution.build_requires))
+        return self.name_convert_deps_list(deps_from_pyp_format(self.distribution.build_requires,
+                                                                runtime=False))
 
     @property
     def conflicts(self):
