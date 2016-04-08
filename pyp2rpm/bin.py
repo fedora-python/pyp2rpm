@@ -111,6 +111,8 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
             # if user provide save_path then save spec in provided path
             spec_path = d + '/' + spec_name
         logger.debug('Opening specfile: {0}.'.format(spec_path))
+        if not utils.PY3:
+            converted = converted.encode('utf-8')
         with open(spec_path, 'w') as f:
             f.write(converted)
             logger.info('Specfile saved at: {0}.'.format(spec_path))
