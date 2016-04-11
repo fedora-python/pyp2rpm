@@ -1,3 +1,7 @@
+3.0.1
+* Prevent double occurance of python-setuptools in Build Requires
+* Fix encoding of converted string in Python 2, issue #28
+
 3.0.0
 * Metadata extraction from setup.py based on distutils command
 * Completely independent wheel metadata extractor
