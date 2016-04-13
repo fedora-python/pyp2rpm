@@ -54,6 +54,6 @@ def register_file_log_handler(log_file, level=logging.DEBUG, fmt=file_formatter)
 
 def register_console_log_handler(level=logging.INFO, fmt=console_formatter):
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.addFilter(LevelFilter(level))
+    console_handler.setLevel(level)
     console_handler.setFormatter(fmt)
     logger.addHandler(console_handler)
