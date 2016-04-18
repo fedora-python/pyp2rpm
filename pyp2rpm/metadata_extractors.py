@@ -12,7 +12,6 @@ except ImportError:
     import xmlrpc.client as xmlrpclib
 
 from pyp2rpm import archive
-from pyp2rpm import virtualenv
 from pyp2rpm.dependency_parser import deps_from_pyp_format, deps_from_pydit_json
 from pyp2rpm.exceptions import VirtualenvFailException
 from pyp2rpm.package_data import PackageData
@@ -20,6 +19,10 @@ from pyp2rpm.logger import LoggerWriter
 from pyp2rpm import settings
 from pyp2rpm import utils
 from pyp2rpm import extract_distribution
+try:
+    from pyp2rpm import virtualenv
+except ImportError:
+    virtualenv = None
 
 logger = logging.getLogger(__name__)
 
@@ -154,7 +157,7 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
-        if not self.metadata_extension:  # Venv data were extracted during first call
+        if virtualenv is not None:
             data.set_from(self.data_from_venv, update=True)
 
         if "scripts" in data.data:
