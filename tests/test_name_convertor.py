@@ -1,6 +1,6 @@
 import pytest
 
-from pyp2rpm.name_convertor import NameConvertor
+from pyp2rpm.name_convertor import NameConvertor, DandifiedNameConvertor, NameVariants
 from pyp2rpm import settings
 
 
@@ -42,3 +42,60 @@ class TestUtils(object):
     ])
     def test_rpm_versioned_name(self, name, version, expected):
         assert NameConvertor.rpm_versioned_name(name, version) == expected
+
+
+class TestDandifiedNameConvertor(object):
+
+    def setup_method(self, method):
+        self.dnc = DandifiedNameConvertor('fedora')
+
+    @pytest.mark.parametrize(('pypi_name', 'version', 'expected'), [
+        ('Babel', '2', 'python-babel'),
+        ('Babel', '3', 'python3-babel'),
+        ('MarkupSafe', '2', 'python-markupsafe'),
+        ('MarkupSafe', '3', 'python3-markupsafe'),
+        ('Jinja2', '2', 'python-jinja2'),
+        ('Jinja2', '3', 'python3-jinja2'),
+        ('Sphinx', '2', 'python-sphinx'),
+        ('Sphinx', '3', 'python3-sphinx'),
+        ('Cython', '2', 'Cython'),
+        ('Cython', '3', 'python3-Cython'),
+        ('pytest', '2', 'pytest'),
+        ('pytest', '3', 'python3-pytest'),
+        ('vertica', '2', 'vertica-python'),
+    ])
+    def test_rpm_name(self, pypi_name, version, expected):
+        assert self.dnc.rpm_name(pypi_name, version) == expected
+
+
+class TestNameVariants(object):
+
+    def setup_method(self, method):
+        self.nv = NameVariants('foo', '3')
+        self.mv = NameVariants('foo', '')
+
+    @pytest.mark.parametrize(('version', 'input_list', 'expected'), [
+        ('3', ['python3-Foo', 'foo-python', 'python-foo'], 'python3-Foo'),
+        ('', ['python3-Foo', 'foo-python', 'python-foo'], 'python-foo'),
+        ('2', ['python3-Foo', 'foo-python', 'foo'], 'foo'),
+    ])
+    def test_best_matching(self, version, input_list, expected):
+        self.nv.version = version
+        self.nv.names_init()
+        self.nv.variants_init()
+        for name in input_list:
+            self.nv.find_match(name)
+        assert self.nv.best_matching == expected
+
+    @pytest.mark.parametrize(('first_list', 'second_list', 'expected'), [
+        (['python3-foo', 'py3foo'], ['foo', 'python-foo'], {'python_ver_name': 'python3-foo',
+                                                            'pyver_name': 'py3foo',
+                                                            'name_python_ver': None,
+                                                            'raw_name': 'foo'})
+
+    ])
+    def test_merge(self, first_list, second_list, expected):
+        for first, second in zip(first_list, second_list):
+            self.nv.find_match(first)
+            self.mv.find_match(second)
+        assert self.nv.merge(self.mv).variants == expected
