@@ -1,3 +1,7 @@
+3.0.2
+* Make virtualenv-api an optional require
+* Fix console logger issue
+
 3.0.1
 * Prevent double occurance of python-setuptools in Build Requires
 * Fix encoding of converted string in Python 2, issue #28
