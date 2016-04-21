@@ -1,5 +1,6 @@
 import getpass
 import logging
+import os
 
 from pyp2rpm.convertor import Convertor
 from pyp2rpm import settings
@@ -110,7 +111,11 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
         else:
             # if user provide save_path then save spec in provided path
             spec_path = d + '/' + spec_name
+        spec_dir = os.path.dirname(spec_path)
+        if not os.path.exists(spec_dir):
+            os.makedirs(spec_dir)
         logger.debug('Opening specfile: {0}.'.format(spec_path))
+
         if not utils.PY3:
             converted = converted.encode('utf-8')
         with open(spec_path, 'w') as f:
