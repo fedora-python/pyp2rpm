@@ -62,7 +62,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               metavar='VERSION')
 @click.option('--venv / --no-venv',
               default=True,
-              help='Enable / disable metadata extraction from virtualenv')
+              help='Enable / disable metadata extraction from virtualenv (default: enabled).')
 @click.argument('package', nargs=1)
 def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
     """Convert PyPI package to RPM specfile or SRPM.
