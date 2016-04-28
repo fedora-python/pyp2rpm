@@ -3,6 +3,7 @@ import pytest
 from pyp2rpm.name_convertor import NameConvertor, DandifiedNameConvertor, NameVariants
 from pyp2rpm import settings
 
+settings.CONSOLE_LOGGING = True
 
 class TestUtils(object):
 
