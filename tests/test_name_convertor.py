@@ -3,6 +3,11 @@ import pytest
 from pyp2rpm.name_convertor import NameConvertor, DandifiedNameConvertor, NameVariants
 from pyp2rpm import settings
 
+try:
+    import dnf
+except ImportError:
+    dnf = None
+
 settings.CONSOLE_LOGGING = True
 
 class TestUtils(object):
@@ -65,6 +70,7 @@ class TestDandifiedNameConvertor(object):
         ('pytest', '3', 'python3-pytest'),
         ('vertica', '2', 'vertica-python'),
     ])
+    @pytest.mark.skipif(dnf is None, reason="Optional dependency DNF required")
     def test_rpm_name(self, pypi_name, version, expected):
         assert self.dnc.rpm_name(pypi_name, version) == expected
 
