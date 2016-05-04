@@ -175,11 +175,22 @@ class DandifiedNameConvertor(NameConvertor):
             return converted
 
         logger.debug("Converted name not found, searches for correct form")
+
         not_versioned_name = NameVariants(self.base_name(original_name), '')
         versioned_name = NameVariants(self.base_name(original_name), python_version)
+
+        if self.base_name(original_name).startswith("py"):
+            nonpy_name = NameVariants(self.base_name(
+                original_name)[2:], python_version)
+
         for pkg in python_query:
             versioned_name.find_match(pkg.name)
             not_versioned_name.find_match(pkg.name)
+            if 'nonpy_name' in locals():
+                nonpy_name.find_match(pkg.name)
+
+        if 'nonpy_name' in locals():
+            versioned_name = versioned_name.merge(nonpy_name)
 
         correct_form = versioned_name.merge(not_versioned_name).best_matching
         logger.debug("Most likely correct form of the name {0}.".format(correct_form))

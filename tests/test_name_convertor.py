@@ -69,6 +69,8 @@ class TestDandifiedNameConvertor(object):
         ('pytest', '2', 'pytest'),
         ('pytest', '3', 'python3-pytest'),
         ('vertica', '2', 'vertica-python'),
+        ('pycairo', '2', 'pycairo'),
+        ('pycairo', '3', 'python3-cairo'),
     ])
     @pytest.mark.skipif(dnf is None, reason="Optional dependency DNF required")
     def test_rpm_name(self, pypi_name, version, expected):
