@@ -19,7 +19,7 @@ DEFAULT_PREP = '%autosetup -n %{upstream_name}-%{unmangled_version}'
 DEFAULT_BUILD = '%{py2_build}'
 DEFAULT_INSTALL = '%{py3_install \--record=.python3-installfiles.txt}'
 DEFAULT_CLEAN = 'rm -rf $RPM_BUILD_ROOT'
-
+CONSOLE_LOGGING = False
 
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
                   'License :: OSI Approved :: Apache Software License': 'ASL %(TODO: version)s',

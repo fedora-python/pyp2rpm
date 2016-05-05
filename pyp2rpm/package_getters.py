@@ -120,7 +120,11 @@ class PypiDownloader(PackageGetter):
         return save_file
 
     def get_name_version(self):
-        return (self.name, self.version)
+        """Try to normalize unusual version string,
+        Returns name and version of the package.
+        """
+        version = '.'.join([c for c in self.version if c.isdigit()])
+        return (self.name, version)
 
 
 class LocalFileGetter(PackageGetter):
