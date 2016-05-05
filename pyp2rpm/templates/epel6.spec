@@ -1,6 +1,9 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
 %global pypi_name {{ data.name }}
+{%- for pv in data.python_versions %}
+%global with_python{{ pv }} 1
+{%- endfor %}
 
 Name:           {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(data.base_python_version) }}
 Version:        {{ data.version }}
@@ -37,24 +40,26 @@ Summary:        {{ data.summary }}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 {%- endif %}
-{% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
+{% call(pv) for_python_versions([data.base_python_version] + data.python_versions,
+data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
-rm -rf %{py{{pv}}dir}
-cp -a . %{py{{pv}}dir}
-find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|'
+rm -rf python{{pv}}
+cp -a . python{{pv}}
+find python{{pv}} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|'
 {%- endif %}
 {%- if data.sphinx_dir %}
-# generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...) #}
+# generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...)
+# #}
 sphinx-build{% if pv != data.base_python_version %}-{{ pv }}{% endif %} {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
-{% endcall %}
+{%- endcall %}
 
 %build
 {%- call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
-pushd %{py{{ pv }}dir}
+pushd python{{ pv }}
 {%- endif %}
 {% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}{{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py build
 {% if pv != data.base_python_version -%}
@@ -70,7 +75,7 @@ popd
 {%- endif -%}
 {%- call(pv) for_python_versions(data.python_versions + [data.base_python_version], data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
-pushd %{py{{ pv }}dir}
+pushd python{{ pv }}
 {%- endif %}
 {{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py install --skip-build --root %{buildroot}
 {%- if pv != data.base_python_version %}
@@ -83,11 +88,11 @@ popd
 {%- endif %}
 {%- endcall %}
 
-{% if data.has_test_suite %}
+{%- if data.has_test_suite %}
 %check
 {%- call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
-pushd %{py{{ pv }}dir}
+pushd python{{ pv }}
 {%- endif %}
 {{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py test
 {% if pv != data.base_python_version -%}
@@ -101,7 +106,7 @@ popd
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 {%- if data.scripts %}
 {%- for script in data.scripts %}
-%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+%{_bindir}/{{ script|script_name_for_python_version(pv, minor=False, default_number=False) }}
 {%- endfor %}
 {%- endif %}
 {%- if data.py_modules %}
@@ -130,7 +135,7 @@ popd
 {%- endif %}
 {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
-{%- endcall %}
+{% endcall %}
 
 %changelog
 * {{ data.changelog_date_packager }} - {{ data.version }}-1

@@ -21,7 +21,7 @@ class NameConvertor(object):
         self.reg_end = re.compile(r'(.*)-(python)(\d*|)$')
 
     @staticmethod
-    def rpm_versioned_name(name, version, default_number=False):
+    def rpm_versioned_name(name, version, default_number=False, epel=False):
         """Properly versions the name.
         For example:
         rpm_versioned_name('python-foo', '26') will return python26-foo
@@ -41,7 +41,8 @@ class NameConvertor(object):
             found = regexp.search(name)
             # second check is to avoid renaming of python2-devel to python-devel
             if found and found.group(2) != 'devel':
-                return 'python-{0}'.format(regexp.search(name).group(2))
+                if not epel:
+                    return 'python-{0}'.format(regexp.search(name).group(2))
             return name
 
         versioned_name = name
@@ -51,7 +52,9 @@ class NameConvertor(object):
                 versioned_name = re.sub(r'^python(\d*|)-', 'python{0}-'.format(version), name)
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
-
+            if epel and version != settings.DEFAULT_PYTHON_VERSION:
+                versioned_name = versioned_name.replace('{0}'.format(
+                    version), '%{{python{0}_pkgversion}}'.format(version))
         return versioned_name
 
     def rpm_name(self, name, python_version=None):

@@ -57,19 +57,26 @@ class Convertor(object):
 
     def merge_versions(self, data):
         """Merges python versions specified in command lines options with
-        extracted versions, checks if base version is not > 2 if EPEL template
+        extracted versions, checks if some of the versions is not > 2 if EPEL6 template
         will be used.
         """
+        if self.template == "epel6.spec":
+            # if user requested version greater than 2, writes error message and exits
+            if (any(int(ver[0]) > 2 for ver in self.python_versions
+                + ([self.base_python_version] if self.base_python_version else [])
+                + [data.base_python_version])):
+                sys.stderr.write("Invalid version, major number of python version for EPEL6 "
+                        "spec file must not be greater than 2.\n".format(self.base_python_version))
+                sys.exit(1)
+            # if version greater than 2 were extracted it is removed
+            data.python_versions = [ver for ver in data.python_versions if not int(ver[0]) > 2]
+
         if self.base_python_version or self.python_versions:
             data.base_python_version = self.base_python_version
             data.python_versions = [v for v in self.python_versions
                                     if not v == data.base_python_version]
         elif data.base_python_version in data.python_versions:
             data.python_versions.remove(data.base_python_version)
-        if self.template == "epel.spec" and int(data.base_python_version[0]) > 2:
-            sys.stderr.write("Invalid base version: {0}, major number of base version for EPEL "
-            "spec file must not be greater than 2.\n".format(self.base_python_version))
-            sys.exit(1)
 
     def convert(self):
         """Returns RPM SPECFILE.
