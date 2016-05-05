@@ -50,6 +50,7 @@ class PypiDownloader(PackageGetter):
             logger.error('Package "{0}" could not be found on PyPI.'.format(name))
 
         self.version = version or self.versions[0]
+        self.digit_sequence = re.compile(r'\d+')
 
         # if version is specified, will check if such version exists
         if version and self.client.release_urls(name, version) == []:
@@ -123,7 +124,7 @@ class PypiDownloader(PackageGetter):
         """Try to normalize unusual version string,
         Returns name and version of the package.
         """
-        version = '.'.join([c for c in self.version if c.isdigit()])
+        version = '.'.join(self.digit_sequence.findall(self.version))
         return (self.name, version)
 
 
