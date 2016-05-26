@@ -15,6 +15,11 @@ try:
 except ImportError:
     import xmlrpc.client as xmlrpclib
 
+try:
+    import dnf
+except ImportError:
+    dnf = None
+
 import jinja2
 
 from pyp2rpm import exceptions
@@ -43,7 +48,7 @@ class Convertor(object):
         self.base_python_version = base_python_version
         self.python_versions = list(python_versions)
         self.template = template
-        self.name_convertor = name_convertor.NameConvertor(distro)
+        self.distro = distro
         if not self.template.endswith('.spec'):
             self.template = '{0}.spec'.format(self.template)
         self.rpm_name = rpm_name
@@ -144,6 +149,15 @@ class Convertor(object):
         """Setter for local_file attribute
         """
         self._local_file = value
+
+    @property
+    def name_convertor(self):
+        if not hasattr(self, '_name_convertor'):
+            if dnf is None:
+                self._name_convertor = name_convertor.NameConvertor(self.distro)
+            else:
+                self._name_convertor = name_convertor.DandifiedNameConvertor(self.distro)
+        return self._name_convertor
 
     @property
     def metadata_extractor(self):
