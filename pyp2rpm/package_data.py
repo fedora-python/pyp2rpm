@@ -25,6 +25,7 @@ class PackageData(object):
 
     def __init__(self, local_file, name, pkg_name, version, md5='', url=''):
         object.__setattr__(self, 'data', {})
+        # Exparimental fix of version
         self.data['local_file'] = local_file
         self.data['name'] = name
         self.data['pkg_name'] = pkg_name

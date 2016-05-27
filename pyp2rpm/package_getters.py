@@ -64,6 +64,7 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
                 md5_digest = release_url['md5_digest']
                 break
     if not url:
+        logger.warning("Url of source archive not found.")
         return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
 
     if not hashed_format:
@@ -112,7 +113,6 @@ class PypiDownloader(PackageGetter):
             logger.error('Package "{0}" could not be found on PyPI.'.format(name))
 
         self.version = version or self.versions[0]
-        self.digit_sequence = re.compile(r'\d+')
 
         # if version is specified, will check if such version exists
         if version and self.client.release_urls(name, version) == []:
@@ -166,8 +166,7 @@ class PypiDownloader(PackageGetter):
         """Try to normalize unusual version string,
         Returns name and version of the package.
         """
-        version = '.'.join(self.digit_sequence.findall(self.version))
-        return (self.name, version)
+        return (self.name, self.version)
 
 
 class LocalFileGetter(PackageGetter):
