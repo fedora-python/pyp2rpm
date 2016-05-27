@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -9,6 +10,11 @@ try:
     import urllib.request as request
 except ImportError:
     import urllib as request
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
+
 
 from pyp2rpm import settings
 from pyp2rpm import exceptions
@@ -93,7 +99,13 @@ class PypiDownloader(PackageGetter):
     def __init__(self, client, name, version=None, save_dir=None):
         self.client = client
         self.name = name
-        self.versions = self.client.package_releases(self.name)
+        try:
+            self.versions = self.client.package_releases(self.name)
+        except xmlrpclib.ProtocolError as e:
+            sys.stderr.write("Failed to connect to server, PyPI is down for maintenance,"
+                             " or is having an outage.\n")
+            raise SystemExit(3)
+
         if not self.versions:  # If versions is empty list then there is no such package on PyPI
             raise exceptions.NoSuchPackageException(
                 'Package "{0}" could not be found on PyPI.'.format(name))
