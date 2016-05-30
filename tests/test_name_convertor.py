@@ -10,6 +10,7 @@ except ImportError:
 
 settings.CONSOLE_LOGGING = True
 
+
 class TestUtils(object):
 
     def setup_method(self, method):
@@ -71,6 +72,8 @@ class TestDandifiedNameConvertor(object):
         ('vertica', '2', 'vertica-python'),
         ('pycairo', '2', 'pycairo'),
         ('pycairo', '3', 'python3-cairo'),
+        ('oslosphinx', '2', 'python-oslo-sphinx'),
+        ('oslosphinx', '3', 'python3-oslo-sphinx'),
     ])
     @pytest.mark.skipif(dnf is None, reason="Optional dependency DNF required")
     def test_rpm_name(self, pypi_name, version, expected):
