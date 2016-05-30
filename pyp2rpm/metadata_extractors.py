@@ -141,7 +141,7 @@ class LocalMetadataExtractor(object):
             setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
         # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
-        if data.has_packages and data.packages == "TODO:":
+        if data.has_packages and data.packages in ("TODO:", set()):
             data.packages = set([data.name])
 
         return data

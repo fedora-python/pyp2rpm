@@ -21,6 +21,7 @@ except ImportError:
     dnf = None
 
 import jinja2
+import pprint
 
 from pyp2rpm import exceptions
 from pyp2rpm import filters
@@ -80,6 +81,8 @@ class Convertor(object):
 
         self.local_file = local_file
         data = self.metadata_extractor.extract_data(self.client)
+        logger.debug('Extracted metadata:')
+        logger.debug(pprint.pformat(data.data))
 
         if self.base_python_version or self.python_versions:
             data.base_python_version = self.base_python_version
