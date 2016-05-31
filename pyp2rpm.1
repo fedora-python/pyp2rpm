@@ -1,0 +1,95 @@
+.TH pyp2rpm(1)
+
+.SH NAME
+.B pyp2rpm
+Tool which convert a package from PyPI to RPM specfile or SRPM.
+
+.SH SYNOPSIS
+.B pyp2rpm
+[-h] [-v VERSION] [-d SAVE_DIR] [-r RPM_NAME] [-t TEMPLATE]
+[-o DISTRO] [-b BASE_PYTHON] [-p PYTHON_VERSION] [--srpm] [--proxy PROXY]
+.B PACKAGE
+
+
+.SH ARGUMENTS
+.B PACKAGE
+PyPI name of the package or path to compressed source file.
+
+.SH DESCRIPTION
+Tool convert Python package to RPM SPECFILES. The package can be download from PyPI or from the local filesystem and the produced SPEC is in line with Fedora packaging Guidelines or Mageia Python Policy.
+.PP
+Users can provide their own templates for rendering the package metadata. Both the package source and metadata can be extracted from PyPI or from local filesystem (local file doesn't provide that much information though).
+
+.SH OPTIONS
+.TP
+.B "\-t \-\-TEMPLATE"
+Template file (jinja2 format) to render (default: "fedora").
+Search order is: 1) filesystem, 2) default templates.
+.TP
+.B "\-v \-\-VERSION"
+Version of the package to download (ignored for local files).
+.TP
+.B "\-d \-\-SAVE_DIR"
+Where to save the package file (default: "~/rpmbuild").
+.TP
+.B "\-r \-\-RPM_NAME"
+Name of rpm package (overrides calculated name).
+.TP
+.B "\-o \-\-DISTRO"
+Default distro whose conversion rules to use (default: "fedora"). Default templates have their rules associated and ignore this.
+.TP
+.B "\-b \-\-BASE_PYTHON"
+Base Python version to package for (default: "2").
+.TP
+.B "\-p \-\-PYTHON_VERSIONS"
+Additional Python versions to include in the specfile (e.g. -p3 f or %{?with_python3}). Specify additional version or use -b explicitly to disable default.
+.TP
+.B "\--srpm \ "
+When used pyp2rpm will produce srpm instead of printing specfile into sdout.
+.TP
+.B "\-s \"
+Spec file ~/rpmbuild/SPECS/python-package_name.spec will be created (default: prints spec file to stdout).
+.TP
+.B "\-n \-\-PYPI_NAME"
+Name of the package on PyPI (ignore for local files).
+.TP
+.B "\--proxy \-\-PROXY"
+Specify proxy in the form proxy.server:port.
+.TP
+.B "\--venv / --no-venv \"
+Enable / disable metadata extraction from virtualenv.
+.TP
+.B "\-h , --help\"
+show this help message and exit.
+
+
+.SH EXAMPLES
+.TP
+.B pyp2rpm  [PACKAGE]
+Create the SPECFILE
+.TP
+.B pyp2rpm --srpm [PACKAGE]
+Create source RPM package
+.TP
+.B pyp2rpm -b 2 -p 3 [PACKAGE]
+Generate a SPECFILE for python2 and python3
+.TP
+.B pyp2rpm -b 3 [PACKAGE]
+Generate a SPECFILE for python3
+.TP
+.B pyp2rpm ~/rpmbuild/SOURCES/python_package_name.tar.gz
+Pick up package from the local filesystem.
+
+ 
+
+	
+
+.SH LANGUAGE
+PYTHON
+
+.SH LICENCE
+MIT
+
+.SH AUTHOR
+Writen by Bohuslav "Slavek" Kabrda, Robert Kuska, Michal Cyprian
+
