@@ -198,4 +198,4 @@ class DandifiedNameConvertor(NameConvertor):
 
 
 def canonical_form(name):
-    return name.lower().replace('-', '_')
+    return name.lower().replace('-', '').replace('_', '')

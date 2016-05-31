@@ -3,6 +3,7 @@ import locale
 import logging
 import os
 import re
+import sre_constants
 import string
 
 from zipfile import ZipFile, ZipInfo
@@ -206,10 +207,14 @@ class Archive(object):
         Returns:
             List of full paths of files inside the archive that match the given file_re.
         """
-        if ignorecase:
-            compiled_re = re.compile(file_re, re.I)
-        else:
-            compiled_re = re.compile(file_re)
+        try:
+            if ignorecase:
+                compiled_re = re.compile(file_re, re.I)
+            else:
+                compiled_re = re.compile(file_re)
+        except sre_constants.error:
+            logger.error("Failed to compile regex: {}.".format(file_re))
+            return []
 
         found = []
 

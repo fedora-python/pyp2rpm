@@ -6,10 +6,39 @@ import pytest
 
 from flexmock import flexmock
 
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
+
 from pyp2rpm.package_getters import *
 from pyp2rpm.exceptions import *
+from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
+
+
+class TestPackageGetters(object):
+    client = xmlrpclib.ServerProxy(settings.PYPI_URL)
+
+    @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf', 'expected_url', 'expected_md5'), [
+        ('setuptools', '18.3.1', False, False,
+         'https://files.pythonhosted.org/packages/source/s/setuptools/setuptools-18.3.1.tar.gz',
+         '748187b93152fa60287dfb896837fd7c'),
+        ('setuptools', '18.3.1', True, False,
+         'https://files.pythonhosted.org/packages/source/s/setuptools/setuptools-18.3.1-py2.py3-none-any.whl',
+         'a21a4d02d0bab2eac499cca72faeb076'),
+        ('setuptools', '18.3.1', False, True,
+         'https://pypi.python.org/packages/86/8a/c4666b05c74e840eb9b09d28f4e7ae76fc9075e8c653d0eb4d265a5b49d9/setuptools-18.3.1.tar.gz',
+         '748187b93152fa60287dfb896837fd7c'),
+        ('pypandoc', '1.1.3', False, False,
+         'https://files.pythonhosted.org/packages/source/p/pypandoc/pypandoc-1.1.3.zip',
+         '771f376bf9c936a90159cd94235998c2'),
+        ('nonexistent_pkg', '0.0.0', False, False, 'FAILED TO EXTRACT FROM PYPI',
+         'FAILED TO EXTRACT FROM PYPI'),
+    ])
+    def test_get_url(self, name, version, wheel, hf, expected_url, expected_md5):
+        assert (expected_url, expected_md5) == get_url(self.client, name, version, wheel, hf)
 
 
 class TestPypiFileGetter(object):

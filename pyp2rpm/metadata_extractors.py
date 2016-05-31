@@ -15,6 +15,7 @@ from pyp2rpm import archive
 from pyp2rpm.dependency_parser import deps_from_pyp_format, deps_from_pydit_json
 from pyp2rpm.exceptions import VirtualenvFailException
 from pyp2rpm.package_data import PackageData
+from pyp2rpm.package_getters import get_url
 from pyp2rpm.logger import LoggerWriter
 from pyp2rpm import settings
 from pyp2rpm import utils
@@ -34,41 +35,17 @@ def pypi_metadata_extension(extraction_fce):
 
     def inner(self, client=None):
         data = extraction_fce(self)
-        if client is None:
-            logger.debug("Client is None, skipping metadata extraction from PyPI.")
-            return data
         try:
-            release_urls = client.release_urls(self.name, self.version)
+            if client is None:
+                raise ValueError("Client is None.")
             release_data = client.release_data(self.name, self.version)
-        except:  # some kind of error with client => return TODO: log the failure
-            logger.debug('Client: {0} Name: {1} Version: {2}.'.format(
-                client, self.name, self.version))
-            logger.warn('Some kind of error while communicating with client: {0}.'.format(
+        except:
+            logger.warning('Some kind of error while communicating with client: {0}.'.format(
                 client), exc_info=True)
-            failure_dict = {'md5': 'FAILED TO EXTRACT FROM PYPI',
-                            'url': 'FAILED TO EXTRACT FROM PYPI'}
-            data.set_from(failure_dict, update=True)
             return data
 
-        url = ''
-        md5_digest = None
-
-        if len(release_urls):
-            zip_url = zip_md5 = ''
-            for release_url in release_urls:
-                if release_url['url'].endswith("tar.gz"):
-                    url = release_url['url']
-                    md5_digest = release_url['md5_digest']
-                if release_url['url'].endswith(".zip"):
-                    zip_url = release_url['url']
-                    zip_md5 = release_url['md5_digest']
-            if url == '':
-                url = zip_url or release_urls[0]['url']
-                md5_digest = zip_md5 or release_urls[0]['md5_digest']
-        elif release_data:
-            url = release_data['download_url']
-
-        data_dict = {'md5': md5_digest, 'url': url}
+        url, md5_digest = get_url(client, self.name, self.version)
+        data_dict = {'url': url, 'md5': md5_digest}
 
         for data_field in settings.PYPI_USABLE_DATA:
             data_dict[data_field] = release_data.get(data_field, '')
@@ -164,7 +141,7 @@ class LocalMetadataExtractor(object):
             setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
         # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
-        if data.has_packages and data.packages == "TODO:":
+        if data.has_packages and data.packages in ("TODO:", set()):
             data.packages = set([data.name])
 
         return data
@@ -357,7 +334,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
             archive_data['build_deps'] = utils.unique_deps([['BuildRequires', 'python2-devel'],
                                                             ['BuildRequires', 'python-setuptools']]
-                                                            + self.build_deps_from_setup_py)
+                                                           + self.build_deps_from_setup_py)
 
         py_vers = self.versions_from_archive
         archive_data['base_python_version'] = py_vers[0] if py_vers \

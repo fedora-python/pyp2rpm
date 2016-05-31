@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -9,12 +10,68 @@ try:
     import urllib.request as request
 except ImportError:
     import urllib as request
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
+
 
 from pyp2rpm import settings
 from pyp2rpm import exceptions
 
 
 logger = logger = logging.getLogger(__name__)
+
+
+def get_url(client, name, version, wheel=False, hashed_format=False):
+    """Retrieves list of package URLs using PyPI's XML-RPC. Chooses URL of prefered
+    archive and md5_digest.
+    """
+    try:
+        release_urls = client.release_urls(name, version)
+        release_data = client.release_data(name, version)
+    except:  # some kind of error with client
+        logger.debug('Client: {0} Name: {1} Version: {2}.'.format(
+            client, name, version))
+        logger.warning('Some kind of error while communicating with client: {0}.'.format(
+            client), exc_info=True)
+        return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
+
+    url = ''
+    md5_digest = None
+
+    if not wheel:
+        # Prefered archive is tar.gz
+        if len(release_urls):
+            zip_url = zip_md5 = ''
+            for release_url in release_urls:
+                if release_url['url'].endswith("tar.gz"):
+                    url = release_url['url']
+                    md5_digest = release_url['md5_digest']
+                if release_url['url'].endswith(".zip"):
+                    zip_url = release_url['url']
+                    zip_md5 = release_url['md5_digest']
+            if url == '':
+                url = zip_url or release_urls[0]['url']
+                md5_digest = zip_md5 or release_urls[0]['md5_digest']
+        elif release_data:
+            url = release_data['download_url']
+    else:
+        # Only wheel is acceptable
+        for release_url in release_urls:
+            if release_url['url'].endswith("none-any.whl"):
+                url = release_url['url']
+                md5_digest = release_url['md5_digest']
+                break
+    if not url:
+        logger.warning("Url of source archive not found.")
+        return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
+
+    if not hashed_format:
+        url = "https://files.pythonhosted.org/packages/source/{0[0]}/{0}/{1}".format(
+            name, url.split("/")[-1])
+
+    return (url, md5_digest)
 
 
 class PackageGetter(object):
@@ -43,14 +100,19 @@ class PypiDownloader(PackageGetter):
     def __init__(self, client, name, version=None, save_dir=None):
         self.client = client
         self.name = name
-        self.versions = self.client.package_releases(self.name)
+        try:
+            self.versions = self.client.package_releases(self.name)
+        except xmlrpclib.ProtocolError as e:
+            sys.stderr.write("Failed to connect to server, PyPI is down for maintenance,"
+                             " or is having an outage.\n")
+            raise SystemExit(3)
+
         if not self.versions:  # If versions is empty list then there is no such package on PyPI
             raise exceptions.NoSuchPackageException(
                 'Package "{0}" could not be found on PyPI.'.format(name))
             logger.error('Package "{0}" could not be found on PyPI.'.format(name))
 
         self.version = version or self.versions[0]
-        self.digit_sequence = re.compile(r'\d+')
 
         # if version is specified, will check if such version exists
         if version and self.client.release_urls(name, version) == []:
@@ -82,24 +144,6 @@ class PypiDownloader(PackageGetter):
 
         self.temp_dir = tempfile.mkdtemp()
 
-    def url(self, wheel=False):
-        urls = self.client.release_urls(self.name, self.version)
-        if not wheel:
-            if urls:
-                zip_url = ''
-                for url in urls:
-                    if url['url'].endswith((".tar.gz")):
-                        return url['url']
-                    if url['url'].endswith((".zip")):
-                        zip_url = url['url']
-                return zip_url or urls[0]['url']
-            return self.client.release_data(self.name, self.version)['release_url']
-        else:
-            for url in urls:
-                if url['url'].endswith("none-any.whl"):
-                    return url['url']
-            return None
-
     def get(self, wheel=False):
         """Downloads the package from PyPI.
         Returns:
@@ -107,9 +151,7 @@ class PypiDownloader(PackageGetter):
         Raises:
             PermissionError if the save_dir is not writable.
         """
-        url = self.url(wheel)
-        if not url:
-            return None
+        url = get_url(self.client, self.name, self.version, wheel, hashed_format=True)[0]
         if wheel:
             save_dir = self.temp_dir
         else:
@@ -124,8 +166,7 @@ class PypiDownloader(PackageGetter):
         """Try to normalize unusual version string,
         Returns name and version of the package.
         """
-        version = '.'.join(self.digit_sequence.findall(self.version))
-        return (self.name, version)
+        return (self.name, self.version)
 
 
 class LocalFileGetter(PackageGetter):

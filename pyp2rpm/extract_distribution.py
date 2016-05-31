@@ -62,6 +62,8 @@ class extract_distribution(bdist_rpm_orig):
     def _list(var):
         if var is None:
             return []
+        if isinstance(var, str):
+            var = var.split('\n')
         elif not isinstance(var, list):
             raise DistutilsOptionError("{} is not a list".format(var))
         return var
