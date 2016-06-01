@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import re
 import tempfile
 import shutil
 import itertools
@@ -246,7 +247,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             settings.SPHINX_DIR_RE, full_path=True)
         for d in candidate_dirs:  # search for conf.py in the dirs (TODO: what if more are found?)
             contains_conf_py = len(self.archive.get_files_re(
-                r'{0}/conf.py'.format(d), full_path=True)) > 0
+                r'{0}/conf.py'.format(re.escape(d)), full_path=True)) > 0
             if contains_conf_py:
                 sphinx_dir = d
 
