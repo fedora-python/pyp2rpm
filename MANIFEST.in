@@ -4,3 +4,4 @@ include README.md
 include pyp2rpm/templates/*
 recursive-include tests *.py *.gz *.whl *.zip *.egg
 include tests/test_data/LICENSE
+include pyp2rpm.1
