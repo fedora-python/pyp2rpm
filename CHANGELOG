@@ -1,3 +1,9 @@
+3.1.0
+* Add DandifiedNameConvertor based on DNF API queries
+* Add support of PyPI's new URL format
+* Add man page
+* Fix bugs found during the analysis of automated builds from PyPI in Copr build system
+
 3.0.2
 * Make virtualenv-api an optional require
 * Fix console logger issue
