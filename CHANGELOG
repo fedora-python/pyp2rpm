@@ -1,3 +1,7 @@
+3.1.1
+* Add man page file to MANIFEST.in
+* Necessary to bump version because of PyPI release
+
 3.1.0
 * Add DandifiedNameConvertor based on DNF API queries
 * Add support of PyPI's new URL format
