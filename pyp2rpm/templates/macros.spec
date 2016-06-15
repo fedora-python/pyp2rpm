@@ -14,7 +14,9 @@ use_with=True) %}
 %if %{?with_python{{ python_version }}}
 {%- endif %}
 {%- for dep in deps -%}
+{%- if python_version == base_python_version or not dep[1] == 'python-sphinx' -%}
 {{ one_dep(dep, python_version) }}
+{%- endif -%}
 {%- endfor %}
 {%- if python_version != base_python_version and use_with %}
 %endif # if with_python{{ python_version }}
