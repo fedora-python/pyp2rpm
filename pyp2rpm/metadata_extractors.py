@@ -6,6 +6,7 @@ import tempfile
 import shutil
 import itertools
 import glob
+import textwrap
 from abc import ABCMeta, abstractmethod
 try:
     import xmlrpclib
@@ -55,6 +56,17 @@ def pypi_metadata_extension(extraction_fce):
         data_dict["license"] = utils.license_from_trove(release_data.get('classifiers', ''))
         data.set_from(data_dict, update=True)
         return data
+    return inner
+
+
+def process_description(description_fce):
+    """Removes special character delimiters, titles 
+    and wraps paragraphs.
+    """
+    def inner(description):
+        return textwrap.fill(re.sub('#|-|=|~|`', '',
+                                    re.sub('((\r?\n)|^).{0,8}((\r?\n)|$)', '',
+                                           description_fce(description)), 80))
     return inner
 
 
@@ -407,10 +419,12 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
         return utils.versions_from_trove(self.distribution.metadata.classifiers)
 
     @property
+    @process_description
     def long_description(self):
         """Shorten description on first newline after approx 10 lines"""
         if not self.distribution.metadata.long_description:
-            return ''
+            return 'TODO'
+
         cut = self.distribution.metadata.long_description.find('\n', 80 * 8)
         if cut > -1:
             return self.distribution.metadata.long_description[:cut] + '\n...'
@@ -520,6 +534,7 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
         return utils.versions_from_trove(self.classifiers)
 
     @property
+    @process_description
     def description(self):
         return self.archive.wheel_description()
 
