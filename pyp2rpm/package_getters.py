@@ -103,8 +103,7 @@ class PypiDownloader(PackageGetter):
         try:
             self.versions = self.client.package_releases(self.name)
         except xmlrpclib.ProtocolError as e:
-            sys.stderr.write("Failed to connect to server, PyPI is down for maintenance,"
-                             " or is having an outage.\n")
+            sys.stderr.write("Failed to connect to server: {0} \n".format(e))
             raise SystemExit(3)
 
         if not self.versions:  # If versions is empty list then there is no such package on PyPI
