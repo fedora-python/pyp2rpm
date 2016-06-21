@@ -182,7 +182,7 @@ class TestWheelMetadataExtractor(object):
             self.td_dir), 'setuptools', self.nc, '19.6.2'))
 
     @pytest.mark.parametrize(('what', 'expected'), [
-        ('doc_files', set(['DESCRIPTION.rst'])),
+        ('doc_files', ['DESCRIPTION.rst']),
         ('has_test_suite', True),
         ('py_modules', set(['_markerlib', 'pkg_resources', 'setuptools'])),
         ('runtime_deps', [['Requires', 'python-certifi', '==', '2015.11.20']])
@@ -198,12 +198,13 @@ class TestDistMetadataExtractor(object):
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
         self.e = [me.DistMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(
-                      self.td_dir), 'plumbum', self.nc, '0.9.0'),
-                  me.DistMetadataExtractor('{0}coverage_pth-0.0.1.tar.gz'.format(
-                      self.td_dir), 'coverage_pth', self.nc, '0.0.1')]
+            self.td_dir), 'plumbum', self.nc, '0.9.0'),
+            me.DistMetadataExtractor('{0}coverage_pth-0.0.1.tar.gz'.format(
+                self.td_dir), 'coverage_pth', self.nc, '0.0.1')]
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
-        (0, 'doc_files', ['README.rst', 'LICENSE']),
+        (0, 'doc_files', ['README.rst']),
+        (0, 'doc_license', ['LICENSE']),
         (0, 'has_test_suite', False),
         (0, 'license', 'MIT'),
         (0, 'build_cmd', '%{py2_build}'),

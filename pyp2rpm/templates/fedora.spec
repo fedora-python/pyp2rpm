@@ -75,6 +75,9 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 {%- endif %}
 {% for pv in [data.base_python_version] + data.python_versions %}
 %files -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }} 
+{%- if data.doc_license %}
+%license {{data.doc_license|join(' ')}}
+{%- endif %}
 %doc {{data.doc_files|join(' ') }}
 {%- for script in data.scripts %}
 {%- if pv == data.base_python_version %}

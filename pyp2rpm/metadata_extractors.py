@@ -354,8 +354,9 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             else settings.DEFAULT_PYTHON_VERSION
         archive_data['python_versions'] = py_vers[1:] if py_vers \
             else [settings.DEFAULT_ADDITIONAL_VERSION]
-
-        archive_data['doc_files'] = self.doc_files
+        doc_files = self.doc_files
+        archive_data['doc_files'] = [doc for doc in doc_files if 'license' not in doc.lower()]
+        archive_data['doc_license'] = [doc for doc in doc_files if 'license' in doc.lower()]
         archive_data['py_modules'] = self.py_modules
         archive_data['has_test_suite'] = self.has_test_suite
         archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
@@ -548,7 +549,9 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
         archive_data['license'] = self.license
         archive_data['summary'] = self.summary
         archive_data['home_page'] = self.home_page
-        archive_data['doc_files'] = self.doc_files
+        doc_files = self.doc_files
+        archive_data['doc_files'] = [doc for doc in doc_files if 'license' not in doc.lower()]
+        archive_data['doc_license'] = [doc for doc in doc_files if 'license' in doc.lower()]
         archive_data['has_pth'] = self.has_pth
         archive_data['runtime_deps'] = utils.unique_deps(self.runtime_deps)
         archive_data['build_deps'] = utils.unique_deps([['BuildRequires', 'python2-devel'],
