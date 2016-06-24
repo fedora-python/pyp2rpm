@@ -12,6 +12,7 @@ ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2',
                     '.gz', '.bz2', '.xz', '.zip', '.egg', '.whl']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
 DOC_FILES_RE = [r'readme.+', r'licens.+', r'copying.+']
+LICENSE_FILES = ['license', 'copyright', 'copying']
 SPHINX_DIR_RE = r'[^/]+/doc.?'
 PYPI_URL = 'https://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'home_page', 'requires']

@@ -103,7 +103,8 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
         if r:
             spec_name = r + '.spec'
         else:
-            spec_name = 'python-' + convertor.name + '.spec'
+            prefix = 'python-' if not convertor.name.startswith('python-') else ''
+            spec_name = prefix + convertor.name + '.spec'
         logger.info('Using name: {0} for specfile.'.format(spec_name))
         if d == settings.DEFAULT_PKG_SAVE_PATH:
             # default save_path is rpmbuild tree so we want to save spec

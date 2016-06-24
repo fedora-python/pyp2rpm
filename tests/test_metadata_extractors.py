@@ -174,11 +174,11 @@ the rest of meaningful text...''',
         assert self.desciption_fce(desc) == expected
 
 
-class TestSetupPyMetadataExtractor(object):
+class TestPyPIMetadataExtension(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
     client = flexmock(
         release_urls=lambda n, v: [{'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
-                                    'url': 'http://pypi.python.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
+                                    'url': 'https://files.pythonhosted.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
         release_data=lambda n, v: {'description': 'UNKNOWN',
                                    'release_url': 'http://pypi.python.org/pypi/restsh/0.1',
                                    'classifiers': ['Development Status :: 4 - Beta',
@@ -200,7 +200,7 @@ class TestSetupPyMetadataExtractor(object):
     @pytest.mark.parametrize(('what', 'expected'), [
         ('description', 'UNKNOWN'),
         ('md5', '9a7a2f6943baba054cf1c28e05a9198e'),
-        ('url', 'http://pypi.python.org/packages/source/r/restsh/restsh-0.1.tar.gz'),
+        ('url', 'https://files.pythonhosted.org/packages/source/r/restsh/restsh-0.1.tar.gz'),
         ('license', 'BSD'),
         ('summary', 'A simple rest shell client')
     ])
@@ -229,6 +229,23 @@ class TestSetupPyMetadataExtractor(object):
         data = self.e[i].extract_data()
         assert getattr(data, what) == expected
 
+    @pytest.mark.parametrize(('doc_files', 'license', 'other'), [
+        (['LICENSE', 'README'], ['LICENSE'], ['README']),
+        ([], [], []),
+        (['README', 'DESCRIPTION'], [], ['README', 'DESCRIPTION']),
+        (['LICENSE', './dir/LICENSE', 'README'], ['LICENSE', './dir/LICENSE'], ['README']),
+        (['LICENSE.MIT', './LICENSE.CC-BY-SA-3.0'],
+         ['LICENSE.MIT', './LICENSE.CC-BY-SA-3.0'], []),
+        (['README', 'COPYRIGHT'], ['COPYRIGHT'], ['README']),
+        (['COPYRIGHT.txt'], ['COPYRIGHT.txt'], []),
+        (['README', 'COPYING'], ['COPYING'], ['README']),
+    ])
+    def test_doc_files(self, doc_files, license, other):
+        flexmock(me.SetupPyMetadataExtractor).should_receive('doc_files').and_return(doc_files)
+        data = self.e[0].data_from_archive
+        assert data['doc_license'] == license
+        assert data['doc_files'] == other
+
 
 class TestWheelMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
@@ -239,7 +256,7 @@ class TestWheelMetadataExtractor(object):
             self.td_dir), 'setuptools', self.nc, '19.6.2'))
 
     @pytest.mark.parametrize(('what', 'expected'), [
-        ('doc_files', set(['DESCRIPTION.rst'])),
+        ('doc_files', ['DESCRIPTION.rst']),
         ('has_test_suite', True),
         ('py_modules', set(['_markerlib', 'pkg_resources', 'setuptools'])),
         ('runtime_deps', [['Requires', 'python-certifi', '==', '2015.11.20']])
@@ -255,12 +272,13 @@ class TestDistMetadataExtractor(object):
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
         self.e = [me.DistMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(
-                      self.td_dir), 'plumbum', self.nc, '0.9.0'),
-                  me.DistMetadataExtractor('{0}coverage_pth-0.0.1.tar.gz'.format(
-                      self.td_dir), 'coverage_pth', self.nc, '0.0.1')]
+            self.td_dir), 'plumbum', self.nc, '0.9.0'),
+            me.DistMetadataExtractor('{0}coverage_pth-0.0.1.tar.gz'.format(
+                self.td_dir), 'coverage_pth', self.nc, '0.0.1')]
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
-        (0, 'doc_files', ['README.rst', 'LICENSE']),
+        (0, 'doc_files', ['README.rst']),
+        (0, 'doc_license', ['LICENSE']),
         (0, 'has_test_suite', False),
         (0, 'license', 'MIT'),
         (0, 'build_cmd', '%{py2_build}'),
