@@ -121,7 +121,7 @@ class TestPyPIMetadataExtension(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
     client = flexmock(
         release_urls=lambda n, v: [{'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
-                                    'url': 'http://pypi.python.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
+                                    'url': 'https://files.pythonhosted.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
         release_data=lambda n, v: {'description': 'UNKNOWN',
                                    'release_url': 'http://pypi.python.org/pypi/restsh/0.1',
                                    'classifiers': ['Development Status :: 4 - Beta',
@@ -143,7 +143,7 @@ class TestPyPIMetadataExtension(object):
     @pytest.mark.parametrize(('what', 'expected'), [
         ('description', 'UNKNOWN'),
         ('md5', '9a7a2f6943baba054cf1c28e05a9198e'),
-        ('url', 'http://pypi.python.org/packages/source/r/restsh/restsh-0.1.tar.gz'),
+        ('url', 'https://files.pythonhosted.org/packages/source/r/restsh/restsh-0.1.tar.gz'),
         ('license', 'BSD'),
         ('summary', 'A simple rest shell client')
     ])
