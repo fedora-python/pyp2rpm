@@ -117,7 +117,7 @@ class TestMetadataExtractor(object):
                     pkgdata.data['python_versions']] == expected
 
 
-class TestSetupPyMetadataExtractor(object):
+class TestPyPIMetadataExtension(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
     client = flexmock(
         release_urls=lambda n, v: [{'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
@@ -171,6 +171,23 @@ class TestSetupPyMetadataExtractor(object):
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()
         assert getattr(data, what) == expected
+
+    @pytest.mark.parametrize(('doc_files', 'license', 'other'), [
+        (['LICENSE', 'README'], ['LICENSE'], ['README']),
+        ([], [], []),
+        (['README', 'DESCRIPTION'], [], ['README', 'DESCRIPTION']),
+        (['LICENSE', './dir/LICENSE', 'README'], ['LICENSE', './dir/LICENSE'], ['README']),
+        (['LICENSE.MIT', './LICENSE.CC-BY-SA-3.0'],
+         ['LICENSE.MIT', './LICENSE.CC-BY-SA-3.0'], []),
+        (['README', 'COPYRIGHT'], ['COPYRIGHT'], ['README']),
+        (['COPYRIGHT.txt'], ['COPYRIGHT.txt'], []),
+        (['README', 'COPYING'], ['COPYING'], ['README']),
+    ])
+    def test_doc_files(self, doc_files, license, other):
+        flexmock(me.SetupPyMetadataExtractor).should_receive('doc_files').and_return(doc_files)
+        data = self.e[0].data_from_archive
+        assert data['doc_license'] == license
+        assert data['doc_files'] == other
 
 
 class TestWheelMetadataExtractor(object):
