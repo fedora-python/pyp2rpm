@@ -64,9 +64,16 @@ def process_description(description_fce):
     and wraps paragraphs.
     """
     def inner(description):
-        return textwrap.fill(re.sub('#|-|=|~|`', '',
-                                    re.sub('((\r?\n)|^).{0,8}((\r?\n)|$)', '',
-                                           description_fce(description)), 80))
+                            # general URLs
+        clear_description = re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '',
+                            # delimiters
+                            re.sub('(#|-|=|~|`)*', '',
+                            # very short lines, typically titles
+                            re.sub('((\r?\n)|^).{0,8}((\r?\n)|$)', '',
+                            # PyPI's version and downloads tags
+                            re.sub('(((\r*.. image::|:target:) https?[^\n]*\n {4}){2}:alt:[^\n]*\n*){2}', '',
+                                                        description_fce(description)))))
+        return ' '.join(textwrap.wrap(clear_description, 80))
     return inner
 
 

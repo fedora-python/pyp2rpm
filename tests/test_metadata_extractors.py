@@ -116,6 +116,63 @@ class TestMetadataExtractor(object):
             assert [pkgdata.data['base_python_version'],
                     pkgdata.data['python_versions']] == expected
 
+    @staticmethod
+    @me.process_description
+    def desciption_fce(description):
+        return description
+
+    @pytest.mark.parametrize(('desc', 'expected'), [
+        (
+'''Convert Python packages to RPM SPECFILES. The packages can be downloaded from
+PyPI and the produced SPEC is in line with Fedora Packaging Guidelines or
+Mageia Python Policy.Users can provide their own templates for rendering the
+package metadata. Both the package source and metadata can be extracted from
+PyPI or from local filesystem (local file doesn't provide that much information
+    though).''',
+'''Convert Python packages to RPM SPECFILES. The packages can be downloaded from \
+PyPI and the produced SPEC is in line with Fedora Packaging Guidelines or \
+Mageia Python Policy.Users can provide their own templates for rendering the \
+package metadata. Both the package source and metadata can be extracted from \
+PyPI or from local filesystem (local file doesn't provide that much information \
+though).'''),
+       (
+'''Vex
+###
+
+Run a command in the named virtualenv.
+
+vex is an alternative to virtualenv's ``source wherever/bin/activate``
+and ``deactivate``, and virtualenvwrapper's ``workon``, and also
+virtualenv-burrito if you use that.''',
+'''Run a command in the named virtualenv.vex is an alternative to virtualenv's \
+source wherever/bin/activate and deactivate, and virtualenvwrapper's workon, \
+and also virtualenvburrito if you use that.'''),
+        (
+'''Python bindings to the OpenStack Cinder API
+===========================================
+
+.. image:: https://img.shields.io/pypi/v/python-cinderclient.svg
+    :target: https://pypi.python.org/pypi/python-cinderclient/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/python-cinderclient.svg
+    :target: https://pypi.python.org/pypi/python-cinderclient/
+    :alt: Downloads
+
+This is a client for the OpenStack Cinder API. There's a Python API (the
+``cinderclient`` module), and a command-line script (``cinder``). Each
+implements 100% of the OpenStack Cinder API.''',
+'''Python bindings to the OpenStack Cinder API This is a client for the OpenStack \
+Cinder API. There's a Python API (the cinderclient module), and a commandline \
+script (cinder). Each implements 100% of the OpenStack Cinder API.'''),
+        (
+'''Some description text, http://docs.openstack.org/developer/python-designateclient/.
+the rest of meaningful text...''',
+'''Some description text,  the rest of meaningful text...''')
+    ])
+    def test_process_description(self, desc, expected):
+        assert self.desciption_fce(desc) == expected
+
 
 class TestSetupPyMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
