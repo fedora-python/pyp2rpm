@@ -65,7 +65,10 @@ class extract_distribution(bdist_rpm_orig):
         if isinstance(var, str):
             var = var.split('\n')
         elif not isinstance(var, list):
-            raise DistutilsOptionError("{} is not a list".format(var))
+            try:
+                var = list(var)
+            except TypeError:
+                raise DistutilsOptionError("{} cannot be converted to list".format(var))
         return var
 
 # extract_distribution command is executed instead of bdist_rpm thanks to this assignment
