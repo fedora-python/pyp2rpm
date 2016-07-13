@@ -37,6 +37,7 @@ class TestPackageGetters(object):
         ('nonexistent_pkg', '0.0.0', False, False, 'FAILED TO EXTRACT FROM PYPI',
          'FAILED TO EXTRACT FROM PYPI'),
     ])
+
     @pytest.mark.webtest
     def test_get_url(self, name, version, wheel, hf, expected_url, expected_md5):
         assert (expected_url, expected_md5) == get_url(self.client, name, version, wheel, hf)
