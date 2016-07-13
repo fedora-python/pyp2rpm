@@ -1,23 +1,67 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
-{%- for pv in data.python_versions %}
-%define		with_python{{ pv }} 1
+
+{# For all python_versions, prints caller content.
+   Content is surrounded by conditionals if python_version != base_python_version #}
+{%- macro for_python_versions(python_versions, base_python_version, use_with=True) %}
+{%- for pv in python_versions %}
+{%- if pv != base_python_version and use_with %}
+%if %{with python{{ pv }}}
+{% endif %}
+{{- caller(pv) }}
+{%- if pv != base_python_version and use_with %}
+%endif
+{% endif %}
 {%- endfor %}
-%define		pypi_name	{{ data.name }}
+{%- endmacro %}
+
+{# Foreach all python_versions, prints caller content.
+   Content is surrounded by conditionals if use_with is True #}
+{%- macro foreach_python_versions(caller, use_with=True, v='') %}
+{%- for pv in [data.base_python_version] + data.python_versions %}
+{%- if use_with %}
+%if %{with python{{ pv }}}
+{%- endif %}
+{# set v variable to be '' for python2, '3' for python3 #}
+{%- set v = pv|replace(data.base_python_version, '') %}
+{{- caller(pv, v) }}
+{%- if use_with %}
+%endif
+{% endif %}
+{%- endfor %}
+{%- endmacro %}
+
+
+#
+# Conditional build:
+%bcond_without	doc	# don't build doc
+%bcond_without	tests	# do not perform "make test"
+{%- for pv in [data.base_python_version] + data.python_versions %}
+%bcond_without	python{{ pv }} # CPython {{ pv }}.x module
+{%- endfor %}
+
+%define 	module		{{ data.name }}
+%define 	egg_name	{{ data.name }}
+%define		pypi_name	{{ data.underscored_name }}
 Summary:	{{ data.summary }}
-Name:		{{ data.pkg_name|name_for_python_version(data.base_python_version) }}
+Name:		python-%{module}
 Version:	{{ data.version }}
 Release:	0.1
 License:	{{ data.license }}
 Group:		Libraries/Python
-Source0:	{{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:	{{ data.url|replace(data.name, '%{module}')|replace(data.version, '%{version}') }}
 # Source0-md5:	-
 URL:		{{ data.home_page }}
-{{ dependencies(data.build_deps, False, data.base_python_version, data.base_python_version) }}
-{%- for pv in data.python_versions %}
-{{ dependencies(data.build_deps, False, pv, data.base_python_version) }}
+BuildRequires:	rpm-pythonprov
+BuildRequires:	rpmbuild(macros) >= 1.714
+{# build deps for each Python version #}
+{%- for pv in [data.base_python_version] + data.python_versions %}
+%if %{with python{{ pv }}}
+{{ dependencies(data.build_deps, False, pv, data.base_python_version, False) }}
+%endif
 {%- endfor %}
-{{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version) }}
+{# runtime deps for base Python version #}
+{{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version, False) }}
 {%- if not data.has_extension %}
 BuildArch:	noarch
 {%- endif %}
@@ -25,9 +69,11 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 {{ data.description|truncate(400)|wordwrap }}
-{% call(pv) for_python_versions(data.python_versions) -%}
+
+{% call(pv) for_python_versions(data.python_versions, use_with=False) -%}
 %package -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
 Summary:	{{ data.summary }}
+Group:		Libraries/Python
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
 
 %description -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
@@ -35,18 +81,14 @@ Summary:	{{ data.summary }}
 {%- endcall %}
 
 %prep
-%setup -q -n %{pypi_name}-%{version}
+%setup -q -n %{module}-%{version}
 {%- if data.has_bundled_egg_info %}
 
 # Remove bundled egg-info
-%{__rm} -r %{pypi_name}.egg-info
+%{__rm} -r %{module}.egg-info
 {%- endif %}
-{% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-{%- if pv != data.base_python_version -%}
-rm -rf %{py{{pv}}dir}
-cp -a . %{py{{pv}}dir}
-find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|'
-{%- endif %}
+
+{% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version, use_with=False) -%}
 {%- if data.sphinx_dir %}
 # generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...) #}
 {% if pv != data.base_python_version %}python{{ pv }}-{% endif %}sphinx-build {{ data.sphinx_dir }} html
@@ -56,79 +98,71 @@ find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}
 {% endcall %}
 
 %build
-{%- call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-{%- if pv != data.base_python_version -%}
-cd %{py{{ pv }}dir}
-{%- endif %}
-{% if data.has_extension %}
-CC="%{__cc}" \
-CFLAGS="%{rpmcflags}" \
-{% endif %}{{ '%{__python}'|python_bin_for_python_version(pv) }} setup.py build
-{% if pv != data.base_python_version -%}
-cd -
-{%- endif %}
+{%- call(pv, v) foreach_python_versions(use_with=True) -%}
+
+%py{{ v }}_build %{?with_tests:test}
+
 {%- endcall %}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-{%- if data.python_versions|length > 0 %}
-# Must do the subpackages' install first because the scripts in /usr/bin are
-# overwritten with every setup.py install (and we want the python2 version
-# to be the default for now).
-{%- endif -%}
-{%- call(pv) for_python_versions(data.python_versions + [data.base_python_version], data.base_python_version) -%}
-{%- if pv != data.base_python_version -%}
-cd %{py{{ pv }}dir}
-{%- endif %}
-{{ '%{__python}'|python_bin_for_python_version(pv) }} setup.py install \
-	--skip-build \
-	--optimize=2 \
-	--root=$RPM_BUILD_ROOT
+{%- call(pv, v) foreach_python_versions(use_with=True) -%}
 
+%py{{ v }}_install
+
+{%- if pv == data.base_python_version %}
 %py_postclean
-{%- if pv != data.base_python_version %}
+{%- endif %}
+
 {%- if data.scripts %}
 {%- for script in data.scripts %}
 mv $RPM_BUILD_ROOT%{_bindir}/{{ script }} $RPM_BUILD_ROOT%{_bindir}/{{ script|script_name_for_python_version(pv) }}
 {%- endfor %}
 {%- endif %}
-cd -
-{%- endif %}
+
 {%- endcall %}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-{% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
+{% call(pv, v) foreach_python_versions(use_with=True) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}{% endif %}
+
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
+
 {%- if data.scripts %}
 {%- for script in data.scripts %}
-%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+%attr(755,root,root) %{_bindir}/{{ script|script_name_for_python_version(pv) }}
 {%- endfor %}
 {%- endif %}
+
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
-{%- if pv == '3' -%}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
+{%- if pv == '2' -%}
+%{py{{ v }}_sitescriptdir}/{{ data.name | module_to_path(module) }}.py[co]
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
+{%- if pv == '3' -%}
+%{py{{ v }}_sitescriptdir}/{{ data.name | module_to_path(module) }}.py
+%{py{{ v }}_sitescriptdir}/__pycache__/*
+{%- endif %}
 {%- endfor %}
 {%- endif %}
 
 {%- if data.has_extension %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+%{py{{ v }}_sitedir/{{ data.name | module_to_path(data.underscored_name) }}
 {%- if data.has_pth %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py*-*.pth
+%{py{{ v }}_sitedir/%{egg_name}-%{version}-py*-*.pth
 {%- endif %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py*.egg-info
+%{py{{ v }}_sitedir/%{egg_name}-%{version}-py*.egg-info
 {%- else %}
 {%- if data.has_packages %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+%{py{{ v }}_sitescriptdir}/{{ data.name | module_to_path(data.underscored_name) }}
 {%- endif %}
+
 {%- if data.has_pth %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py*-*.pth
+%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py*-*.pth
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py*.egg-info
+%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py*.egg-info
 {%- endif %}
+
 {%- endcall %}
