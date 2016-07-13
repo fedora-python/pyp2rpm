@@ -92,7 +92,8 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 %dir {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/
 {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
 {%- endif %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
+{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module)
+}}.py*{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_extension %}
