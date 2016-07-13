@@ -31,7 +31,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               default=None,
               metavar='BASE_PYTHON')
 @click.option('-p',
-              help='Additional Python versions to include in the specfile (e.g -p3 for %%{0}).'
+              help='Additional Python versions to include in the specfile (e.g -p3 for %{0}).'
               'Can be specified multiple times (default: "{1}"). Specify additional version '
               'or use -b explicitly to disable default.'.format(
                   '{?with_python3}', settings.DEFAULT_ADDITIONAL_VERSION),
