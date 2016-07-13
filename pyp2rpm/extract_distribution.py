@@ -33,6 +33,7 @@ class extract_distribution(bdist_rpm_orig):
 
         self.distribution.conflicts = [dep.replace('!=', '=')
                                        for dep in self.distribution.run_requires if '!=' in dep]
+        self.distribution.py_modules = self._list(getattr(self.distribution, 'py_modules', []))
 
         if (getattr(self.distribution, 'entry_points', None)
                 and 'setuptools' not in self.distribution.run_requires):
