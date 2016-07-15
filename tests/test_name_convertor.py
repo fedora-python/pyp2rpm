@@ -57,22 +57,22 @@ class TestDandifiedNameConvertor(object):
         self.dnc = DandifiedNameConvertor('fedora')
 
     @pytest.mark.parametrize(('pypi_name', 'version', 'expected'), [
-        ('Babel', '2', 'python-babel'),
+        ('Babel', '2', 'python2-babel'),
         ('Babel', '3', 'python3-babel'),
         ('MarkupSafe', '2', 'python-markupsafe'),
         ('MarkupSafe', '3', 'python3-markupsafe'),
         ('Jinja2', '2', 'python-jinja2'),
         ('Jinja2', '3', 'python3-jinja2'),
-        ('Sphinx', '2', 'python-sphinx'),
+        ('Sphinx', '2', 'python2-sphinx'),
         ('Sphinx', '3', 'python3-sphinx'),
         ('Cython', '2', 'Cython'),
         ('Cython', '3', 'python3-Cython'),
-        ('pytest', '2', 'pytest'),
+        ('pytest', '2', 'python2-pytest'),
         ('pytest', '3', 'python3-pytest'),
         ('vertica', '2', 'vertica-python'),
         ('pycairo', '2', 'pycairo'),
         ('pycairo', '3', 'python3-cairo'),
-        ('oslosphinx', '2', 'python-oslo-sphinx'),
+        ('oslosphinx', '2', 'python2-oslo-sphinx'),
         ('oslosphinx', '3', 'python3-oslo-sphinx'),
     ])
     @pytest.mark.skipif(dnf is None, reason="Optional dependency DNF required")
