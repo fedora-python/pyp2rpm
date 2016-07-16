@@ -101,7 +101,7 @@ class LocalMetadataExtractor(object):
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
-            dep[1] = self.name_convertor.rpm_name(dep[1])
+            dep[1] = self.name_convertor.rpm_name(dep[1], settings.DEFAULT_PYTHON_VERSION)
 
         return deps_list
 

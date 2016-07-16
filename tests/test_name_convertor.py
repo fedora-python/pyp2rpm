@@ -74,6 +74,8 @@ class TestDandifiedNameConvertor(object):
         ('pycairo', '3', 'python3-cairo'),
         ('oslosphinx', '2', 'python2-oslo-sphinx'),
         ('oslosphinx', '3', 'python3-oslo-sphinx'),
+        ('mock', '2', 'python2-mock'),
+        ('mock', '3', 'python3-mock'),
     ])
     @pytest.mark.skipif(dnf is None, reason="Optional dependency DNF required")
     def test_rpm_name(self, pypi_name, version, expected):

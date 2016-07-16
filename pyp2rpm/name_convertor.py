@@ -54,7 +54,7 @@ class NameConvertor(object):
 
         return versioned_name
 
-    def rpm_name(self, name, python_version=None):
+    def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION):
         """Returns name of the package coverted to (possibly) correct package 
            name according to Packaging Guidelines.
         Args:
@@ -64,7 +64,7 @@ class NameConvertor(object):
             Converted name of the package, that should be in line with Fedora Packaging Guidelines.
             If for_python is not None, the returned name is in form python%(version)s-%(name)s
         """
-        logger.debug('Converting name: {0} to rpm name.'.format(name))
+        logger.debug('Converting name: {0} to rpm name, version: {1}.'.format(name, python_version))
         rpmized_name = self.base_name(name)
 
         rpmized_name = 'python-{0}'.format(rpmized_name)
