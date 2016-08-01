@@ -66,11 +66,13 @@ class TestVirtualEnv(object):
         shutil.rmtree(self.temp_dir)
 
     @pytest.mark.parametrize(('bin_diff', 'package_diff', 'expected'), [
-        (set(['foo']), set(['foo']), (set(['foo']), ['foo'])),
-        (set([]), set(['foo', 'foo2']), (set(['foo', 'foo2']), [])),
-        (set(['foo']), set([]), (set([]), ['foo'])),
+        (set(['foo']), set(['foo']), (set(['foo']), set(), ['foo'])),
+        (set(['foo']), set(['foo.py', 'foo.pyc']), (set(), set(['foo']), ['foo'])),
+        (set([]), set(['foo.py']), (set(), set(['foo']), [])),
+        (set(['foo']), set([]), (set([]), set(), ['foo'])),
+        (set(), set(), (set(), set(), [])),
     ])
-    def test_get_dirs_defferance(self, bin_diff, package_diff, expected):
+    def test_get_dirs_differance(self, bin_diff, package_diff, expected):
         flexmock(DirsContent).should_receive('__sub__').and_return(
             DirsContent(bin_diff, package_diff))
         assert self.venv.get_dirs_differance == expected

@@ -446,9 +446,21 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
             return self.distribution.metadata.long_description[:cut] + '\n...'
         else:
             return self.distribution.metadata.long_description
+
     @property
     def py_modules(self):
         return self.distribution.py_modules
+
+    @property
+    def has_packages(self):
+        return self.distribution.packages is not None
+
+    @property
+    def packages(self):
+        if self.has_packages:
+            packages = [package.split('.', 1)[0]
+                        for package in self.distribution.packages]
+            return set(packages)
 
     @property
     def data_from_archive(self):

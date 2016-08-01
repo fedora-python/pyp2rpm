@@ -271,10 +271,12 @@ class TestDistMetadataExtractor(object):
 
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
-        self.e = [me.DistMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(
-            self.td_dir), 'plumbum', self.nc, '0.9.0'),
-            me.DistMetadataExtractor('{0}coverage_pth-0.0.1.tar.gz'.format(
-                self.td_dir), 'coverage_pth', self.nc, '0.0.1')]
+        self.e = []
+        for archive in ('plumbum-0.9.0.tar.gz', 'coverage_pth-0.0.1.tar.gz',
+                         'pytest-2.2.3.zip', 'simpleeval-0.8.7.tar.gz'):
+            name, version = archive.split('-')
+            self.e.append(me.DistMetadataExtractor('{0}{1}'.format(
+                self.td_dir, archive), name, self.nc, version[:5]))
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
         (0, 'doc_files', ['README.rst']),
@@ -283,8 +285,14 @@ class TestDistMetadataExtractor(object):
         (0, 'license', 'MIT'),
         (0, 'build_cmd', '%{py2_build}'),
         (0, 'runtime_deps', [['Requires', 'python-six']]),
+        (0, 'py_modules', []),
+        (0, 'packages', set(['plumbum'])),
         (1, 'runtime_deps', [['Requires', 'python-coverage']]),
-        (1, 'python_versions', ['3'])
+        (1, 'python_versions', ['3']),
+        (2, 'py_modules', ['pytest']),
+        (2, 'packages', set(['_pytest'])),
+        (3, 'py_modules', ['simpleeval']),
+        (3, 'packages', set())
     ])
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()
