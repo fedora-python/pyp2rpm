@@ -24,15 +24,15 @@ BuildArch:      noarch
 {% for pv in ([data.base_python_version] + data.python_versions) %}
 %package -n     {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}
 Summary:        {{ data.summary }}
-%{?python_provide:%python_provide python{{ pv }}-%{pypi_name}}
+%{?python_provide:%python_provide {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True)}}}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
 %description -n {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}
 {{ data.description|truncate(400)|wordwrap }}
 {% endfor -%}
 {%- if data.sphinx_dir %}
-%package -n python-%{pypi_name}-doc
+%package -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}-doc
 Summary:        {{ data.name }} documentation
-%description -n python-%{pypi_name}-doc
+%description -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}-doc
 Documentation for {{ data.name }}
 {%- endif %}
 
@@ -89,7 +89,6 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
 {%- if pv == '3' -%}
-%dir {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/
 {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
 {%- endif %}
 {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
@@ -114,7 +113,7 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 {%- endif %}
 {% endfor %}
 {%- if data.sphinx_dir %}
-%files -n python-%{pypi_name}-doc
+%files -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}-doc
 %doc html 
 {% endif %}
 %changelog

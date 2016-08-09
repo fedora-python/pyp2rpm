@@ -1,4 +1,5 @@
 import os
+import re
 import glob
 import logging
 from virtualenvapi.manage import VirtualEnvironment
@@ -54,6 +55,8 @@ class DirsContent(object):
 
 class VirtualEnv(object):
 
+    modul_pattern = re.compile(r'\.py.?$')
+
     def __init__(self, name, temp_dir, name_convertor, base_python_version):
         self.name = name
         self.temp_dir = temp_dir
@@ -93,14 +96,19 @@ class VirtualEnv(object):
         except ValueError:
             raise VirtualenvFailException("Some of the DirsContent attributes is uninicialized")
         site_packages = site_packages_filter(diff.lib_sitepackages)
-        logger.debug('Site_packages from files differance in virtualenv: {0}.'.format(
-            site_packages))
+        packages = set([p for p in site_packages if not self.modul_pattern.search(p)])
+        py_modules = set([os.path.splitext(m)[0] for m in site_packages - packages])
         scripts = scripts_filter(list(diff.bindir))
+        logger.debug('Packages from files differance in virtualenv: {0}.'.format(
+            packages))
+        logger.debug('py_modules from files differance in virtualenv: {0}.'.format(
+            py_modules))
         logger.debug('Scripts from files differance in virtualenv: {0}.'.format(scripts))
-        return (site_packages, scripts)
+        return (packages, py_modules, scripts)
 
     @property
     def get_venv_data(self):
         self.install_package_to_venv()
-        self.data['packages'], self.data['scripts'] = self.get_dirs_differance
+        (self.data['packages'], self.data['py_modules'],
+         self.data['scripts']) = self.get_dirs_differance
         return self.data

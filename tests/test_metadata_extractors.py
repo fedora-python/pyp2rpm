@@ -166,9 +166,55 @@ implements 100% of the OpenStack Cinder API.''',
 Cinder API. There's a Python API (the cinderclient module), and a commandline \
 script (cinder). Each implements 100% of the OpenStack Cinder API.'''),
         (
+'''.. image:: http://pytest.org/latest/_static/pytest1.png
+   :target: http://pytest.org
+   :align: center
+   :alt: pytest
+
+------
+
+.. image:: https://img.shields.io/pypi/v/pytest.svg
+   :target: https://pypi.python.org/pypi/pytest
+.. image:: https://img.shields.io/pypi/pyversions/pytest.svg
+  :target: https://pypi.python.org/pypi/pytest
+.. image:: https://img.shields.io/coveralls/pytest-dev/pytest/master.svg
+   :target: https://coveralls.io/r/pytest-dev/pytest
+.. image:: https://travis-ci.org/pytest-dev/pytest.svg?branch=master
+    :target: https://travis-ci.org/pytest-dev/pytest
+.. image:: https://ci.appveyor.com/api/projects/status/mrgbjaua7t33pg6b?svg=true
+    :target: https://ci.appveyor.com/project/pytestbot/pytest
+
+The ``pytest`` framework makes it easy to write small tests, yet
+scales to support complex functional testing for applications and libraries. 
+
+An example of a simple test:
+
+.. code-block:: python
+
+    # content of test_sample.py
+    def func(x):
+        return x + 1
+
+    def test_answer():
+        assert func(3) == 5
+
+
+To execute it::
+
+    $ py.test
+    ======= test session starts ========
+    platform linux -- Python 3.4.3, pytest-2.8.5, py-1.4.31, pluggy-0.3.1
+    collected 1 items''',
+''' The pytest framework makes it easy to write small tests, yet scales to support \
+complex functional testing for applications and libraries. An example of a \
+simple test:.. codeblock:: python content of test_sample.py def func(x): return \
+x + 1 def test_answer(): assert func(3) 5 To execute it:: $ py.test test \
+session starts platform linux Python 3.4.3, pytest2.8.5, py1.4.31, pluggy0.3.1 \
+collected 1 items'''),
+        (
 '''Some description text, http://docs.openstack.org/developer/python-designateclient/.
 the rest of meaningful text...''',
-'''Some description text,  the rest of meaningful text...''')
+'''Some description text, the rest of meaningful text...''')
     ])
     def test_process_description(self, desc, expected):
         assert self.desciption_fce(desc) == expected
@@ -271,10 +317,12 @@ class TestDistMetadataExtractor(object):
 
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
-        self.e = [me.DistMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(
-            self.td_dir), 'plumbum', self.nc, '0.9.0'),
-            me.DistMetadataExtractor('{0}coverage_pth-0.0.1.tar.gz'.format(
-                self.td_dir), 'coverage_pth', self.nc, '0.0.1')]
+        self.e = []
+        for archive in ('plumbum-0.9.0.tar.gz', 'coverage_pth-0.0.1.tar.gz',
+                         'pytest-2.2.3.zip', 'simpleeval-0.8.7.tar.gz'):
+            name, version = archive.split('-')
+            self.e.append(me.DistMetadataExtractor('{0}{1}'.format(
+                self.td_dir, archive), name, self.nc, version[:5]))
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
         (0, 'doc_files', ['README.rst']),
@@ -283,8 +331,14 @@ class TestDistMetadataExtractor(object):
         (0, 'license', 'MIT'),
         (0, 'build_cmd', '%{py2_build}'),
         (0, 'runtime_deps', [['Requires', 'python-six']]),
+        (0, 'py_modules', []),
+        (0, 'packages', set(['plumbum'])),
         (1, 'runtime_deps', [['Requires', 'python-coverage']]),
-        (1, 'python_versions', ['3'])
+        (1, 'python_versions', ['3']),
+        (2, 'py_modules', ['pytest']),
+        (2, 'packages', set(['_pytest'])),
+        (3, 'py_modules', ['simpleeval']),
+        (3, 'packages', set())
     ])
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()

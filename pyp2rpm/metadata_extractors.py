@@ -64,15 +64,17 @@ def process_description(description_fce):
     and wraps paragraphs.
     """
     def inner(description):
+                            # multiple whitespaces
+        clear_description = re.sub(r'\s+', ' ',
                             # general URLs
-        clear_description = re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '',
+                            re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '',
                             # delimiters
                             re.sub('(#|-|=|~|`)*', '',
                             # very short lines, typically titles
                             re.sub('((\r?\n)|^).{0,8}((\r?\n)|$)', '',
                             # PyPI's version and downloads tags
-                            re.sub('(((\r*.. image::|:target:) https?[^\n]*\n {4}){2}:alt:[^\n]*\n*){2}', '',
-                                                        description_fce(description)))))
+                            re.sub('((\r*.. image::|:target:) https?|(:align:|:alt:))[^\n]*\n', '',
+                                description_fce(description))))))
         return ' '.join(textwrap.wrap(clear_description, 80))
     return inner
 
@@ -437,18 +439,34 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
     @property
     @process_description
     def long_description(self):
-        """Shorten description on first newline after approx 10 lines"""
         if not self.distribution.metadata.long_description:
             return 'TODO'
-
-        cut = self.distribution.metadata.long_description.find('\n', 80 * 8)
-        if cut > -1:
-            return self.distribution.metadata.long_description[:cut] + '\n...'
         else:
             return self.distribution.metadata.long_description
+
+    @property
+    def description(self):
+        """Shorten description on first newline after approx 10 lines"""
+        cut = self.long_description.find('\n', 80 * 8)
+        if cut > -1:
+            return self.long_description[:cut] + '\n...'
+        else:
+            return self.long_description
+
     @property
     def py_modules(self):
         return self.distribution.py_modules
+
+    @property
+    def has_packages(self):
+        return self.distribution.packages is not None
+
+    @property
+    def packages(self):
+        if self.has_packages:
+            packages = [package.split('.', 1)[0]
+                        for package in self.distribution.packages]
+            return set(packages)
 
     @property
     def data_from_archive(self):
@@ -464,7 +482,7 @@ class DistMetadataExtractor(SetupPyMetadataExtractor):
         else:
             archive_data['build_arch'] = self.distribution.force_arch
 
-        archive_data['description'] = self.long_description
+        archive_data['description'] = self.description
         archive_data['summary'] = self.distribution.get_description()
         archive_data['home_page'] = self.distribution.get_url()
         archive_data['icon'] = getattr(self.distribution, 'icon', None)
