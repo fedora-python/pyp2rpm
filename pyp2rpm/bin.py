@@ -126,10 +126,7 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
 
         if srpm:
             msg = utils.build_srpm(spec_path, d)
-            if utils.PY3:
-                logger.info(msg.decode('utf-8'))
-            else:
-                logger.info(msg)
+            logger.info(msg)
 
     else:
         logger.debug('Printing specfile to stdout.')
