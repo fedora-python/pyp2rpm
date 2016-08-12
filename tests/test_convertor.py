@@ -6,6 +6,7 @@ from pyp2rpm.convertor import Convertor
 from pyp2rpm.exceptions import *
 from pyp2rpm.metadata_extractors import *
 from pyp2rpm.package_getters import *
+from pyp2rpm.package_data import PackageData
 from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -43,3 +44,52 @@ class TestConvertor(object):
         c.local_file = sf
         c.name = 'plumbum'
         assert isinstance(c.metadata_extractor, expected)
+
+    @pytest.mark.parametrize(('self_bv', 'self_pv', 'data_bv', 'data_pv',
+                              'expected_bv', 'expected_pv'), [
+        (None, [], '2', ['3'], '2', ['3']),
+        (None, ['2'], '2', [], '2', []),
+        ('2', [], '2', ['3'], '2', []),
+        ('3', [], '2', ['3'], '3', []),
+        ('3', ['2'], '2', ['3'], '3', ['2']),
+    ])
+    def test_merge_versions_fedora(self, self_bv, self_pv, data_bv, data_pv,
+                                   expected_bv, expected_pv):
+        c = Convertor(package='pkg', base_python_version=self_bv, python_versions=self_pv,
+                      template='fedora.spec')
+        data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
+        data.base_python_version = data_bv
+        data.python_versions = data_pv
+        c.merge_versions(data)
+        assert data.base_python_version == expected_bv
+        assert data.python_versions == expected_pv
+
+    @pytest.mark.parametrize(('self_bv', 'self_pv', 'data_bv', 'data_pv',
+                              'expected_bv', 'expected_pv'), [
+        (None, [], '2', ['3'], '2', []),
+        (None, ['2'], '2', [], '2', []),
+        ('2', [], '2', ['2'], '2', []),
+        ('2', '2', '2', ['2'], '2', []),
+    ])
+    def test_versions_epel6(self, self_bv, self_pv, data_bv, data_pv,
+                            expected_bv, expected_pv):
+        c = Convertor(package='pkg', base_python_version=self_bv, python_versions=self_pv,
+                      template='epel6.spec')
+        data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
+        data.base_python_version = data_bv
+        data.python_versions = data_pv
+        c.merge_versions(data)
+        assert data.base_python_version == expected_bv
+        assert data.python_versions == expected_pv
+
+    @pytest.mark.parametrize(('self_bv', 'self_pv'), [
+        ('3', []),
+        (None, ['3']),
+        ('3', ['3'])
+    ])
+    def test_bad_versions(self, self_bv, self_pv):
+        c = Convertor(package='pkg', base_python_version=self_bv, python_versions=self_pv,
+                      template='epel6.spec')
+        data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
+        with pytest.raises(SystemExit):
+            c.merge_versions(data)
