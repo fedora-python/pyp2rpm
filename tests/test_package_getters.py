@@ -36,6 +36,8 @@ class TestPackageGetters(object):
          '771f376bf9c936a90159cd94235998c2'),
         ('nonexistent_pkg', '0.0.0', False, False, 'FAILED TO EXTRACT FROM PYPI',
          'FAILED TO EXTRACT FROM PYPI'),
+        ('Pymacs', '0.25', False, False, 'PACKAGE WITHOUT SOURCES',
+         'PACKAGE WITHOUT SOURCES'),
     ])
 
     @pytest.mark.webtest

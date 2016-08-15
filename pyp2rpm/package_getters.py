@@ -67,6 +67,11 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
         logger.warning("Url of source archive not found.")
         return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
 
+    if url == 'UNKNOWN':
+        logger.warning("{0} package has no sources on PyPI, cannot proceed. "
+                       "Please ask the maintainer to upload sources.".format(release_data['name']))
+        return ('PACKAGE WITHOUT SOURCES', 'PACKAGE WITHOUT SOURCES')
+
     if not hashed_format:
         url = "https://files.pythonhosted.org/packages/source/{0[0]}/{0}/{1}".format(
             name, url.split("/")[-1])
