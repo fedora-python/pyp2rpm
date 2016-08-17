@@ -64,13 +64,11 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
                 md5_digest = release_url['md5_digest']
                 break
     if not url:
-        logger.warning("Url of source archive not found.")
-        return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
+        raise SystemExit("Url of source archive not found.")
 
     if url == 'UNKNOWN':
-        logger.warning("{0} package has no sources on PyPI, cannot proceed. "
-                       "Please ask the maintainer to upload sources.".format(release_data['name']))
-        return ('PACKAGE WITHOUT SOURCES', 'PACKAGE WITHOUT SOURCES')
+        raise SystemExit("{0} package has no sources on PyPI, cannot proceed. "
+                         "Please ask the maintainer to upload sources.".format(release_data['name']))
 
     if not hashed_format:
         url = "https://files.pythonhosted.org/packages/source/{0[0]}/{0}/{1}".format(

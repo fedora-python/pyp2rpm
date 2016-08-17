@@ -34,15 +34,22 @@ class TestPackageGetters(object):
         ('pypandoc', '1.1.3', False, False,
          'https://files.pythonhosted.org/packages/source/p/pypandoc/pypandoc-1.1.3.zip',
          '771f376bf9c936a90159cd94235998c2'),
-        ('nonexistent_pkg', '0.0.0', False, False, 'FAILED TO EXTRACT FROM PYPI',
-         'FAILED TO EXTRACT FROM PYPI'),
-        ('Pymacs', '0.25', False, False, 'PACKAGE WITHOUT SOURCES',
-         'PACKAGE WITHOUT SOURCES'),
     ])
-
     @pytest.mark.webtest
     def test_get_url(self, name, version, wheel, hf, expected_url, expected_md5):
         assert (expected_url, expected_md5) == get_url(self.client, name, version, wheel, hf)
+
+    @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf', 'exception', 'error_msg'), [
+        ('nonexistent_pkg', '0.0.0', False, False, SystemExit,
+         'Url of source archive not found.'),
+        ('Pymacs', '0.25', False, False, SystemExit,
+         'Pymacs package has no sources on PyPI, cannot proceed. Please ask the maintainer to upload sources.'),
+    ])
+    @pytest.mark.webtest
+    def test_get_url_raises(self, name, version, wheel, hf, exception, error_msg):
+        with pytest.raises(exception) as exc_info:
+            get_url(self.client, name, version, wheel, hf)
+        assert error_msg == str(exc_info.value)
 
 
 class TestPypiFileGetter(object):
