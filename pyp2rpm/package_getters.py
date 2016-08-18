@@ -33,9 +33,8 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
     except:  # some kind of error with client
         logger.debug('Client: {0} Name: {1} Version: {2}.'.format(
             client, name, version))
-        logger.warning('Some kind of error while communicating with client: {0}.'.format(
+        raise SystemExit('Some kind of error while communicating with client: {0}.'.format(
             client), exc_info=True)
-        return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
 
     url = ''
     md5_digest = None
