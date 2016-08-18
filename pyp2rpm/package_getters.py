@@ -33,9 +33,8 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
     except:  # some kind of error with client
         logger.debug('Client: {0} Name: {1} Version: {2}.'.format(
             client, name, version))
-        logger.warning('Some kind of error while communicating with client: {0}.'.format(
+        raise SystemExit('Some kind of error while communicating with client: {0}.'.format(
             client), exc_info=True)
-        return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
 
     url = ''
     md5_digest = None
@@ -64,8 +63,11 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
                 md5_digest = release_url['md5_digest']
                 break
     if not url:
-        logger.warning("Url of source archive not found.")
-        return ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
+        raise SystemExit("Url of source archive not found.")
+
+    if url == 'UNKNOWN':
+        raise SystemExit("{0} package has no sources on PyPI, cannot proceed. "
+                         "Please ask the maintainer to upload sources.".format(release_data['name']))
 
     if not hashed_format:
         url = "https://files.pythonhosted.org/packages/source/{0[0]}/{0}/{1}".format(
