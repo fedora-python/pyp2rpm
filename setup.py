@@ -34,6 +34,8 @@ setup(
     setup_requires=['setuptools',
                     'flexmock >= 0.9.3',
                     'pytest-runner',
+                    'click',
+                    'Jinja2',
                     ],
     tests_require=['pytest'],
     extras_require = {
