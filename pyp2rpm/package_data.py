@@ -25,7 +25,6 @@ class PackageData(object):
 
     def __init__(self, local_file, name, pkg_name, version, md5='', url=''):
         object.__setattr__(self, 'data', {})
-        # Exparimental fix of version
         self.data['local_file'] = local_file
         self.data['name'] = name
         self.data['pkg_name'] = pkg_name
@@ -40,6 +39,12 @@ class PackageData(object):
             return self.data['name'].replace('-', '_')
         elif name == 'changelog_date_packager':
             return self.get_changelog_date_packager()
+        elif name in ['runtime_deps', 'build_deps', 'classifiers', 'doc_files', 'doc_license']:
+            return self.data.get(name, [])
+        elif name in ['packages', 'py_modules', 'scripts']:
+            return self.data.get(name, set())
+        elif name in ['has_egg_info', 'has_test_suite', 'has_pth', 'has_extension']:
+            return self.data.get(name, False)
         return self.data.get(name, 'TODO:')
 
     def __setattr__(self, name, value):
