@@ -36,7 +36,7 @@ class TestConvertor(object):
             c.getter
 
     @pytest.mark.parametrize(('sf', 'expected'), [
-        ('{0}plumbum-0.9.0.tar.gz'.format(td_dir), DistMetadataExtractor),
+        ('{0}plumbum-0.9.0.tar.gz'.format(td_dir), SetupPyMetadataExtractor),
         ('{0}setuptools-19.6-py2.py3-none-any.whl'.format(td_dir), WheelMetadataExtractor)
     ])
     def test_get_metadata_extractor(self, sf, expected):

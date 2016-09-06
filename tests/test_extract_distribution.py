@@ -1,6 +1,6 @@
 import pytest
 
-from pyp2rpm.extract_distribution import extract_distribution
+from command.extract_dist import to_list
 
 
 class TestExtractDistribution(object):
@@ -14,4 +14,4 @@ class TestExtractDistribution(object):
         ((p for p in ('pkg',)), ['pkg']),
     ])
     def test_list(self, var, expected):
-        assert extract_distribution._list(var) == expected
+        assert to_list(var) == expected

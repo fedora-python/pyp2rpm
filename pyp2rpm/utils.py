@@ -165,7 +165,7 @@ def build_srpm(specfile, save_dir):
 def remove_major_minor_suffix(scripts):
     """Checks if executables already contain a "-MAJOR.MINOR" suffix. """
     minor_major_regex = re.compile("-\d.?\d?$")
-    return [x for x in scripts if not minor_major_regex.search(x)]
+    return set([x for x in scripts if not minor_major_regex.search(x)])
 
 
 def runtime_to_build(runtime_deps):

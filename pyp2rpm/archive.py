@@ -4,7 +4,6 @@ import logging
 import os
 import re
 import sre_constants
-import string
 
 from zipfile import ZipFile, ZipInfo
 from tarfile import TarFile, TarInfo
@@ -253,100 +252,6 @@ class Archive(object):
                         found.add(to_match)
 
         return list(found)
-
-    def find_list_argument(self, setup_argument):
-        """A simple method that gets setup() function from setup.py list argument
-           like install_requires.
-
-        Will not work in all cases and might need a smarter approach.
-        On the other side, it's so stupid, that it's actually smart - it gets this:
-        'console_scripts': [
-            'xtermcolor = xtermcolor.Main:Cli'
-        ]
-        as 'scripts', which is very nice :)
-
-        Args:
-            setup_argument: name of the argument of setup() function
-                            to get value of
-        Returns:
-            The requested setup() argument or empty list, if setup.py
-            can't be open (or argument is not present).
-        """
-        argument = []
-        cont = False
-        setup_cfg = self.get_content_of_file('setup.cfg')
-        if setup_cfg:
-            argument_re = re.compile(r'\b' + format(setup_argument) + '\s*=')
-            for line in setup_cfg.splitlines():
-                if line.find("#") != -1:
-                    line = line.split("#")[0]
-                if argument_re.search(line):
-                    args = line.split("=")
-                    if len(args) > 1:
-                        argument.append(args[1])
-                    cont = True
-                    continue
-                if cont and len(line) and line[0] in string.whitespace:
-                    argument.append(line.strip())
-                    continue
-                if cont:
-                    return argument
-
-        setup_py = self.get_content_of_file(
-            'setup.py')  # TODO: construct absolute path here?
-        if not setup_py:
-            return []
-
-        start_braces = end_braces = 0
-        cont = False
-
-        for line in setup_py.splitlines():
-            if setup_argument in line or cont:
-                if line.find("#") != -1:
-                    line = line.split("#")[0]
-                start_braces += line.count('[')
-                end_braces += line.count(']')
-
-                cont = True
-                argument.append(line)
-                if start_braces == end_braces:
-                    break
-        if not argument or start_braces == 0:
-            return []
-        else:
-            argument[0] = argument[0][argument[0].find('['):]
-            argument[-1] = argument[-1][:argument[-1].rfind(']') + 1]
-            argument[-1] = argument[-1].rstrip().rstrip(',')
-            try:
-                return flat_list(eval(' '.join(argument).strip()))
-            # something unparsable in the list - different errors can come out -
-            # function undefined, syntax error, ...
-            except:
-                logger.warn('Something unparsable in the list.', exc_info=True)
-                return []
-
-    def has_argument(self, argument):
-        """A simple method that finds out if setup() function from setup.py
-           is called with given argument.
-        Args:
-            argument: argument to look for
-        Returns:
-            True if argument is used, False otherwise
-        """
-        setup_cfg = self.get_content_of_file('setup.cfg')
-        if setup_cfg:
-            argument_re = re.compile(r'\b' + format(argument) + '\s*=')
-            if argument_re.search(setup_cfg):
-                return True
-
-        setup_py = self.get_content_of_file('setup.py')
-        if not setup_py:
-            return False
-
-        argument_re = re.compile(
-            r'setup\(.*(?<!\w){0}.*\)'.format(argument), re.DOTALL)
-
-        return True if argument_re.search(setup_py) else False
 
     @property
     def json_wheel_metadata(self):

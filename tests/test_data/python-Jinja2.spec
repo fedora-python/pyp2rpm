@@ -11,12 +11,12 @@ URL:            http://jinja.pocoo.org/
 Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
  
-BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
 BuildRequires:  python-sphinx
  
-BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
@@ -31,7 +31,6 @@ Summary:        A small but fast and easy to use stand-alone template engine wri
 %{?python_provide:%python_provide python2-%{pypi_name}}
  
 Requires:       python-MarkupSafe
-Requires:       python-setuptools
 %description -n python2-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired nonXML syntax but supports inline expressions and an optional
@@ -45,7 +44,6 @@ Summary:        A small but fast and easy to use stand-alone template engine wri
 %{?python_provide:%python_provide python3-%{pypi_name}}
  
 Requires:       python3-MarkupSafe
-Requires:       python3-setuptools
 %description -n python3-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired nonXML syntax but supports inline expressions and an optional
@@ -96,5 +94,5 @@ rm -rf html/.{doctrees,buildinfo}
 %doc html 
 
 %changelog
-* Tue Aug 09 2016 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Mon Aug 22 2016 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

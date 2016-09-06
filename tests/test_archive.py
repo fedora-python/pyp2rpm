@@ -5,8 +5,6 @@ from zipfile import ZipFile
 
 import pytest
 
-from flexmock import flexmock
-
 from pyp2rpm.archive import Archive, flat_list
 
 
@@ -59,38 +57,6 @@ class TestArchive(object):
         with self.a[i] as a:
             assert a.get_content_of_file(n, abs) == expected
 
-    def test_find_list_argument_not_present(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
-            'setup.cfg').and_return('install_requires=["spam",\n"eggs"]')
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
-            'setup.py').and_return('install_requires=["spam",\n"eggs"]')
-        assert self.a[4].find_list_argument('setup_requires') == []
-
-    def test_find_list_argument_present(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
-            'setup.cfg').and_return('setup_requires=["spam"]')
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
-            'setup.py').and_return('install_requires=["beans",\n"spam"]')
-        assert self.a[4].find_list_argument('install_requires') == ['beans', 'spam']
-
-    def test_find_list_argument_not_evaluable(self):
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
-            'setup.cfg').and_return('install_requires=[some_function()]')
-        flexmock(self.a[4]).should_receive('get_content_of_file').with_args(
-            'setup.py').and_return('install_requires=[some_function()]')
-        assert self.a[4].find_list_argument('install_requires') == []
-
-    def test_find_list_argument_unopenable_file(self):
-        flexmock(self.a[4]).should_receive(
-            'get_content_of_file').with_args('setup.cfg').and_return(None)
-        flexmock(self.a[4]).should_receive(
-            'get_content_of_file').with_args('setup.py').and_return(None)
-        assert self.a[4].find_list_argument('install_requires') == []
-
-    def test_find_list_argument_nested_list(self):
-        with self.a[6] as a:
-            assert a.find_list_argument('scripts') == ['pkginfo = pkginfo.commandline:main', ]
-
     @pytest.mark.parametrize(('i', 'suf', 'expected'), [
         (0, ['.spamspamspam'],  False),
         (1, '.py', True),
@@ -131,14 +97,3 @@ class TestArchive(object):
     def test_get_directories_re(self, i, r, f, c, expected):
         with self.a[i] as a:
             assert set(a.get_directories_re(r, f, c)) == set(expected)
-
-    @pytest.mark.parametrize(('i', 'arg', 'expected'), [
-        (0, 'name', True),
-        (0, 'classifiers', True),
-        (0, 'version', True),
-        (0, 'spam', False),
-        (0, 'lassifiers', False),
-    ])
-    def test_has_argument(self, i, arg, expected):
-        with self.a[i] as a:
-            assert a.has_argument(arg) == expected

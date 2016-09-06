@@ -197,8 +197,8 @@ class Convertor(object):
                 logger.info('Getting metadata from wheel using WheelMetadataExtractor.')
                 extractor_cls = metadata_extractors.WheelMetadataExtractor
             else:
-                logger.info('Getting metadata from setup.py using DistMetadataExtractor.')
-                extractor_cls = metadata_extractors.DistMetadataExtractor
+                logger.info('Getting metadata from setup.py using SetupPyMetadataExtractor.')
+                extractor_cls = metadata_extractors.SetupPyMetadataExtractor
 
             self._metadata_extractor = extractor_cls(
                 self.local_file,

@@ -1,20 +1,11 @@
 import os
 
-from tarfile import TarFile
-from zipfile import ZipFile
-
 import pytest
 
 from flexmock import flexmock
-try:
-    import xmlrpclib
-except ImportError:
-    import xmlrpc.client as xmlrpclib
 
 import pyp2rpm.metadata_extractors as me
-from pyp2rpm.archive import Archive
 from pyp2rpm.name_convertor import NameConvertor
-from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -31,12 +22,6 @@ class TestMetadataExtractor(object):
             me.SetupPyMetadataExtractor(
             '{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3'),
             me.SetupPyMetadataExtractor(
-            '{0}restsh-0.1.tar.gz'.format(self.td_dir), 'restsh', self.nc, '0.1'),
-            me.SetupPyMetadataExtractor(
-            '{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3'),
-            me.SetupPyMetadataExtractor(
-            '{0}unextractable-1.tar'.format(self.td_dir), 'unextractable', self.nc, '1'),
-            me.SetupPyMetadataExtractor(
             '{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
             me.SetupPyMetadataExtractor(
             '{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
@@ -51,25 +36,9 @@ class TestMetadataExtractor(object):
     def test_name_convert_deps_list(self, lst, expected):
         assert self.e[0].name_convert_deps_list(lst) == expected
 
-    def test_runtime_deps_from_egg_info_no_deps(self):
-        flexmock(Archive).should_receive('get_content_of_file').with_args(
-            'EGG-INFO/requires.txt', True).and_return('')
-        assert self.e[3].runtime_deps_from_egg_info == []
-
-    def test_runtime_deps_from_egg_info_some_deps(self):
-        flexmock(Archive).should_receive('get_content_of_file').with_args(
-            'EGG-INFO/requires.txt', True).and_return('spam>1.0\n\n')
-        assert len(self.e[3].runtime_deps_from_egg_info) == 1
-
-    def test_runtime_deps_auto_setuptools(self):
-        flexmock(Archive).should_receive('has_argument').with_args('entry_points').and_return(True)
-        assert ['Requires', 'python-setuptools'] in self.e[6].runtime_deps_from_setup_py
-
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, True),
-        (1, True),
-        (3, False),
-        (4, False),
+        (2, False),
     ])
     def test_has_bundled_egg_info(self, i, expected):
         with self.e[i].archive:
@@ -77,9 +46,8 @@ class TestMetadataExtractor(object):
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, False),
-        (3, False),
-        (4, False),
-        (5, True),
+        (1, False),
+        (2, True),
     ])
     def test_has_extension(self, i, expected):
         with self.e[i].archive:
@@ -87,8 +55,6 @@ class TestMetadataExtractor(object):
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, ['README.rst', 'LICENSE']),
-        (1, ['README.txt', 'LICENSE']),
-        (3, []),
     ])
     def test_doc_files(self, i, expected):
         with self.e[i].archive:
@@ -96,7 +62,7 @@ class TestMetadataExtractor(object):
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, None),
-        (6, 'versiontools-1.9.1/doc'),
+        (3, 'versiontools-1.9.1/doc'),
     ])
     def test_sphinx_dir(self, i, expected):
         with self.e[i].archive:
@@ -104,11 +70,8 @@ class TestMetadataExtractor(object):
 
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, ['2', ['3']]),
-        (1, ['3', []]),
         (2, ['2', ['3']]),
         (3, ['2', ['3']]),
-        (5, ['2', ['3']]),
-        (6, ['2', ['3']]),
     ])
     def test_extract_versions(self, i, expected):
         with self.e[i].archive:
@@ -135,7 +98,7 @@ Mageia Python Policy.Users can provide their own templates for rendering the \
 package metadata. Both the package source and metadata can be extracted from \
 PyPI or from local filesystem (local file doesn't provide that much information \
 though).'''),
-       (
+        (
 '''Vex
 ###
 
@@ -241,14 +204,17 @@ class TestPyPIMetadataExtension(object):
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
         # we will only test getting stuff from the client => pass spam as file
-        self.e = me.SetupPyMetadataExtractor('spam', 'restsh', self.nc, '0.1')
+        self.e = me.SetupPyMetadataExtractor(
+            '{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3')
 
     @pytest.mark.parametrize(('what', 'expected'), [
-        ('description', 'UNKNOWN'),
+        ('description', 'crossproject testing tool for Python.Platforms: Linux, Win32, '
+         'OSXInterpreters: Python versions 2.4 through to 3.2, Jython 2.5.1 '
+         'and PyPy1.6/1.7Bugs and issues: page: (c) Holger Krekel and others, 20042012'),
         ('md5', '9a7a2f6943baba054cf1c28e05a9198e'),
-        ('url', 'https://files.pythonhosted.org/packages/source/r/restsh/restsh-0.1.tar.gz'),
-        ('license', 'BSD'),
-        ('summary', 'A simple rest shell client')
+        ('url',  'https://files.pythonhosted.org/packages/source/p/pytest/restsh-0.1.tar.gz'),
+        ('license', 'MIT license'),
+        ('summary', 'py.test: simple powerful testing with Python')
     ])
     def test_extract(self, what, expected):
         data = self.e.extract_data(self.client)
@@ -258,22 +224,59 @@ class TestPyPIMetadataExtension(object):
 class TestSetupPyMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
 
-    def setup_method(self, method):  # test for non-egg and egg
+    def setup_method(self, method):
         self.nc = NameConvertor('fedora')
-        self.e = [me.SetupPyMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(
-            self.td_dir), 'plumbum', self.nc, '0.9.0'),
-            me.SetupPyMetadataExtractor(
-            '{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir), 'Sphinx', self.nc, '1.1.3')
-        ]
+        self.e = []
+        for archive in ('plumbum-0.9.0.tar.gz', 'pytest-2.2.3.zip',
+                        'simpleeval-0.8.7.tar.gz', 'coverage_pth-0.0.1.tar.gz'):
+            name, version = archive.split('-')
+            self.e.append(me.SetupPyMetadataExtractor('{0}{1}'.format(
+                self.td_dir, archive), name, self.nc, version[:5]))
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
-        (0, 'description', 'TODO:'),  # try random non-set attribute
+        (0, 'runtime_deps', [['Requires', 'python-six']]),
+        (0, 'build_deps', [['BuildRequires', 'python2-devel'],
+                           ['BuildRequires', 'python-setuptools']]),
+        (0, 'py_modules', set()),
+        (0, 'packages', set(['plumbum'])),
+        (0, 'scripts', set()),
+        (0, 'home_page', "https://github.com/tomerfiliba/plumbum"),
+        (0, 'summary', "Plumbum: shell combinators library"),
         (0, 'license', 'MIT'),
-        (1, 'license', 'BSD'),
+        (0, 'has_pth', False),
+        (0, 'has_extension', False),
+        (0, 'has_test_suite', False),
+        (0, 'has_bundled_egg_info', True),
+        (0, 'doc_files', ['README.rst']),
+        (0, 'doc_license', ['LICENSE']),
+        (0, 'sphinx_dir', None),
+        (1, 'runtime_deps', [['Requires', 'python-py', '>=', '1.4.7.dev2'],
+                             ['Requires', 'python-setuptools']]),
+        (1, 'build_deps', [['BuildRequires', 'python2-devel'],
+                           ['BuildRequires', 'python-setuptools'],
+                           ['BuildRequires', 'python-sphinx']]),
+        (1, 'py_modules', set(['pytest'])),
+        (1, 'packages', set(['_pytest'])),
+        (1, 'scripts', set(['py.test', 'pytest'])),
+        (1, 'home_page', 'http://pytest.org'),
+        (1, 'summary', 'py.test: simple powerful testing with Python'),
+        (1, 'license', 'MIT license'),
+        (1, 'has_pth', False),
+        (1, 'has_extension', False),
+        (1, 'has_test_suite', False),
+        (1, 'has_packages', True),
+        (1, 'has_bundled_egg_info', True),
+        (1, 'doc_files', ['README.txt']),
+        (1, 'doc_license', ['LICENSE']),
+        (1, 'sphinx_dir', 'doc'),
+        (2, 'py_modules', set(['simpleeval'])),
+        (3, 'runtime_deps', [['Requires', 'python-coverage']]),
+        (3, 'python_versions', ['3']),
     ])
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()
         assert getattr(data, what) == expected
+
 
     @pytest.mark.parametrize(('doc_files', 'license', 'other'), [
         (['LICENSE', 'README'], ['LICENSE'], ['README']),
@@ -288,9 +291,9 @@ class TestSetupPyMetadataExtractor(object):
     ])
     def test_doc_files(self, doc_files, license, other):
         flexmock(me.SetupPyMetadataExtractor).should_receive('doc_files').and_return(doc_files)
-        data = self.e[0].data_from_archive
-        assert data['doc_license'] == license
-        assert data['doc_files'] == other
+        data = self.e[0].extract_data()
+        assert data.data['doc_license'] == license
+        assert data.data['doc_files'] == other
 
 
 class TestWheelMetadataExtractor(object):
@@ -298,47 +301,52 @@ class TestWheelMetadataExtractor(object):
 
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
-        self.e = (me.WheelMetadataExtractor('{0}setuptools-19.6-py2.py3-none-any.whl'.format(
-            self.td_dir), 'setuptools', self.nc, '19.6.2'))
-
-    @pytest.mark.parametrize(('what', 'expected'), [
-        ('doc_files', ['DESCRIPTION.rst']),
-        ('has_test_suite', True),
-        ('py_modules', set(['_markerlib', 'pkg_resources', 'setuptools'])),
-        ('runtime_deps', [['Requires', 'python-certifi', '==', '2015.11.20']])
-    ])
-    def test_extract(self, what, expected):
-        data = self.e.extract_data()
-        assert getattr(data, what) == expected
-
-
-class TestDistMetadataExtractor(object):
-    td_dir = '{0}/test_data/'.format(tests_dir)
-
-    def setup_method(self, method):
-        self.nc = NameConvertor('fedora')
         self.e = []
-        for archive in ('plumbum-0.9.0.tar.gz', 'coverage_pth-0.0.1.tar.gz',
-                         'pytest-2.2.3.zip', 'simpleeval-0.8.7.tar.gz'):
-            name, version = archive.split('-')
-            self.e.append(me.DistMetadataExtractor('{0}{1}'.format(
-                self.td_dir, archive), name, self.nc, version[:5]))
+        for archive, name, version in [
+                ('setuptools-19.6-py2.py3-none-any.whl', 'setuptools', '19.6.2'),
+                ('py2exe-0.9.2.2-py33.py34-none-any.whl', 'py2exe', '0.9.2.2')]:
+            self.e.append(me.WheelMetadataExtractor('{0}{1}'.format(
+                self.td_dir, archive), name, self.nc, version))
+            self.e[-1].venv = None
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
-        (0, 'doc_files', ['README.rst']),
-        (0, 'doc_license', ['LICENSE']),
-        (0, 'has_test_suite', False),
-        (0, 'license', 'MIT'),
-        (0, 'build_cmd', '%{py2_build}'),
-        (0, 'runtime_deps', [['Requires', 'python-six']]),
-        (0, 'py_modules', []),
-        (0, 'packages', set(['plumbum'])),
-        (1, 'runtime_deps', [['Requires', 'python-coverage']]),
-        (1, 'python_versions', ['3']),
-        (2, 'py_modules', ['pytest']),
-        (2, 'packages', set(['_pytest'])),
-        (3, 'py_modules', ['simpleeval']),
-        (3, 'packages', set())
+        (0, 'runtime_deps', [['Requires', 'python-certifi', '==', '2015.11.20'],
+                             ['Requires', 'python-setuptools']]),
+        (0, 'build_deps', [['BuildRequires', 'python2-devel'],
+                           ['BuildRequires', 'python-pytest', '>=', '2.8'],
+                           ['BuildRequires', 'python-setuptools[ssl]'],
+                           ['BuildRequires', 'python-setuptools']]),
+
+        (0, 'py_modules', set(['setuptools', '_markerlib', 'pkg_resources'])),
+        (0, 'packages', set(['setuptools'])),
+        (0, 'scripts', set()),
+        (0, 'home_page', 'https://bitbucket.org/pypa/setuptools'),
+        (0, 'summary', 'Easily download, build, install, upgrade, and uninstall Python packages'),
+        (0, 'license', 'TODO:'),
+        (0, 'has_pth', False),
+        (0, 'has_extension', False),
+        (0, 'has_test_suite', True),
+        (0, 'doc_files', ['DESCRIPTION.rst']),
+        (0, 'doc_license', []),
+        (0, 'sphinx_dir', None),
+        (0, 'python_versions', ['3']),
+        (1, 'runtime_deps', [['Requires', 'python-setuptools']]),
+        (1, 'build_deps', [['BuildRequires', 'python2-devel'],
+                           ['BuildRequires', 'python-setuptools']]),
+        (1, 'py_modules', set(['py2exe'])),
+        (1, 'packages', set(['py2exe'])),
+        (1, 'scripts', set(['build_exe.exe', 'build_exe-script.py'])),
+        (1, 'home_page', 'TODO:'),
+        (1, 'summary', 'Build standalone executables for Windows (python 3 version)'),
+        (1, 'license', 'MIT/X11'),
+        (1, 'has_pth', False),
+        (1, 'has_extension', False),
+        (1, 'has_test_suite', False),
+        (1, 'doc_files', []),
+        (1, 'doc_license', []),
+        (1, 'sphinx_dir', None),
+        (1, 'python_versions', []),
+
     ])
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()
