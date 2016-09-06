@@ -1,3 +1,5 @@
+import sys
+import json
 from distutils.core import Command
 
 
@@ -46,8 +48,7 @@ class extract_dist(Command):
         is specified, assigns metadata dictionary to class_metadata variable otherwise.
         """
         if self.stdout:
-           # TODO: put json serialized data to stdout
-            pass
+            sys.stdout.write("extracted json data:\n" + json.dumps(self.metadata))
         else:
             extract_dist.class_metadata = self.metadata
 

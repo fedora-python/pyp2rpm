@@ -20,3 +20,7 @@ class NoSuchSourceException(BaseException):
 
 class VirtualenvFailException(BaseException):
     pass
+
+
+class ExtractionError(BaseException):
+    pass

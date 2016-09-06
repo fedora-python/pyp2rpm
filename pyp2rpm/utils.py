@@ -181,3 +181,24 @@ def unique_deps(deps):
     """Remove duplicities from deps list of the lists"""
     deps.sort()
     return list(k for k, _ in itertools.groupby(deps))
+
+
+def get_interpreter_path(current=True):
+    """Returns expected path to current python interpreter."""
+    if current:
+        return sys.executable
+    else:
+        interpreter = settings.PYTHON_INTERPRETER
+        version = '3' if sys.version == '2' else '2'
+        return interpreter + version
+
+
+if PY3:
+    def console_to_str(s):
+        try:
+            return s.decode(sys.__stdout__.encoding)
+        except UnicodeDecodeError:
+            return s.decode('utf-8')
+else:
+    def console_to_str(s):
+        return s
