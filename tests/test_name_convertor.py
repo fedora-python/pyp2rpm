@@ -8,8 +8,6 @@ try:
 except ImportError:
     dnf = None
 
-settings.CONSOLE_LOGGING = True
-
 
 class TestUtils(object):
 

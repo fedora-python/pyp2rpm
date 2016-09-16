@@ -73,7 +73,6 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
     register_file_log_handler('/tmp/pyp2rpm-{0}.log'.format(getpass.getuser()))
 
     if srpm or s:
-        settings.CONSOLE_LOGGING = True
         register_console_log_handler()
 
     distro = o

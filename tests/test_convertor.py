@@ -10,7 +10,6 @@ from pyp2rpm.package_data import PackageData
 from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
-settings.CONSOLE_LOGGING = True
 
 
 class TestConvertor(object):

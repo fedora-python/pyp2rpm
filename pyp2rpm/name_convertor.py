@@ -157,13 +157,11 @@ class DandifiedNameConvertor(NameConvertor):
             raise RuntimeError("DandifiedNameConvertor needs optional require dnf, and "
                                "can be used for Fedora distro only.")
         with dnf.Base() as base:
-            with utils.RedirectStdStreams(stdout=LoggerWriter(logger.debug),
-                                          stderr=LoggerWriter(logger.warning)):
-                RELEASEVER = dnf.rpm.detect_releasever(base.conf.installroot)
-                base.conf.substitutions['releasever'] = RELEASEVER
-                base.read_all_repos()
-                base.fill_sack()
-                self.query = base.sack.query()
+            RELEASEVER = dnf.rpm.detect_releasever(base.conf.installroot)
+            base.conf.substitutions['releasever'] = RELEASEVER
+            base.read_all_repos()
+            base.fill_sack()
+            self.query = base.sack.query()
 
     def rpm_name(self, name, python_version=None):
         """Checks if name converted using superclass rpm_name_method match name
