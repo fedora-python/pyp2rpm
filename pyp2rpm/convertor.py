@@ -176,8 +176,12 @@ class Convertor(object):
     def name_convertor(self):
         if not hasattr(self, '_name_convertor'):
             if dnf is None:
+                logger.warn("Dnf module not found, please dnf install python{0}-dnf "
+                        "to improve accuracy of name conversion.".format(sys.version[0]))
+                logger.debug("Using NameConvertor to convert names of the packages.")
                 self._name_convertor = name_convertor.NameConvertor(self.distro)
             else:
+                logger.debug("Using DandifiedNameConvertor to convert names of the packages.")
                 self._name_convertor = name_convertor.DandifiedNameConvertor(self.distro)
         return self._name_convertor
 
