@@ -13,9 +13,6 @@ BuildArch:      noarch
  
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
- 
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
 
 %description
 ++++++++.. contents :: Summary Cloud infrastructure and .deb file management
@@ -37,18 +34,6 @@ supervisor20111208 * Separated key generation from install of buildkitaptrepo.
 * Made repo and key base directory settings options of the buildkit repo
 command so that ...
 
-%package -n     python3-%{pypi_name}
-Summary:        Cloud infrastructure and .deb file management software
-%{?python_provide:%python_provide python3-%{pypi_name}}
-
-%description -n python3-%{pypi_name}
-++++++++.. contents :: Summary Cloud infrastructure and .deb file management
-software.Get Started * See the docsAuthor James Gardner <>_Changes20111210 *
-Changed aptcacherng to run on port 3142 to avoid a potential conflict with
-supervisor20111208 * Separated key generation from install of buildkitaptrepo.
-* Made repo and key base directory settings options of the buildkit repo
-command so that ...
-
 
 %prep
 %autosetup -n %{pypi_name}-%{version}
@@ -57,13 +42,8 @@ rm -rf %{pypi_name}.egg-info
 
 %build
 %py2_build
-%py3_build
 
 %install
-# Must do the subpackages' install first because the scripts in /usr/bin are
-# overwritten with every setup.py install.
-%py3_install
-
 %py2_install
 
 
@@ -73,12 +53,6 @@ rm -rf %{pypi_name}.egg-info
 %{python2_sitelib}/%{pypi_name}
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
-%files -n python3-%{pypi_name}
-%license LICENSE.txt
-%doc example/README.txt README.txt
-%{python3_sitelib}/%{pypi_name}
-%{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
-
 %changelog
-* Thu Sep 08 2016 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
+* Thu Sep 22 2016 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
 - Initial package.

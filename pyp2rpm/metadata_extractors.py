@@ -200,11 +200,8 @@ class LocalMetadataExtractor(object):
         archive_data['has_extension'] = self.has_extension
         archive_data['has_test_suite'] = self.has_test_suite
 
-        py_vers = self.versions_from_archive
-        archive_data['base_python_version'] = py_vers[0] if py_vers \
-            else settings.DEFAULT_PYTHON_VERSION
-        archive_data['python_versions'] = py_vers[1:] if py_vers \
-            else [settings.DEFAULT_ADDITIONAL_VERSION]
+        (archive_data['base_python_version'],
+         archive_data['python_versions']) = self.versions_from_archive
 
         (archive_data['doc_files'],
          archive_data['doc_license']) = self.separate_license_files(self.doc_files)
@@ -339,7 +336,16 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def versions_from_archive(self):
-        return utils.versions_from_trove(self.metadata['classifiers'])
+        py_vers = utils.versions_from_trove(self.metadata['classifiers'])
+        base_python_version = py_vers[0] if py_vers else settings.DEFAULT_PYTHON_VERSION
+        python_versions = py_vers[1:] if py_vers else [settings.DEFAULT_ADDITIONAL_VERSION]
+        if hasattr(self, 'unsupported_version'):
+            if base_python_version == self.unsupported_version:
+                base_python_version = python_versions[0]
+                python_versions = python_versions[1:]
+            elif self.unsupported_version in python_versions:
+                python_versions.remove(self.unsupported_version)
+        return (base_python_version, python_versions)
 
     @property
     def has_bundled_egg_info(self):
@@ -478,7 +484,9 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def versions_from_archive(self):
-        return utils.versions_from_trove(self.classifiers)
+        py_vers = utils.versions_from_trove(self.classifiers)
+        return (py_vers[0] if py_vers else settings.DEFAULT_PYTHON_VERSION,
+                py_vers[1:] if py_vers else [settings.DEFAULT_ADDITIONAL_VERSION])
 
     @property
     def has_test_suite(self):

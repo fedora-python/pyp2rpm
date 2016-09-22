@@ -6,6 +6,7 @@ from flexmock import flexmock
 
 import pyp2rpm.metadata_extractors as me
 from pyp2rpm.name_convertor import NameConvertor
+from pyp2rpm import utils
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -25,6 +26,8 @@ class TestMetadataExtractor(object):
             '{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
             me.SetupPyMetadataExtractor(
             '{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
+            me.SetupPyMetadataExtractor(
+            '{0}isholiday-0.1.tar.gz'.format(self.td_dir), 'isholiday', self.nc, '0.1'),
         ]
 
     @pytest.mark.parametrize(('lst', 'expected'), [
@@ -72,12 +75,14 @@ class TestMetadataExtractor(object):
         (0, ['2', ['3']]),
         (2, ['2', ['3']]),
         (3, ['2', ['3']]),
+        (4, ['2', []]),
     ])
     def test_extract_versions(self, i, expected):
-        with self.e[i].archive:
-            pkgdata = self.e[i].extract_data()
-            assert [pkgdata.data['base_python_version'],
-                    pkgdata.data['python_versions']] == expected
+        if i != 4 or utils.PY3:
+            with self.e[i].archive:
+                pkgdata = self.e[i].extract_data()
+                assert [pkgdata.data['base_python_version'],
+                        pkgdata.data['python_versions']] == expected
 
     @staticmethod
     @me.process_description
