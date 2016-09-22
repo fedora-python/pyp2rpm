@@ -34,9 +34,10 @@ def pypi_metadata_extension(extraction_fce):
 
     def inner(self, client=None):
         data = extraction_fce(self)
+        if client is None:
+            logger.warning("Client is None, it was probably disabled")
+            return data
         try:
-            if client is None:
-                raise ValueError("Client is None.")
             release_data = client.release_data(self.name, self.version)
         except:
             logger.warning('Some kind of error while communicating with client: {0}.'.format(
