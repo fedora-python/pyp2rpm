@@ -24,3 +24,7 @@ class VirtualenvFailException(BaseException):
 
 class ExtractionError(BaseException):
     pass
+
+
+class MissingUrlException(BaseException):
+    pass

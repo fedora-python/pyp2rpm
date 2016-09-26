@@ -33,7 +33,7 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
     except:  # some kind of error with client
         logger.debug('Client: {0} Name: {1} Version: {2}.'.format(
             client, name, version))
-        raise SystemExit('Some kind of error while communicating with client: {0}.'.format(
+        raise exceptions.MissingUrlException('Some kind of error while communicating with client: {0}.'.format(
             client), exc_info=True)
 
     url = ''
@@ -63,11 +63,11 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
                 md5_digest = release_url['md5_digest']
                 break
     if not url:
-        raise SystemExit("Url of source archive not found.")
+        raise exceptions.MissingUrlException("Url of source archive not found.")
 
     if url == 'UNKNOWN':
-        raise SystemExit("{0} package has no sources on PyPI, cannot proceed. "
-                         "Please ask the maintainer to upload sources.".format(release_data['name']))
+        raise exceptions.MissingUrlException("{0} package has no sources on PyPI, "
+                "Please ask the maintainer to upload sources.".format(release_data['name']))
 
     if not hashed_format:
         url = "https://files.pythonhosted.org/packages/source/{0[0]}/{0}/{1}".format(
@@ -152,7 +152,10 @@ class PypiDownloader(PackageGetter):
         Raises:
             PermissionError if the save_dir is not writable.
         """
-        url = get_url(self.client, self.name, self.version, wheel, hashed_format=True)[0]
+        try:
+            url = get_url(self.client, self.name, self.version, wheel, hashed_format=True)[0]
+        except exceptions.MissingUrlException as e:
+            raise SystemExit(e)
         if wheel:
             self.temp_dir = tempfile.mkdtemp()
             save_dir = self.temp_dir

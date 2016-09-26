@@ -40,10 +40,10 @@ class TestPackageGetters(object):
         assert (expected_url, expected_md5) == get_url(self.client, name, version, wheel, hf)
 
     @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf', 'exception', 'error_msg'), [
-        ('nonexistent_pkg', '0.0.0', False, False, SystemExit,
+        ('nonexistent_pkg', '0.0.0', False, False, MissingUrlException,
          'Url of source archive not found.'),
-        ('Pymacs', '0.25', False, False, SystemExit,
-         'Pymacs package has no sources on PyPI, cannot proceed. Please ask the maintainer to upload sources.'),
+        ('Pymacs', '0.25', False, False, MissingUrlException,
+         'Pymacs package has no sources on PyPI, Please ask the maintainer to upload sources.'),
     ])
     @pytest.mark.webtest
     def test_get_url_raises(self, name, version, wheel, hf, exception, error_msg):
