@@ -59,6 +59,9 @@ BuildRequires:	rpmbuild(macros) >= 1.714
 %if %{with python{{ pv }}}
 {{ dependencies(data.build_deps, False, pv, data.base_python_version, False) }}
 %endif
+%if %{with tests}
+{{ dependencies(data.test_deps, False, pv, data.base_python_version, False) }}
+%endif
 {%- endfor %}
 {# runtime deps for base Python version #}
 {{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version, False) }}

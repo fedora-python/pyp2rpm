@@ -100,6 +100,7 @@ class LocalMetadataExtractor(object):
         self.venv = venv
         self.base_python_version = base_python_version
         self.metadata_extension = metadata_extension
+        self.builtin_build_deps = [['BuildRequires', 'python2-devel'], ['BuildRequires', 'python-setuptools']]
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
@@ -358,13 +359,12 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
         if self.archive.is_egg:
             archive_data['runtime_deps'] = self.runtime_deps_from_egg_info
-            archive_data['build_deps'] = [['BuildRequires', 'python2-devel'],
-                                          ['BuildRequires', 'python-setuptools']]
+            archive_data['build_deps'] = self.builtin_build_deps
+            archive_data['test_deps'] = []
         else:
             archive_data['runtime_deps'] = self.runtime_deps_from_setup_py
-            archive_data['build_deps'] = utils.unique_deps([['BuildRequires', 'python2-devel'],
-                                                            ['BuildRequires', 'python-setuptools']]
-                                                           + self.build_deps_from_setup_py)
+            archive_data['build_deps'] = self.builtin_build_deps
+            archive_data['test_deps'] = self.build_deps_from_setup_py
 
         py_vers = self.versions_from_archive
         archive_data['base_python_version'] = py_vers[0] if py_vers \
@@ -589,9 +589,8 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
          archive_data['doc_license']) = self.separate_license_files(self.doc_files)
         archive_data['has_pth'] = self.has_pth
         archive_data['runtime_deps'] = utils.unique_deps(self.runtime_deps)
-        archive_data['build_deps'] = utils.unique_deps([['BuildRequires', 'python2-devel'],
-                                                        ['BuildRequires', 'python-setuptools']]
-                                                       + self.build_deps)
+        archive_data['build_deps'] = self.builtin_build_deps
+        archive_data['test_deps'] = self.build_deps
         archive_data['py_modules'] = self.modules
         archive_data['scripts'] = self.scripts
         archive_data['has_test_suite'] = self.has_test_suite

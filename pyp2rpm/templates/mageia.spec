@@ -19,9 +19,9 @@ Source0:        {{ data.url|replace(data.name, '%{pypi_name}')|replace(data.vers
 {%- if not data.has_extension %}
 BuildArch:      noarch
 {%- endif %}
-{{ dependencies(data.build_deps, False, data.base_python_version, data.base_python_version) | replace("python2-devel", "python-devel") }}
+{{ dependencies(data.build_deps + data.test_deps, False, data.base_python_version, data.base_python_version) | replace("python2-devel", "python-devel") }}
 {%- for pv in data.python_versions %}
-{{ dependencies(data.build_deps, False, pv, data.base_python_version)  | replace("python2-devel", "python-devel") }}
+{{ dependencies(data.build_deps + data.test_deps, False, pv, data.base_python_version)  | replace("python2-devel", "python-devel") }}
 {%- endfor %}
 {{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version)  | replace("python2-devel", "python-devel") }}
 
