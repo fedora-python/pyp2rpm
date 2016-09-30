@@ -41,15 +41,15 @@
 {%- endfor %}
 
 %define 	module		{{ data.name }}
-%define 	egg_name	{{ data.name }}
-%define		pypi_name	{{ data.underscored_name }}
+%define 	egg_name	{{ data.underscored_name }}
+%define		pypi_name	{{ data.name }}
 Summary:	{{ data.summary }}
-Name:		python-%{module}
+Name:		python-%{pypi_name}
 Version:	{{ data.version }}
 Release:	0.1
 License:	{{ data.license }}
 Group:		Libraries/Python
-Source0:	{{ data.url|replace(data.name, '%{module}')|replace(data.version, '%{version}') }}
+Source0:	{{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 # Source0-md5:	-
 URL:		{{ data.home_page }}
 BuildRequires:	rpm-pythonprov
@@ -60,8 +60,6 @@ BuildRequires:	rpmbuild(macros) >= 1.714
 {{ dependencies(data.build_deps, False, pv, data.base_python_version, False) }}
 %endif
 {%- endfor %}
-{# runtime deps for base Python version #}
-{{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version, False) }}
 {%- if not data.has_extension %}
 BuildArch:	noarch
 {%- endif %}
@@ -74,18 +72,17 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %package -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
 Summary:	{{ data.summary }}
 Group:		Libraries/Python
-{{ dependencies(data.runtime_deps, True, pv, pv) }}
 
 %description -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
 {{ data.description|truncate(400)|wordwrap }}
 {%- endcall %}
 
 %prep
-%setup -q -n %{module}-%{version}
+%setup -q -n %{pypi_name}-%{version}
 {%- if data.has_bundled_egg_info %}
 
 # Remove bundled egg-info
-%{__rm} -r %{module}.egg-info
+%{__rm} -r %{egg_name}.egg-info
 {%- endif %}
 
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version, use_with=False) -%}
@@ -127,6 +124,7 @@ rm -rf $RPM_BUILD_ROOT
 
 {% call(pv, v) foreach_python_versions(use_with=True) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}{% endif %}
+%defattr(644,root,root,755)
 
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 
@@ -149,14 +147,14 @@ rm -rf $RPM_BUILD_ROOT
 {%- endif %}
 
 {%- if data.has_extension %}
-%{py{{ v }}_sitedir/{{ data.name | module_to_path(data.underscored_name) }}
+%{py{{ v }}_sitedir/%{module}
 {%- if data.has_pth %}
 %{py{{ v }}_sitedir/%{egg_name}-%{version}-py*-*.pth
 {%- endif %}
 %{py{{ v }}_sitedir/%{egg_name}-%{version}-py*.egg-info
 {%- else %}
 {%- if data.has_packages %}
-%{py{{ v }}_sitescriptdir}/{{ data.name | module_to_path(data.underscored_name) }}
+%{py{{ v }}_sitescriptdir}/%{module}
 {%- endif %}
 
 {%- if data.has_pth %}
