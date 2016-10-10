@@ -222,7 +222,11 @@ class LocalFileGetter(PackageGetter):
             logger.info('Rpmbuild failed. See log for more info.')
 
     def get_name_version(self):
-        name, version = self.name_version_pattern.search(self._stripped_name_version).groups()
+        try:
+            name, version = self.name_version_pattern.search(self._stripped_name_version).groups()
+        except AttributeError:
+            raise SystemExit("Failed to get name and version of the package, "
+                             "check if name of the archive is in format: name-version.suffix.")
         if version[-1] == '.':
             version = version[:-1]
         return (name, version)
