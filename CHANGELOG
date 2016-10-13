@@ -1,3 +1,9 @@
+3.2.0
+* Refactoring of extract_dist command and metadata_extractors
+* Drop .egg archives support in SetupPyMetadataExtractor
+* Remove redirection of streams to log
+* Add epel6 and epel7 templates
+
 3.1.3
 * Move Licenses from %doc to %license
 * Update pld template
