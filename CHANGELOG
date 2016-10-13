@@ -1,3 +1,6 @@
+3.2.1
+* Update MANIFEST.in
+
 3.2.0
 * Refactoring of extract_dist command and metadata_extractors
 * Drop .egg archives support in SetupPyMetadataExtractor
