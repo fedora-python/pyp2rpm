@@ -114,7 +114,7 @@ class LocalMetadataExtractor(object):
 
     def __init__(self, local_file, name, name_convertor, version,
                  rpm_name=None, venv=True,
-                 base_python_version=settings.DEFAULT_PYTHON_VERSION,
+                 base_python_version=None,
                  metadata_extension=False):
         self.local_file = local_file
         self.archive = archive.Archive(local_file)
@@ -218,18 +218,20 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
         temp_dir = tempfile.mkdtemp()
         try:
-            with self.archive as a:
-                a.extract_all(directory=temp_dir)
+            with self.archive as package_archive:
+                package_archive.extract_all(directory=temp_dir)
+
+                runner = SubprocessModuleRunner(self.get_setup_py(temp_dir),
+                                                *settings.EXTRACT_DIST_COMMAND_ARGS + ['--stdout'])
                 try:
-                    runner = SubprocessModuleRunner(self.get_setup_py(temp_dir),
-                                                    *settings.EXTRACT_DIST_COMMAND_ARGS + ['--stdout'])
                     logger.info("Running extract_dist command using current interpreter.")
-                    runner.run(utils.get_interpreter_path(current=True))
+                    runner.run(utils.get_interpreter_path(version=self.base_python_version))
                 except (JSONDecodeError, exc.ExtractionError):
                     logger.error("Error occured, trying alternative python interpreter.")
-                    self.unsupported_version = '3' if utils.PY3 else '2'
+                    self.unsupported_version = self.base_python_version or str(sys.version_info.major)
                     try:
-                        runner.run(utils.get_interpreter_path(current=False))
+                        runner.run(utils.get_interpreter_path(
+                            version='2' if self.unsupported_version == '3' else '3'))
                     except (JSONDecodeError, exc.ExtractionError):
                         sys.stdout.write("Failed to extract data from setup.py script.\n")
                         raise SystemExit(3)
