@@ -1,12 +1,11 @@
 import os
-import re
 import glob
 import logging
 from virtualenvapi.manage import VirtualEnvironment
 import virtualenvapi.exceptions as ve
 
 from pyp2rpm.exceptions import VirtualenvFailException
-from pyp2rpm.settings import DEFAULT_PYTHON_VERSION
+from pyp2rpm.settings import DEFAULT_PYTHON_VERSION, MODULE_SUFFIXES
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +54,6 @@ class DirsContent(object):
 
 class VirtualEnv(object):
 
-    modul_pattern = re.compile(r'\.py.?$')
-
     def __init__(self, name, temp_dir, name_convertor, base_python_version):
         self.name = name
         self.temp_dir = temp_dir
@@ -96,7 +93,7 @@ class VirtualEnv(object):
         except ValueError:
             raise VirtualenvFailException("Some of the DirsContent attributes is uninicialized")
         site_packages = site_packages_filter(diff.lib_sitepackages)
-        packages = set([p for p in site_packages if not self.modul_pattern.search(p)])
+        packages = set([p for p in site_packages if not p.endswith(MODULE_SUFFIXES)])
         py_modules = set([os.path.splitext(m)[0] for m in site_packages - packages])
         scripts = scripts_filter(list(diff.bindir))
         logger.debug('Packages from files differance in virtualenv: {0}.'.format(
