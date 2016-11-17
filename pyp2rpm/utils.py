@@ -185,7 +185,7 @@ def unique_deps(deps):
 
 def get_interpreter_path(version=None):
     """Return the executable of a specified or current version."""
-    if version:
+    if version and version != str(sys.version_info[0]):
         return settings.PYTHON_INTERPRETER + version
     else:
         return sys.executable
