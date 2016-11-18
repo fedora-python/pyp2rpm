@@ -216,6 +216,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
     def __init__(self, *args, **kwargs):
         super(SetupPyMetadataExtractor, self).__init__(*args, **kwargs)
 
+        self.unsupported_version = None
         temp_dir = tempfile.mkdtemp()
         try:
             with self.archive as package_archive:
