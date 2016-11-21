@@ -66,13 +66,19 @@ class TestVirtualEnv(object):
         shutil.rmtree(self.temp_dir)
 
     @pytest.mark.parametrize(('bin_diff', 'package_diff', 'expected'), [
-        (set(['foo']), set(['foo']), (set(['foo']), set(), ['foo'])),
-        (set(['foo']), set(['foo.py', 'foo.pyc']), (set(), set(['foo']), ['foo'])),
-        (set([]), set(['foo.py']), (set(), set(['foo']), [])),
-        (set(['foo']), set([]), (set([]), set(), ['foo'])),
-        (set(), set(), (set(), set(), [])),
+        (set(['foo']), set(['foo']), (set(['foo']), set(), ['foo'], False)),
+        (set(['foo']), set(['foo.py', 'foo.pyc']),
+         (set(), set(['foo']), ['foo'], False)),
+        (set([]), set(['foo.py']), (set(), set(['foo']), [], False)),
+        (set(['foo']), set(["foo-pyX.Y-nspkg.pth"]),
+         (set([]), set(), ['foo'], True)),
+        (set(), set(), (set(), set(), [], False)),
     ])
     def test_get_dirs_differance(self, bin_diff, package_diff, expected):
         flexmock(DirsContent).should_receive('__sub__').and_return(
             DirsContent(bin_diff, package_diff))
-        assert self.venv.get_dirs_differance == expected
+        self.venv.get_dirs_differance()
+        assert ((self.venv.data['packages'],
+                 self.venv.data['py_modules'],
+                 self.venv.data['scripts'],
+                 self.venv.data['has_pth']) == expected)

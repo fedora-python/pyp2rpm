@@ -135,7 +135,10 @@ class LocalMetadataExtractor(object):
     @property
     def has_pth(self):
         """Figure out if package has pth file """
-        return "." in self.name
+        if virtualenv is None:
+            return "." in self.name
+        else:
+            return None
 
     @property
     def has_extension(self):
