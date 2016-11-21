@@ -27,7 +27,7 @@ content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
 user.username }}</a></li> {% ...
 
 %package -n     python2-%{pypi_name}
-Summary:        A small but fast and easy to use stand-alone template engine written in pure python
+Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pypi_name}}
  
 Requires:       python-MarkupSafe
@@ -40,7 +40,7 @@ content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
 user.username }}</a></li> {% ...
 
 %package -n     python3-%{pypi_name}
-Summary:        A small but fast and easy to use stand-alone template engine written in pure python
+Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
  
 Requires:       python3-MarkupSafe
