@@ -63,7 +63,7 @@ rm -rf html/.{doctrees,buildinfo}
 %py{{ pv }}_install
 {% for script in data.scripts -%}
 cp %{buildroot}/%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv, True) }}
-ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
 {% endfor %}
 {%- endfor -%}
 {% if data.has_test_suite %}
