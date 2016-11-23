@@ -33,11 +33,9 @@ def python_bin_for_python_version(name, version, default_string='__python2'):
         return name.replace(default_string, '__python{0}'.format(version))
 
 
-def macroed_pkg_name(pkg_name, name):
-    if pkg_name.startswith('python') and name == pkg_name:
-        # if (pypi) name starts with python also then we can't prefix python
-        # this would lead to python3-python-foo names like
-        return name
+def macroed_pkg_name(pkg_name, srcname):
+    if srcname:
+        return 'python-%{srcname}'
     elif pkg_name.startswith('python-'):
         return 'python-%{pypi_name}'
     else:
@@ -60,6 +58,7 @@ def package_to_path(package, module):
         return "%{pypi_name}"
     else:
         return package
+
 
 __all__ = [name_for_python_version,
            script_name_for_python_version,

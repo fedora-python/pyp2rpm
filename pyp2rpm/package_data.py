@@ -23,10 +23,11 @@ class PackageData(object):
 
     """A simple object that carries data about a package."""
 
-    def __init__(self, local_file, name, pkg_name, version, md5='', url=''):
+    def __init__(self, local_file, name, pkg_name, version, md5='', url='', srcname=None):
         object.__setattr__(self, 'data', {})
         self.data['local_file'] = local_file
         self.data['name'] = name
+        self.data['srcname'] = srcname
         self.data['pkg_name'] = pkg_name
         self.data['version'] = version
         self.data['python_versions'] = []

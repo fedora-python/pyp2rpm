@@ -155,11 +155,15 @@ class LocalMetadataExtractor(object):
         Returns:
             PackageData object containing the extracted data.
         """
-        data = PackageData(self.local_file,
-                           self.name,
-                           self.name_convertor.rpm_name(self.name)
-                           if self.rpm_name is None else self.rpm_name,
-                           self.version)
+        data = PackageData(
+            local_file=self.local_file,
+            name=self.name,
+            pkg_name=self.rpm_name or self.name_convertor.rpm_name(self.name),
+            version=self.version,
+            # Provide srcname if provided with -r or
+            # if pypi name is like python-<name>.
+            srcname=self.name_convertor.base_name(self.rpm_name or self.name)
+            if self.rpm_name or self.name.startswith('python') else None)
 
         with self.archive:
             data.set_from(self.data_from_archive)

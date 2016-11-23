@@ -58,7 +58,7 @@ class NameConvertor(object):
         return versioned_name
 
     def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION):
-        """Returns name of the package coverted to (possibly) correct package 
+        """Returns name of the package coverted to (possibly) correct package
            name according to Packaging Guidelines.
         Args:
             name: name to convert
