@@ -8,3 +8,7 @@ build/
 dist/
 pyp2rpm.egg-info
 MANIFEST
+.tox/
+.cache/
+.eggs/
+tests/test_output/
