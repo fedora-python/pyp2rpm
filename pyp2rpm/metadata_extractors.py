@@ -114,7 +114,7 @@ class LocalMetadataExtractor(object):
 
     def __init__(self, local_file, name, name_convertor, version,
                  rpm_name=None, venv=True,
-                 base_python_version=settings.DEFAULT_PYTHON_VERSION,
+                 base_python_version=None,
                  metadata_extension=False):
         self.local_file = local_file
         self.archive = archive.Archive(local_file)
@@ -216,26 +216,36 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
     def __init__(self, *args, **kwargs):
         super(SetupPyMetadataExtractor, self).__init__(*args, **kwargs)
 
+        self.unsupported_version = None
         temp_dir = tempfile.mkdtemp()
         try:
-            with self.archive as a:
-                a.extract_all(directory=temp_dir)
-                try:
-                    runner = SubprocessModuleRunner(self.get_setup_py(temp_dir),
-                                                    *settings.EXTRACT_DIST_COMMAND_ARGS + ['--stdout'])
-                    logger.info("Running extract_dist command using current interpreter.")
-                    runner.run(utils.get_interpreter_path(current=True))
-                except (JSONDecodeError, exc.ExtractionError):
-                    logger.error("Error occured, trying alternative python interpreter.")
-                    self.unsupported_version = '3' if utils.PY3 else '2'
-                    try:
-                        runner.run(utils.get_interpreter_path(current=False))
-                    except (JSONDecodeError, exc.ExtractionError):
-                        sys.stdout.write("Failed to extract data from setup.py script.\n")
-                        raise SystemExit(3)
-                self.metadata = runner.results
+            with self.archive as package_archive:
+                package_archive.extract_all(directory=temp_dir)
+                self.metadata = self._get_metadata(temp_dir)
         finally:
             shutil.rmtree(temp_dir)
+
+    def _get_metadata(self, temp_dir):
+        runner = SubprocessModuleRunner(
+            self.get_setup_py(temp_dir),
+            *settings.EXTRACT_DIST_COMMAND_ARGS + ['--stdout'])
+
+        current_version = self.base_python_version or str(sys.version_info[0])
+        paths_to_attempt = (utils.get_interpreter_path(version=ver) for ver in (
+            current_version,  # the version provided with `-b` option or default
+            '2' if current_version == '3' else '3'  # alternative Python version
+        ))
+        for path in paths_to_attempt:
+            try:
+                logger.info("Running extract_dist command with: {0}".format(path))
+                runner.run(path)
+                return runner.results
+            except (JSONDecodeError, exc.ExtractionError):
+                logger.error("Could not extract metadata with: {0}".format(path))
+                self.unsupported_version = current_version
+        else:
+            sys.stdout.write("Failed to extract data from setup.py script.\n")
+            raise SystemExit(3)
 
     def get_setup_py(self, directory):
         try:

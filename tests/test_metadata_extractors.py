@@ -30,6 +30,17 @@ class TestMetadataExtractor(object):
             '{0}isholiday-0.1.tar.gz'.format(self.td_dir), 'isholiday', self.nc, '0.1'),
         ]
 
+    @pytest.mark.parametrize(('b_version', 'what', 'expected'), [
+        ('2', 'install_requires', ['jinja2', 'jsonschema', 'six', 'py2-ipaddress']),
+        ('3', 'install_requires', ['jinja2', 'jsonschema', 'six']),
+    ])
+    def test_init_extractor(self, b_version, what, expected):
+        extractor = me.SetupPyMetadataExtractor(
+            '{0}netjsonconfig-0.5.1.tar.gz'.format(self.td_dir),
+            'netjsonconfig', self.nc, '0.5.1', base_python_version=b_version)
+        if extractor.unsupported_version != b_version:
+            assert extractor.metadata.get(what) == expected
+
     @pytest.mark.parametrize(('lst', 'expected'), [
         ([['Requires', 'pyfoo', 'spam', 'spam']], [['Requires', 'python-pyfoo', 'spam', 'spam']]),
         ([['Requires', 'foo', 'spam', 'spam']], [['Requires', 'python-foo', 'spam', 'spam']]),
@@ -281,7 +292,6 @@ class TestSetupPyMetadataExtractor(object):
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()
         assert getattr(data, what) == expected
-
 
     @pytest.mark.parametrize(('doc_files', 'license', 'other'), [
         (['LICENSE', 'README'], ['LICENSE'], ['README']),

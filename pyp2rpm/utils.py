@@ -183,14 +183,12 @@ def unique_deps(deps):
     return list(k for k, _ in itertools.groupby(deps))
 
 
-def get_interpreter_path(current=True):
-    """Returns expected path to current python interpreter."""
-    if current:
-        return sys.executable
+def get_interpreter_path(version=None):
+    """Return the executable of a specified or current version."""
+    if version and version != str(sys.version_info[0]):
+        return settings.PYTHON_INTERPRETER + version
     else:
-        interpreter = settings.PYTHON_INTERPRETER
-        version = '3' if sys.version == '2' else '2'
-        return interpreter + version
+        return sys.executable
 
 
 if PY3:
