@@ -1,19 +1,20 @@
 import os
-import re
 import glob
 import logging
+import pprint
+
 from virtualenvapi.manage import VirtualEnvironment
 import virtualenvapi.exceptions as ve
 
 from pyp2rpm.exceptions import VirtualenvFailException
-from pyp2rpm.settings import DEFAULT_PYTHON_VERSION
+from pyp2rpm.settings import DEFAULT_PYTHON_VERSION, MODULE_SUFFIXES
 
 logger = logging.getLogger(__name__)
 
 
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
-    return set([x for x in site_packages_list if not x.split('.')[-1] == 'dist-info'])
+    return set([x for x in site_packages_list if not x.endswith(('dist-info', '.pth'))])
 
 
 def scripts_filter(scripts):
@@ -55,8 +56,6 @@ class DirsContent(object):
 
 class VirtualEnv(object):
 
-    modul_pattern = re.compile(r'\.py.?$')
-
     def __init__(self, name, temp_dir, name_convertor, base_python_version):
         self.name = name
         self.temp_dir = temp_dir
@@ -85,7 +84,6 @@ class VirtualEnv(object):
             raise VirtualenvFailException('Failed to install package to virtualenv')
         self.dirs_after_install.fill(self.temp_dir + '/venv/')
 
-    @property
     def get_dirs_differance(self):
         '''
         Makes final versions of site_packages and scripts using DirsContent
@@ -95,20 +93,17 @@ class VirtualEnv(object):
             diff = self.dirs_after_install - self.dirs_before_install
         except ValueError:
             raise VirtualenvFailException("Some of the DirsContent attributes is uninicialized")
+        self.data['has_pth'] = any([x for x in diff.lib_sitepackages if x.endswith('.pth')])
         site_packages = site_packages_filter(diff.lib_sitepackages)
-        packages = set([p for p in site_packages if not self.modul_pattern.search(p)])
-        py_modules = set([os.path.splitext(m)[0] for m in site_packages - packages])
-        scripts = scripts_filter(list(diff.bindir))
-        logger.debug('Packages from files differance in virtualenv: {0}.'.format(
-            packages))
-        logger.debug('py_modules from files differance in virtualenv: {0}.'.format(
-            py_modules))
-        logger.debug('Scripts from files differance in virtualenv: {0}.'.format(scripts))
-        return (packages, py_modules, scripts)
+        self.data['packages'] = set([p for p in site_packages if not p.endswith(MODULE_SUFFIXES)])
+        self.data['py_modules'] = set([os.path.splitext(m)[0]
+                                       for m in site_packages - self.data['packages']])
+        self.data['scripts'] = scripts_filter(list(diff.bindir))
+        logger.debug('Data from files differance in virtualenv:')
+        logger.debug(pprint.pformat(self.data))
 
     @property
     def get_venv_data(self):
         self.install_package_to_venv()
-        (self.data['packages'], self.data['py_modules'],
-         self.data['scripts']) = self.get_dirs_differance
+        self.get_dirs_differance()
         return self.data

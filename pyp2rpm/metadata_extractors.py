@@ -85,7 +85,7 @@ def venv_metadata_extension(extraction_fce):
 
 
 def process_description(description_fce):
-    """Removes special character delimiters, titles 
+    """Removes special character delimiters, titles
     and wraps paragraphs.
     """
     def inner(description):
@@ -135,7 +135,10 @@ class LocalMetadataExtractor(object):
     @property
     def has_pth(self):
         """Figure out if package has pth file """
-        return "." in self.name
+        if virtualenv is None:
+            return "." in self.name
+        else:
+            return None
 
     @property
     def has_extension(self):
@@ -165,8 +168,10 @@ class LocalMetadataExtractor(object):
             setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
         # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
-        if getattr(data, "packages") == set():
+        # if virtualenv is disabled
+        if virtualenv is None and getattr(data, "packages") == set():
             data.packages = set([data.name])
+
 
         return data
 

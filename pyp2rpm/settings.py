@@ -11,6 +11,7 @@ KNOWN_DISTROS = ['fedora', 'mageia', 'pld']
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2',
                     '.gz', '.bz2', '.xz', '.zip', '.egg', '.whl']
 EXTENSION_SUFFIXES = ['.c', '.cpp']
+MODULE_SUFFIXES = ('.py', '.pyc')
 DOC_FILES_RE = [r'readme.+', r'licens.+', r'copying.+']
 LICENSE_FILES = ['license', 'copyright', 'copying']
 SPHINX_DIR_RE = r'[^/]+/doc.?'

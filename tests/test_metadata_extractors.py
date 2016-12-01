@@ -333,7 +333,7 @@ class TestWheelMetadataExtractor(object):
                            ['BuildRequires', 'python-setuptools']]),
 
         (0, 'py_modules', set(['setuptools', '_markerlib', 'pkg_resources'])),
-        (0, 'packages', set(['setuptools'])),
+        (0, 'packages', set()),
         (0, 'scripts', set()),
         (0, 'home_page', 'https://bitbucket.org/pypa/setuptools'),
         (0, 'summary', 'Easily download, build, install, upgrade, and uninstall Python packages'),
@@ -349,7 +349,7 @@ class TestWheelMetadataExtractor(object):
         (1, 'build_deps', [['BuildRequires', 'python2-devel'],
                            ['BuildRequires', 'python-setuptools']]),
         (1, 'py_modules', set(['py2exe'])),
-        (1, 'packages', set(['py2exe'])),
+        (1, 'packages', set()),
         (1, 'scripts', set(['build_exe.exe', 'build_exe-script.py'])),
         (1, 'home_page', 'TODO:'),
         (1, 'summary', 'Build standalone executables for Windows (python 3 version)'),

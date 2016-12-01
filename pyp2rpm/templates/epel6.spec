@@ -111,7 +111,7 @@ popd
 {%- endif %}
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
-{%- if pv == '3' -%}
+{%- if pv == '3' %}
 %dir {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/
 {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
 {%- endif %}
@@ -119,7 +119,11 @@ popd
 {%- endfor %}
 {%- endif %}
 {%- if data.has_extension %}
-{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- if data.has_packages %}
+{%- for package in data.packages %}
+{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ package | package_to_path(data.name) }}
+{%- endfor %}
+{%- endif %}
 {%- if data.has_pth %}
 {{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
@@ -127,7 +131,7 @@ popd
 {%- else %}
 {%- if data.has_packages %}
 {%- for package in data.packages %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ package | package_to_path(data.underscored_name) }}
+{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ package | package_to_path(data.name) }}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}

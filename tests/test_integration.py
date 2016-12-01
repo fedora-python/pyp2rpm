@@ -21,7 +21,9 @@ class TestSpec(object):
         ('Jinja2', '-t epel7', 'python-Jinja2_epel7.spec'),
         ('Jinja2', '-t epel6', 'python-Jinja2_epel6.spec'),
         ('buildkit', '-b2', 'python-buildkit.spec'),
+        ('StructArray', '-b2', 'python-StructArray.spec'),
     ])
+    @pytest.mark.spectest
     def test_spec(self, package, options, expected):
         with open(self.td_dir + expected) as fi:
             self.spec_content = fi.read()
