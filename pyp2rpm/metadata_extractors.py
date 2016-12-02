@@ -401,19 +401,17 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             Full path to sphinx documentation dir inside the archive, or None if there is no such.
         """
-        sphinx_dir = None
-
         # search for sphinx dir doc/ or docs/ under the first directory in
         # archive (e.g. spam-1.0.0/doc)
         candidate_dirs = self.archive.get_directories_re(
             settings.SPHINX_DIR_RE, full_path=True)
-        for d in candidate_dirs:  # search for conf.py in the dirs (TODO: what if more are found?)
-            contains_conf_py = len(self.archive.get_files_re(
-                r'{0}/conf.py'.format(re.escape(d)), full_path=True)) > 0
-            if contains_conf_py:
-                sphinx_dir = d
 
-        return sphinx_dir
+        for directory in candidate_dirs:  # search for conf.py in the dirs (TODO: what if more are found?)
+            contains_conf_py = self.archive.get_files_re(
+                r'{0}/conf.py'.format(re.escape(directory)), full_path=True)
+            in_tests = 'tests' in directory.split(os.sep)
+            if contains_conf_py and not in_tests:
+                return directory
 
     @property
     def data_from_archive(self):
