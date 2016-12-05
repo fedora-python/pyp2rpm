@@ -34,12 +34,11 @@ def python_bin_for_python_version(name, version, default_string='__python2'):
 
 
 def macroed_pkg_name(pkg_name, srcname):
-    if srcname:
-        return 'python-%{srcname}'
-    elif pkg_name.startswith('python-'):
-        return 'python-%{pypi_name}'
+    macro = '%{srcname}' if srcname else '%{pypi_name}'
+    if pkg_name.startswith('python-'):
+        return 'python-{0}'.format(macro)
     else:
-        return '%{pypi_name}'
+        return macro
 
 
 def module_to_path(name, module):

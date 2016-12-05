@@ -148,6 +148,17 @@ class LocalMetadataExtractor(object):
         """
         return self.archive.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
+    @property
+    def srcname(self):
+        """Return srcname for the macro if the pypi name should be changed.
+
+        Those cases are:
+        - name was provided with -r option
+        - pypi name is like python-<name>
+        """
+        if self.rpm_name or self.name.startswith('python'):
+            return self.name_convertor.base_name(self.rpm_name or self.name)
+
     @pypi_metadata_extension
     @venv_metadata_extension
     def extract_data(self):
@@ -160,10 +171,7 @@ class LocalMetadataExtractor(object):
             name=self.name,
             pkg_name=self.rpm_name or self.name_convertor.rpm_name(self.name),
             version=self.version,
-            # Provide srcname if provided with -r or
-            # if pypi name is like python-<name>.
-            srcname=self.name_convertor.base_name(self.rpm_name or self.name)
-            if self.rpm_name or self.name.startswith('python') else None)
+            srcname=self.srcname)
 
         with self.archive:
             data.set_from(self.data_from_archive)
@@ -175,7 +183,6 @@ class LocalMetadataExtractor(object):
         # if virtualenv is disabled
         if virtualenv is None and getattr(data, "packages") == set():
             data.packages = set([data.name])
-
 
         return data
 
