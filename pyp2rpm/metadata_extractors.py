@@ -415,7 +415,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
         for directory in candidate_dirs:  # search for conf.py in the dirs (TODO: what if more are found?)
             contains_conf_py = self.archive.get_files_re(
-                r'{0}/conf.py'.format(re.escape(directory)), full_path=True)
+                r'{0}/conf.py$'.format(re.escape(directory)), full_path=True)
             in_tests = 'tests' in directory.split(os.sep)
             if contains_conf_py and not in_tests:
                 return directory
