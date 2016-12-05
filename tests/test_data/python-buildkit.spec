@@ -23,7 +23,7 @@ supervisor20111208 * Separated key generation from install of buildkitaptrepo.
 command so that ...
 
 %package -n     python2-%{pypi_name}
-Summary:        Cloud infrastructure and .deb file management software
+Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pypi_name}}
 
 %description -n python2-%{pypi_name}

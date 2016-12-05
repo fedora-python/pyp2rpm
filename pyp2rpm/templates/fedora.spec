@@ -23,7 +23,7 @@ BuildArch:      noarch
 {{ data.description|truncate(400)|wordwrap }}
 {% for pv in ([data.base_python_version] + data.python_versions) %}
 %package -n     {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}
-Summary:        {{ data.summary }}
+Summary:        %{summary}
 %{?python_provide:%python_provide {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True)}}}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
 %description -n {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}
@@ -62,8 +62,8 @@ rm -rf html/.{doctrees,buildinfo}
 {%- for pv in data.python_versions + [data.base_python_version] %}
 %py{{ pv }}_install
 {% for script in data.scripts -%}
-cp %{buildroot}/%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
-ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv, True) }}
+cp %{buildroot}/%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv, True) }}
+ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
 {% endfor %}
 {%- endfor -%}
 {% if data.has_test_suite %}
