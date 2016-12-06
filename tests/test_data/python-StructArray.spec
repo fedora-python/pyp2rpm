@@ -22,7 +22,7 @@ trouble.*This is the "release early" part of the "release early, release often"
 equation. It's ...
 
 %package -n     python2-%{pypi_name}
-Summary:        Fast operations on arrays of structured data
+Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pypi_name}}
 
 %description -n python2-%{pypi_name}
@@ -52,5 +52,5 @@ rm -rf %{pypi_name}.egg-info
 %{python2_sitearch}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Thu Nov 24 2016 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
+* Tue Dec 06 2016 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
 - Initial package.
