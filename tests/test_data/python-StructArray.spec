@@ -52,5 +52,5 @@ rm -rf %{pypi_name}.egg-info
 %{python2_sitearch}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Thu Nov 24 2016 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
+* Tue Dec 06 2016 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
 - Initial package.
