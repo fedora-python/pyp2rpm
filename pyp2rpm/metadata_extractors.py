@@ -156,7 +156,7 @@ class LocalMetadataExtractor(object):
         - name was provided with -r option
         - pypi name is like python-<name>
         """
-        if self.rpm_name or self.name.startswith('python'):
+        if self.rpm_name or self.name.startswith(('python-', 'Python-')):
             return self.name_convertor.base_name(self.rpm_name or self.name)
 
     @pypi_metadata_extension
