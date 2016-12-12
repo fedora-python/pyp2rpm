@@ -17,7 +17,7 @@ class NameConvertor(object):
 
     def __init__(self, distro):
         self.distro = distro
-        self.reg_start = re.compile(r'^python(\d*|)-(.*)')
+        self.reg_start = re.compile(r'^[Pp]ython(\d*|)-(.*)')
         self.reg_end = re.compile(r'(.*)-(python)(\d*|)$')
 
     @staticmethod
@@ -58,7 +58,7 @@ class NameConvertor(object):
         return versioned_name
 
     def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION):
-        """Returns name of the package coverted to (possibly) correct package 
+        """Returns name of the package coverted to (possibly) correct package
            name according to Packaging Guidelines.
         Args:
             name: name to convert

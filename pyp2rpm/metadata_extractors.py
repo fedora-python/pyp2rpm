@@ -148,6 +148,17 @@ class LocalMetadataExtractor(object):
         """
         return self.archive.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
+    @property
+    def srcname(self):
+        """Return srcname for the macro if the pypi name should be changed.
+
+        Those cases are:
+        - name was provided with -r option
+        - pypi name is like python-<name>
+        """
+        if self.rpm_name or self.name.startswith(('python-', 'Python-')):
+            return self.name_convertor.base_name(self.rpm_name or self.name)
+
     @pypi_metadata_extension
     @venv_metadata_extension
     def extract_data(self):
@@ -155,11 +166,12 @@ class LocalMetadataExtractor(object):
         Returns:
             PackageData object containing the extracted data.
         """
-        data = PackageData(self.local_file,
-                           self.name,
-                           self.name_convertor.rpm_name(self.name)
-                           if self.rpm_name is None else self.rpm_name,
-                           self.version)
+        data = PackageData(
+            local_file=self.local_file,
+            name=self.name,
+            pkg_name=self.rpm_name or self.name_convertor.rpm_name(self.name),
+            version=self.version,
+            srcname=self.srcname)
 
         with self.archive:
             data.set_from(self.data_from_archive)
@@ -171,7 +183,6 @@ class LocalMetadataExtractor(object):
         # if virtualenv is disabled
         if virtualenv is None and getattr(data, "packages") == set():
             data.packages = set([data.name])
-
 
         return data
 
@@ -397,19 +408,17 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             Full path to sphinx documentation dir inside the archive, or None if there is no such.
         """
-        sphinx_dir = None
-
         # search for sphinx dir doc/ or docs/ under the first directory in
         # archive (e.g. spam-1.0.0/doc)
         candidate_dirs = self.archive.get_directories_re(
             settings.SPHINX_DIR_RE, full_path=True)
-        for d in candidate_dirs:  # search for conf.py in the dirs (TODO: what if more are found?)
-            contains_conf_py = len(self.archive.get_files_re(
-                r'{0}/conf.py'.format(re.escape(d)), full_path=True)) > 0
-            if contains_conf_py:
-                sphinx_dir = d
 
-        return sphinx_dir
+        for directory in candidate_dirs:  # search for conf.py in the dirs (TODO: what if more are found?)
+            contains_conf_py = self.archive.get_files_re(
+                r'{0}/conf.py$'.format(re.escape(directory)), full_path=True)
+            in_tests = 'tests' in directory.split(os.sep)
+            if contains_conf_py and not in_tests:
+                return directory
 
     @property
     def data_from_archive(self):

@@ -76,12 +76,12 @@ rm -rf html/.{doctrees,buildinfo}
 %{__python2} setup.py install --skip-build --root %{buildroot}
 
 
-%files -n python2-%{pypi_name} 
+%files -n python2-%{pypi_name}
 %doc README.rst
 %{python2_sitelib}/jinja2
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
-%files -n python%{python3_pkgversion}-%{pypi_name} 
+%files -n python%{python3_pkgversion}-%{pypi_name}
 %doc README.rst
 %{python3_sitelib}/jinja2
 %{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info

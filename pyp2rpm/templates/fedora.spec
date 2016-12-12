@@ -1,8 +1,11 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
 %global pypi_name {{ data.name }}
+{%- if data.srcname %}
+%global srcname {{ data.srcname }}
+{%- endif %}
 
-Name:           {{ data.pkg_name|macroed_pkg_name(data.name) }}
+Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
 Version:        {{ data.version }}
 Release:        1%{?dist}
 Summary:        {{ data.summary }}
@@ -22,17 +25,17 @@ BuildArch:      noarch
 %description
 {{ data.description|truncate(400)|wordwrap }}
 {% for pv in ([data.base_python_version] + data.python_versions) %}
-%package -n     {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}
+%package -n     {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 Summary:        %{summary}
-%{?python_provide:%python_provide {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True)}}}
+%{?python_provide:%python_provide {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True)}}}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
-%description -n {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}
+%description -n {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 {{ data.description|truncate(400)|wordwrap }}
 {% endfor -%}
 {%- if data.sphinx_dir %}
-%package -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}-doc
+%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
 Summary:        {{ data.name }} documentation
-%description -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}-doc
+%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
 Documentation for {{ data.name }}
 {%- endif %}
 
@@ -74,7 +77,7 @@ ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildro
 {%- endfor %}
 {%- endif %}
 {% for pv in [data.base_python_version] + data.python_versions %}
-%files -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }} 
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 {%- if data.doc_license %}
 %license {{data.doc_license|join(' ')}}
 {%- endif %}
@@ -117,7 +120,7 @@ ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildro
 {%- endif %}
 {% endfor %}
 {%- if data.sphinx_dir %}
-%files -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True) }}-doc
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
 %doc html 
 {% endif %}
 %changelog

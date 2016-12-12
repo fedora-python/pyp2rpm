@@ -1,8 +1,11 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
 %global pypi_name {{ data.name }}
+{%- if data.srcname %}
+%global srcname {{ data.srcname }}
+{%- endif %}
 
-Name:           {{ data.pkg_name|macroed_pkg_name(data.name) }}
+Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
 Version:        {{ data.version }}
 Release:        1%{?dist}
 Summary:        {{ data.summary }}
@@ -24,10 +27,10 @@ use_with=False, epel=True) }}
 %description
 {{ data.description|truncate(400)|wordwrap }}
 {% for pv in ([data.base_python_version] + data.python_versions) %}
-%package -n     {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True, True)}}
+%package -n     {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True, True)}}
 Summary:        {{ data.summary }}
 {{ dependencies(data.runtime_deps, True, pv, pv, use_with=False, epel=True) }}
-%description -n {{data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True, True)}}
+%description -n {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True, True)}}
 {{ data.description|truncate(400)|wordwrap }}
 {% endfor -%}
 {%- if data.sphinx_dir %}
@@ -75,7 +78,7 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 {%- endfor %}
 {%- endif %}
 {% for pv in [data.base_python_version] + data.python_versions %}
-%files -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv, True, True) }} 
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True, True) }}
 %doc {{data.doc_files|join(' ') }}
 {%- for script in data.scripts %}
 {%- if pv == data.base_python_version %}

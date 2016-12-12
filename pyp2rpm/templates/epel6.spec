@@ -1,11 +1,14 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
 %global pypi_name {{ data.name }}
+{%- if data.srcname %}
+%global srcname {{ data.srcname }}
+{%- endif %}
 {%- for pv in data.python_versions %}
 %global with_python{{ pv }} 1
 {%- endfor %}
 
-Name:           {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(data.base_python_version) }}
+Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(data.base_python_version) }}
 Version:        {{ data.version }}
 Release:        1%{?dist}
 Summary:        {{ data.summary }}
@@ -26,11 +29,11 @@ BuildArch:      noarch
 %description
 {{ data.description|truncate(400)|wordwrap }}
 {% call(pv) for_python_versions(data.python_versions) -%}
-%package -n     {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
+%package -n     {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
 Summary:        {{ data.summary }}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
 
-%description -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
+%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
 {{ data.description|truncate(400)|wordwrap }}
 {%- endcall %}
 
@@ -102,7 +105,7 @@ popd
 {%- endif %}
 
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}{% endif %}
+%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
 {%- if data.scripts %}
 {%- for script in data.scripts %}

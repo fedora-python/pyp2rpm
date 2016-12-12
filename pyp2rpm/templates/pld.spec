@@ -69,11 +69,11 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 {{ data.description|truncate(400)|wordwrap }}
 
 {% call(pv) for_python_versions(data.python_versions, use_with=False) -%}
-%package -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
+%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
 Summary:	{{ data.summary }}
 Group:		Libraries/Python
 
-%description -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}
+%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
 {{ data.description|truncate(400)|wordwrap }}
 {%- endcall %}
 
@@ -123,7 +123,7 @@ mv $RPM_BUILD_ROOT%{_bindir}/{{ script }} $RPM_BUILD_ROOT%{_bindir}/{{ script|sc
 rm -rf $RPM_BUILD_ROOT
 
 {% call(pv, v) foreach_python_versions(use_with=True) -%}
-%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.name)|name_for_python_version(pv) }}{% endif %}
+%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
 %defattr(644,root,root,755)
 
 %doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
