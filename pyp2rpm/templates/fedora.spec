@@ -40,7 +40,7 @@ Documentation for {{ data.name }}
 {%- endif %}
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n {{ data.dirname|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}')|default('%{pypi_name}-%{version}', true) }}
 {%- if data.has_bundled_egg_info %}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
