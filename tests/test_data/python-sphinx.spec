@@ -3,7 +3,7 @@
 %global srcname sphinx
 
 Name:           python-%{srcname}
-Version:        1.5.1
+Version:        1.5
 Release:        1%{?dist}
 Summary:        Python documentation generator
 
