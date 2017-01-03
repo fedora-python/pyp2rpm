@@ -14,13 +14,13 @@ class TestSpec(object):
         self.env = TestFileEnvironment('{0}/test_output/'.format(tests_dir))
 
     @pytest.mark.parametrize(('package', 'options', 'expected'), [
-        ('Jinja2', '', 'python-Jinja2.spec'),
-        ('Jinja2', '-b3', 'python-Jinja2_base.spec'),
-        ('Jinja2', '-t epel7', 'python-Jinja2_epel7.spec'),
-        ('Jinja2', '-t epel6', 'python-Jinja2_epel6.spec'),
-        ('buildkit', '-b2', 'python-buildkit.spec'),
-        ('StructArray', '-b2', 'python-StructArray.spec'),
-        ('Sphinx', '-r python-sphinx', 'python-sphinx.spec'),
+        ('Jinja2', '-v2.8', 'python-Jinja2.spec'),
+        ('Jinja2', '-v2.8 -b3', 'python-Jinja2_base.spec'),
+        ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7.spec'),
+        ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6.spec'),
+        ('buildkit', '-v0.2.2 -b2', 'python-buildkit.spec'),
+        ('StructArray', '-v0.1 -b2', 'python-StructArray.spec'),
+        ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx.spec'),
     ])
     @pytest.mark.spectest
     def test_spec(self, package, options, expected):

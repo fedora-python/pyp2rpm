@@ -223,6 +223,8 @@ class LocalMetadataExtractor(object):
         (archive_data['doc_files'],
          archive_data['doc_license']) = self.separate_license_files(self.doc_files)
 
+        archive_data['dirname'] = self.archive.top_directory
+
         return archive_data
 
 
@@ -265,7 +267,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
     def get_setup_py(self, directory):
         try:
-            return glob.glob(directory + "/{0}*/".format(self.name) + 'setup.py')[0]
+            return glob.glob("{0}/{1}*/setup.py".format(
+                directory, self.archive.top_directory or self.name))[0]
         except IndexError:
             sys.stderr.write(
                 "setup.py not found, maybe local_file is not proper source archive.\n")

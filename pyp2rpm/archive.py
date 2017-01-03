@@ -55,6 +55,9 @@ class ZipWrapper(object):
     def getmembers(self, *args, **kwargs):
         return self._wrapped_obj.infolist(*args, **kwargs)
 
+    def getnames(self, *args, **kwargs):
+        return self._wrapped_obj.namelist(*args, **kwargs)
+
     def extractfile(self, *args, **kwargs):
         return self._wrapped_obj.open(*args, **kwargs)
 
@@ -252,6 +255,12 @@ class Archive(object):
                         found.add(to_match)
 
         return list(found)
+
+    @property
+    def top_directory(self):
+        """Return the name of the archive topmost directory."""
+        if self.handle:
+            return os.path.commonprefix(self.handle.getnames()).rstrip('/')
 
     @property
     def json_wheel_metadata(self):
