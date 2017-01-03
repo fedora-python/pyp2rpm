@@ -366,16 +366,21 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def versions_from_archive(self):
+        """Return Python versions extracted from trove classifiers or default.
+        Returns:
+            (str, list) base_python_version, python_versions
+        """
         py_vers = utils.versions_from_trove(self.metadata['classifiers'])
-        base_python_version = py_vers[0] if py_vers else settings.DEFAULT_PYTHON_VERSION
-        python_versions = py_vers[1:] if py_vers else [settings.DEFAULT_ADDITIONAL_VERSION]
-        if hasattr(self, 'unsupported_version'):
-            if base_python_version == self.unsupported_version:
-                base_python_version = python_versions[0]
-                python_versions = python_versions[1:]
-            elif self.unsupported_version in python_versions:
-                python_versions.remove(self.unsupported_version)
-        return (base_python_version, python_versions)
+        if self.unsupported_version in py_vers:
+            py_vers.remove(self.unsupported_version)
+
+        if not py_vers:
+            py_vers = [settings.DEFAULT_PYTHON_VERSION,
+                       settings.DEFAULT_ADDITIONAL_VERSION]
+            if self.unsupported_version in py_vers:
+                py_vers.remove(self.unsupported_version)
+
+        return (py_vers[0], py_vers[1:])
 
     @property
     def has_bundled_egg_info(self):
