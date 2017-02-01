@@ -25,7 +25,7 @@ documentation for Python projects (or other documents consisting of multiple
 reStructuredText sources), written by Georg Brandl. It was originally created
 for the new Python documentation, and has excellent facilities for Python
 project documentation, but C/C++ is supported as well, and more languages are
-Sphinx uses ...
+Sphinx uses...
 
 %package -n     python2-%{srcname}
 Summary:        %{summary}
@@ -49,7 +49,7 @@ documentation for Python projects (or other documents consisting of multiple
 reStructuredText sources), written by Georg Brandl. It was originally created
 for the new Python documentation, and has excellent facilities for Python
 project documentation, but C/C++ is supported as well, and more languages are
-Sphinx uses ...
+Sphinx uses...
 
 %package -n     python3-%{srcname}
 Summary:        %{summary}
@@ -73,7 +73,7 @@ documentation for Python projects (or other documents consisting of multiple
 reStructuredText sources), written by Georg Brandl. It was originally created
 for the new Python documentation, and has excellent facilities for Python
 project documentation, but C/C++ is supported as well, and more languages are
-Sphinx uses ...
+Sphinx uses...
 
 %package -n python-%{srcname}-doc
 Summary:        Sphinx documentation

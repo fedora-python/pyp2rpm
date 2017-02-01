@@ -21,7 +21,7 @@ inspired nonXML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
 extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
-user.username }}</a></li> {% ...
+user.username }}</a></li> {%...
 
 %package -n     python3-%{pypi_name}
 Summary:        %{summary}
@@ -34,7 +34,7 @@ inspired nonXML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
 extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
-user.username }}</a></li> {% ...
+user.username }}</a></li> {%...
 
 %package -n python-%{pypi_name}-doc
 Summary:        Jinja2 documentation
