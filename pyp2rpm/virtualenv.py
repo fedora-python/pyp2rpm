@@ -79,7 +79,7 @@ class VirtualEnv(object):
         dependencies
         '''
         try:
-            self.env.install(self.name, options=["--no-deps"])
+            self.env.install(self.name, force=True, options=["--no-deps"])
         except (ve.PackageInstallationException, ve.VirtualenvReadonlyException):
             raise VirtualenvFailException('Failed to install package to virtualenv')
         self.dirs_after_install.fill(self.temp_dir + '/venv/')
