@@ -48,7 +48,8 @@ class extract_dist(Command):
         is specified, assigns metadata dictionary to class_metadata variable otherwise.
         """
         if self.stdout:
-            sys.stdout.write("extracted json data:\n" + json.dumps(self.metadata))
+            sys.stdout.write("extracted json data:\n" + json.dumps(
+                self.metadata, default=to_str))
         else:
             extract_dist.class_metadata = self.metadata
 
@@ -69,6 +70,7 @@ def to_list(var):
 
 def to_str(var):
     """Similar to to_list function, but for string attributes."""
-    if not isinstance(var, str):
-        return 'TODO'
-    return var
+    try:
+        return str(var)
+    except TypeError:
+        raise ValueError("{} cannot be converted to string.".format(var))

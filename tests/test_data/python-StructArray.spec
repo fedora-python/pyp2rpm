@@ -19,7 +19,7 @@ arrays of structured (or unstructured) data.This library is useful for
 performing the same operation on every item in an I've included an example
 showing a simple particle engine. It animates 10,000 particles without much
 trouble.*This is the "release early" part of the "release early, release often"
-equation. It's ...
+equation. It's...
 
 %package -n     python2-%{pypi_name}
 Summary:        %{summary}
@@ -31,7 +31,7 @@ arrays of structured (or unstructured) data.This library is useful for
 performing the same operation on every item in an I've included an example
 showing a simple particle engine. It animates 10,000 particles without much
 trouble.*This is the "release early" part of the "release early, release often"
-equation. It's ...
+equation. It's...
 
 
 %prep

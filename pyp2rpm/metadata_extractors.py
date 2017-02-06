@@ -318,7 +318,10 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def py_modules(self):
-        return set(self.metadata['py_modules'])
+        try:
+            return set(self.metadata['py_modules'])
+        except TypeError:
+            return set()
 
     @property
     def scripts(self):

@@ -20,7 +20,7 @@ software.Get Started * See the docsAuthor James Gardner <>_Changes20111210 *
 Changed aptcacherng to run on port 3142 to avoid a potential conflict with
 supervisor20111208 * Separated key generation from install of buildkitaptrepo.
 * Made repo and key base directory settings options of the buildkit repo
-command so that ...
+command so that...
 
 %package -n     python2-%{pypi_name}
 Summary:        %{summary}
@@ -32,7 +32,7 @@ software.Get Started * See the docsAuthor James Gardner <>_Changes20111210 *
 Changed aptcacherng to run on port 3142 to avoid a potential conflict with
 supervisor20111208 * Separated key generation from install of buildkitaptrepo.
 * Made repo and key base directory settings options of the buildkit repo
-command so that ...
+command so that...
 
 
 %prep
