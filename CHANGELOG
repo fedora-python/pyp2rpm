@@ -1,5 +1,10 @@
-Upcoming
-* Drop Python 2.6 support 
+3.2.2
+* Fix package rename option (-r), issue #87 (thanks to Sorin Sbarnea for reporting)
+* Improve detection of packages and modules, issue #86 (thanks to Joe Mullally for reporting)
+* Abide by the latest packaging guidelines (use %{summary} macro and improve creating soft links for executables)
+* Use python version provided with -b2 option to extract metadata, issue #90
+* Drop Python 2.6 support
+* Additional various bug fixes (issues #95, #96, #97)
 
 3.2.1
 * Update MANIFEST.in
