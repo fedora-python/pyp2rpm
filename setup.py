@@ -4,8 +4,7 @@
 from pyp2rpm.version import version
 
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
-import sys
+
 
 description = """Convert Python packages to RPM SPECFILES. The packages can be downloaded from
 PyPI and the produced SPEC is in line with Fedora Packaging Guidelines or Mageia Python Policy.
@@ -20,8 +19,8 @@ setup(
     description="Convert Python packages to RPM SPECFILES",
     long_description=description,
     keywords='pypi, rpm, spec, specfile, convert',
-    author='Bohuslav "Slavek" Kabrda, Robert Kuska, Michal Cyprian',
-    author_email='bkabrda@redhat.com, rkuska@redhat.com, mcyprian@redhat.com',
+    author='Bohuslav "Slavek" Kabrda, Robert Kuska, Michal Cyprian, Iryna Shcherbina',
+    author_email='bkabrda@redhat.com, rkuska@redhat.com, mcyprian@redhat.com, ishcherb@redhat.com',
     url='https://github.com/fedora-python/pyp2rpm',
     license='MIT',
     packages=['pyp2rpm', 'command'],
@@ -38,7 +37,7 @@ setup(
                     'Jinja2',
                     ],
     tests_require=['pytest'],
-    extras_require = {
+    extras_require={
         'venv metadata': ['virtualenv-api'],
     },
     classifiers=['Development Status :: 4 - Beta',
