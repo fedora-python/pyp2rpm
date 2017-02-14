@@ -8,6 +8,10 @@ from pyp2rpm import utils
 from pyp2rpm.logger import register_file_log_handler, register_console_log_handler
 
 import click
+try:
+    from spec2scl.convertor import Convertor as SclConvertor
+except:
+    SclConvertor = None
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -63,8 +67,32 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('--venv / --no-venv',
               default=True,
               help='Enable / disable metadata extraction from virtualenv (default: enabled).')
+@click.option('--sclize',
+              help='Convert tags and macro definitions to SCL-style and '
+                   'produce a Software Collection spec file using `spec2scl` package.',
+              is_flag=True)
+@click.option('--no-meta-runtime-dep',
+              help='Don\'t add the runtime dependency on the scl runtime package.',
+              is_flag=True)
+@click.option('--no-meta-buildtime-dep',
+              help='Don\'t add the buildtime dependency on the scl runtime package.',
+              is_flag=True)
+@click.option('--skip-functions',
+              help='Comma separated list of transformer functions to skip.',
+              default='',
+              metavar='FUNCTIONS')
+@click.option('--no-deps-convert',
+              help='Don\'t convert dependency tags (mutually exclusive with --list-file).',
+              is_flag=True)
+@click.option('--list-file',
+              help='List of the packages/provides, that will be in the SCL '
+                   '(to convert Requires/BuildRequires properly). Lines in '
+                   'the file are in form of "pkg-name %%{?custom_prefix}", '
+                   'where the prefix part is optional.',
+              default=None,
+              metavar='FILE_NAME')
 @click.argument('package', nargs=1)
-def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
+def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, sclize, **scl_kwargs):
     """Convert PyPI package to RPM specfile or SRPM.
 
     \b
@@ -97,6 +125,11 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
     logger.debug('Convertor: {0} created. Trying to convert.'.format(convertor))
     converted = convertor.convert()
     logger.debug('Convertor: {0} succesfully converted.'.format(convertor))
+
+    if sclize:
+        converted = convert_to_scl(converted, scl_kwargs)
+        if not converted:
+            return
 
     if srpm or s:
         if r:
@@ -135,3 +168,22 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv):
             print(converted.encode('utf-8'))
         logger.debug('Specfile printed.')
     logger.info("That's all folks!")
+
+
+def convert_to_scl(spec, scl_options):
+    """Convert spec into SCL-style spec file using `spec2scl`.
+
+    Args:
+        spec: (str) a spec file
+        scl_options: (dict) SCL options provided
+    Returns:
+        A converted spec file or None
+    """
+    if not SclConvertor:
+        click.echo('Please install spec2scl to perform SCL-style conversion')
+        return
+
+    scl_options['skip_functions'] = scl_options['skip_functions'].split(',')
+    scl_options['meta_spec'] = None
+    convertor = SclConvertor(spec=spec, options=scl_options)
+    return str(convertor.convert())

@@ -1,6 +1,11 @@
 import pytest
 import os
+
+from flexmock import flexmock
 from scripttest import TestFileEnvironment
+
+from pyp2rpm.bin import Convertor, SclConvertor, main, convert_to_scl
+
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -42,3 +47,61 @@ class TestSrpm(object):
     def test_srpm(self):
         res = self.env.run('{0} Jinja2 --srpm'.format(self.exe), expect_stderr=True)
         assert res.returncode == 0
+
+
+@pytest.mark.skipif(SclConvertor is None, reason="spec2scl not installed")
+class TestSclIntegration(object):
+    """
+    """
+    sphinx_spec = '{0}/test_data/python-sphinx.spec'.format(tests_dir)
+
+    @classmethod
+    def setup_class(cls):
+        with open(cls.sphinx_spec, 'r') as spec:
+            cls.test_spec = spec.read()
+
+    def setup_method(self, method):
+        self.default_options = {
+            'no_meta_runtime_dep': False,
+            'no_meta_buildtime_dep': False,
+            'skip_functions': [''],
+            'no_deps_convert': False,
+            'list_file': None,
+            'meta_spec': None
+        }
+        flexmock(Convertor).should_receive('__init__').and_return(None)
+        flexmock(Convertor).should_receive('convert').and_return(self.test_spec)
+
+    @pytest.mark.parametrize(('options', 'expected_options'), [
+        (['--no-meta-runtime-dep'], {'no_meta_runtime_dep': True}),
+        (['--no-meta-buildtime-dep'], {'no_meta_buildtime_dep': True}),
+        (['--skip-functions=func1,func2'], {'skip_functions': ['func1', 'func2']}),
+        (['--no-deps-convert'], {'no_deps_convert': True}),
+        (['--list-file=file_name'], {'list_file': 'file_name'}),
+    ])
+    def test_scl_convertor_args_correctly_passed(self, options, expected_options, capsys):
+        """Test that pyp2rpm command passes correct options to SCL convertor."""
+        self.default_options.update(expected_options)
+        flexmock(SclConvertor).should_receive('convert').and_return(self.test_spec)
+        flexmock(SclConvertor).should_receive('__init__').with_args(
+            spec=self.test_spec,
+            options=self.default_options,
+        ).once()
+
+        with pytest.raises(SystemExit):
+            main(args=['foo_package', '--sclize'] + options)
+        out, err = capsys.readouterr()
+        assert out == self.test_spec + '\n'
+
+    @pytest.mark.parametrize(('options', 'omit_from_spec'), [
+        ({'no_meta_runtime_dep': True}, '%{?scl:Requires: %{scl}-runtime}'),
+        ({'no_meta_buildtime_dep': True}, '{?scl:BuildRequires: %{scl}-runtime}'),
+        ({'skip_functions': 'handle_python_specific_commands'},
+         '%{?scl:scl enable %{scl} - << \\EOF}\nset -e\nsphinx-build doc html\n%{?scl:EOF}'),
+    ])
+    def test_convert_to_scl_options(self, options, omit_from_spec):
+        """Test integration with SCL options."""
+        self.default_options.update({'skip_functions': ''})
+        self.default_options.update(options)
+        converted = convert_to_scl(self.test_spec, self.default_options)
+        assert omit_from_spec not in converted
