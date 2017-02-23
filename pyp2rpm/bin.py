@@ -10,14 +10,64 @@ from pyp2rpm.logger import register_file_log_handler, register_console_log_handl
 import click
 try:
     from spec2scl.convertor import Convertor as SclConvertor
-except:
+except ImportError:
     SclConvertor = None
+except Exception as err:
+    SclConvertor = None
+    click.echo('Warning: An unexpected error occured when trying'
+               ' to import spec2scl: {}'.format(err))
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
-@click.command(context_settings=CONTEXT_SETTINGS)
+class Pyp2rpmCommand(click.Command):
+    """Base class for pyp2rpm command.
+
+    Modify the help message for SCL related options,
+    to single them out in a separate group.
+    """
+
+    def format_options(self, ctx, formatter):
+        """Writes SCL related options into the formatter as a separate group."""
+        super(Pyp2rpmCommand, self).format_options(ctx, formatter)
+        scl_opts = []
+        for param in self.get_params(ctx):
+            if isinstance(param, SclizeOption):
+                scl_opts.append(param.get_scl_help_record(ctx))
+
+        if scl_opts:
+            with formatter.section('SCL related options'):
+                formatter.write_dl(scl_opts)
+
+
+class SclizeOption(click.Option):
+    """Base class for SCL related options.
+
+    Provide proper validation and help message formatting.
+    """
+
+    def handle_parse_result(self, ctx, opts, args):
+        """Validate SCL related options before parsing."""
+        if 'sclize' in opts and not SclConvertor:
+            raise click.UsageError(
+                "Please install spec2scl package to perform SCL-style conversion")
+        if self.name in opts and 'sclize' not in opts:
+            raise click.UsageError(
+                "`--{}` can only be used with --sclize option".format(self.name))
+
+        return super(SclizeOption, self).handle_parse_result(ctx, opts, args)
+
+    def get_help_record(self, ctx):
+        """Remove help record, so that it does not appear in Options section."""
+        pass
+
+    def get_scl_help_record(self, ctx):
+        """Move help record, so that it appears in SCL options section."""
+        return super(SclizeOption, self).get_help_record(ctx)
+
+
+@click.command(context_settings=CONTEXT_SETTINGS, cls=Pyp2rpmCommand)
 @click.option('-t',
               help='Template file (jinja2 format) to render (default: "{0}").'
               'Search order is 1) filesystem, 2) default templates.'.format(
@@ -68,23 +118,24 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               default=True,
               help='Enable / disable metadata extraction from virtualenv (default: enabled).')
 @click.option('--sclize',
-              help='Convert tags and macro definitions to SCL-style and '
-                   'produce a Software Collection spec file using `spec2scl` package.',
+              help='Convert tags and macro definitions to SCL-style using `spec2scl` module.'
+                   ' NOTE: SCL related options can be provided alongside this option.',
               is_flag=True)
-@click.option('--no-meta-runtime-dep',
+# SCL related options
+@click.option('--no-meta-runtime-dep', cls=SclizeOption,
               help='Don\'t add the runtime dependency on the scl runtime package.',
               is_flag=True)
-@click.option('--no-meta-buildtime-dep',
+@click.option('--no-meta-buildtime-dep', cls=SclizeOption,
               help='Don\'t add the buildtime dependency on the scl runtime package.',
               is_flag=True)
-@click.option('--skip-functions',
+@click.option('--skip-functions', cls=SclizeOption,
               help='Comma separated list of transformer functions to skip.',
               default='',
               metavar='FUNCTIONS')
-@click.option('--no-deps-convert',
+@click.option('--no-deps-convert', cls=SclizeOption,
               help='Don\'t convert dependency tags (mutually exclusive with --list-file).',
               is_flag=True)
-@click.option('--list-file',
+@click.option('--list-file', cls=SclizeOption,
               help='List of the packages/provides, that will be in the SCL '
                    '(to convert Requires/BuildRequires properly). Lines in '
                    'the file are in form of "pkg-name %%{?custom_prefix}", '
@@ -128,8 +179,6 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, sclize, **scl_kwarg
 
     if sclize:
         converted = convert_to_scl(converted, scl_kwargs)
-        if not converted:
-            return
 
     if srpm or s:
         if r:
@@ -177,12 +226,8 @@ def convert_to_scl(spec, scl_options):
         spec: (str) a spec file
         scl_options: (dict) SCL options provided
     Returns:
-        A converted spec file or None
+        A converted spec file
     """
-    if not SclConvertor:
-        click.echo('Please install spec2scl to perform SCL-style conversion')
-        return
-
     scl_options['skip_functions'] = scl_options['skip_functions'].split(',')
     scl_options['meta_spec'] = None
     convertor = SclConvertor(spec=spec, options=scl_options)

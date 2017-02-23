@@ -59,8 +59,37 @@ Specify proxy in the form proxy.server:port.
 .B "\--venv / --no-venv \"
 Enable / disable metadata extraction from virtualenv.
 .TP
+\fB\-\-sclize\fR
+Convert tags and macro definitions to SCL\-style
+using `spec2scl` module. NOTE: SCL related options
+can be provided alongside this option.
+.TP
 .B "\-h , --help\"
 show this help message and exit.
+.SS "SCL related options:"
+.TP
+\fB\-\-no\-meta\-runtime\-dep\fR
+Don't add the runtime dependency on the scl
+runtime package.
+.TP
+\fB\-\-no\-meta\-buildtime\-dep\fR
+Don't add the buildtime dependency on the scl
+runtime package.
+.TP
+\fB\-\-skip\-functions\fR FUNCTIONS
+Comma separated list of transformer functions to
+skip.
+.TP
+\fB\-\-no\-deps\-convert\fR
+Don't convert dependency tags (mutually
+exclusive with \fB\-\-list\-file\fR).
+.TP
+\fB\-\-list\-file\fR FILE_NAME
+List of the packages/provides, that will be in
+the SCL (to convert Requires/BuildRequires
+properly). Lines in the file are in form of
+"pkg\-name %%{?custom_prefix}", where the prefix
+part is optional.
 
 
 .SH EXAMPLES
