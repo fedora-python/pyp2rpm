@@ -39,6 +39,7 @@ setup(
     tests_require=['pytest'],
     extras_require={
         'venv metadata': ['virtualenv-api'],
+        'sclize': ['spec2scl >= 1.1.4']
     },
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',
