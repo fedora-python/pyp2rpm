@@ -273,7 +273,6 @@ class TestSetupPyMetadataExtractor(object):
                            ['BuildRequires', 'python-sphinx']]),
         (1, 'py_modules', set(['pytest'])),
         (1, 'packages', set(['_pytest'])),
-        (1, 'scripts', set(['py.test', 'pytest'])),
         (1, 'home_page', 'http://pytest.org'),
         (1, 'summary', 'py.test: simple powerful testing with Python'),
         (1, 'license', 'MIT license'),

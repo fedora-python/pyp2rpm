@@ -27,11 +27,12 @@ class TestSpec(object):
         ('StructArray', '-v0.1 -b2', 'python-StructArray.spec'),
         ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx.spec'),
     ])
-    @pytest.mark.spectest
+    @pytest.mark.webtest
     def test_spec(self, package, options, expected):
         with open(self.td_dir + expected) as fi:
             self.spec_content = fi.read()
-        res = self.env.run('{0} {1} {2}'.format(self.exe, package, options))
+        res = self.env.run('{0} {1} {2}'.format(self.exe, package, options),
+                           expect_stderr=True)
         # changelog have to be cut from spec files
         assert set(res.stdout.split('\n')[1:-4]) == set(self.spec_content.split('\n')[1:-4])
 
@@ -44,6 +45,7 @@ class TestSrpm(object):
     def setup_method(self, method):
         self.env = TestFileEnvironment('{0}/test_output/'.format(tests_dir))
 
+    @pytest.mark.webtest
     def test_srpm(self):
         res = self.env.run('{0} Jinja2 --srpm'.format(self.exe), expect_stderr=True)
         assert res.returncode == 0
