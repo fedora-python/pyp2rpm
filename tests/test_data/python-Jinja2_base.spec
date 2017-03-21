@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.1.2
+# Created by pyp2rpm-3.2.2
 %global pypi_name Jinja2
 
 Name:           python-%{pypi_name}
@@ -28,6 +28,7 @@ Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
  
 Requires:       python3-MarkupSafe
+Requires:       python3-Babel >= 0.8
 %description -n python3-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired nonXML syntax but supports inline expressions and an optional
@@ -67,5 +68,5 @@ rm -rf html/.{doctrees,buildinfo}
 %doc html 
 
 %changelog
-* Mon Aug 22 2016 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Apr 11 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

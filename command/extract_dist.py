@@ -11,7 +11,7 @@ class extract_dist(Command):
     class_metadata = None
 
     def __init__(self, *args, **kwargs):
-        """Metadata dictionary is created, all the metadata attributes, that were 
+        """Metadata dictionary is created, all the metadata attributes, that were
         not found are set to default empty values. Checks of data types are performed.
         """
         Command.__init__(self, *args, **kwargs)
@@ -21,6 +21,18 @@ class extract_dist(Command):
         for attr in ['setup_requires', 'tests_require', 'install_requires',
                      'packages', 'py_modules', 'scripts']:
             self.metadata[attr] = to_list(getattr(self.distribution, attr, []))
+
+        try:
+            for k, v in getattr(self.distribution, 'extras_require', {}).items():
+                if k in ['test, docs', 'doc', 'dev']:
+                    attr = 'setup_requires'
+                else:
+                    attr = 'install_requires'
+                self.metadata[attr] += to_list(v)
+        except (AttributeError, ValueError):
+            # extras require are skipped in case of wrong data format
+            # can't log here, because this file is executed in a subprocess
+            pass
 
         for attr in ['url', 'long_description', 'description', 'license']:
             self.metadata[attr] = to_str(getattr(self.distribution.metadata, attr, None))

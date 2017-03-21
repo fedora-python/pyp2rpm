@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.1.3
+# Created by pyp2rpm-3.2.2
 %global pypi_name buildkit
 
 Name:           python-%{pypi_name}
@@ -25,7 +25,8 @@ command so that...
 %package -n     python2-%{pypi_name}
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pypi_name}}
-
+ 
+Requires:       python-Sphinx = 0.6.7
 %description -n python2-%{pypi_name}
 ++++++++.. contents :: Summary Cloud infrastructure and .deb file management
 software.Get Started * See the docsAuthor James Gardner <>_Changes20111210 *
@@ -54,5 +55,5 @@ rm -rf %{pypi_name}.egg-info
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Thu Sep 22 2016 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
+* Tue Apr 11 2017 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
 - Initial package.

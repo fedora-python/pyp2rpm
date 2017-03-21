@@ -460,7 +460,6 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     def get_requires(self, requires_types):
         "Extracts requires of given types from metadata file, filter windows specific requires"
-        # TODO extras?
         if not isinstance(requires_types, list):
             requires_types = list(requires_types)
         extracted_requires = []
