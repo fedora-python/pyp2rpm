@@ -5,13 +5,13 @@
 pyp2rpm
 =======
 
-Tool to convert a package from PyPI to RPM SPECFILE or to generate SRPM.
-Under heavy development, see TODO file for list of planned features.
+A tool to convert a PyPI package to an RPM SPECFILE or to generate an SRPM.
+Under heavy development, see the TODO file for a list of planned features.
 pyp2rpm currently ships with Fedora and Mageia specific templates.
 
 ## Usage
 
-The simplest use case is running:
+The simplest use case is to run:
 
     pyp2rpm package_name
 
@@ -21,7 +21,7 @@ Or:
 
     pyp2rpm package_name --srpm
 
-This downloads the package from PyPI and creates SRPM file.
+This downloads the package from PyPI and creates ab SRPM file.
 
 All of the options are (print this by running pyp2rpm -h):
 
@@ -73,7 +73,8 @@ or run:
 
 ## Contributing
 
-We will gladly accept any pull request or recommendation.
-With complex pull requests, please include unit tests in *pytest*, use *flexmock* if you need mocking.
+We will gladly accept any pull request, bug report, or feature request.
+With complex pull requests, please include unit tests in *pytest*. You
+can use *flexmock* if you need mocking.
 
-pyp2rpm is licensed under MIT license.
+pyp2rpm is licensed under the MIT/Expat license.
