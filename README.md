@@ -1,7 +1,6 @@
 
 ![Logo](https://rkuska.fedorapeople.org/pyp2rpm_large.png)
 
-=======
 pyp2rpm
 =======
 
@@ -21,7 +20,7 @@ Or:
 
     pyp2rpm package_name --srpm
 
-This downloads the package from PyPI and creates ab SRPM file.
+This downloads the package from PyPI and creates a SRPM file.
 
 All of the options are (print this by running pyp2rpm -h):
 
@@ -73,8 +72,7 @@ or run:
 
 ## Contributing
 
-We will gladly accept any pull request, bug report, or feature request.
-With complex pull requests, please include unit tests in *pytest*. You
-can use *flexmock* if you need mocking.
+We will gladly accept any pull request or feature request.
+With complex pull requests, please include unit tests in *pytest* and use *flexmock* if you need mocking.
 
 pyp2rpm is licensed under the MIT/Expat license.
