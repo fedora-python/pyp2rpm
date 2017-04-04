@@ -113,7 +113,7 @@ class NameVariants(object):
                 self.variants[variant] = name
 
     def merge(self, other):
-        """Merges object with other NameVariants object, not set values 
+        """Merges object with other NameVariants object, not set values
         of self.variants are replace by values from other object.
         """
         if not isinstance(other, NameVariants):
@@ -153,9 +153,9 @@ class DandifiedNameConvertor(NameConvertor):
 
     def __init__(self, *args):
         super(DandifiedNameConvertor, self).__init__(*args)
-        if dnf is None or self.distro != 'fedora':
-            raise RuntimeError("DandifiedNameConvertor needs optional require dnf, and "
-                               "can be used for Fedora distro only.")
+        if dnf is None:
+            raise RuntimeError("DandifiedNameConvertor needs an optional "
+                               "requirement dnf.")
         with dnf.Base() as base:
             RELEASEVER = dnf.rpm.detect_releasever(base.conf.installroot)
             base.conf.substitutions['releasever'] = RELEASEVER
