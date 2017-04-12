@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.1.2
+# Created by pyp2rpm-3.2.2
 %global pypi_name Jinja2
 
 Name:           python-%{pypi_name}
@@ -30,6 +30,7 @@ user.username }}</a></li> {%...
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
  
 Requires:       python-MarkupSafe
+Requires:       python-Babel >= 0.8
 %description -n python2-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired nonXML syntax but supports inline expressions and an optional
@@ -42,6 +43,7 @@ user.username }}</a></li> {%...
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
  
 Requires:       python%{python3_pkgversion}-MarkupSafe
+Requires:       python%{python3_pkgversion}-Babel >= 0.8
 %description -n python%{python3_pkgversion}-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired nonXML syntax but supports inline expressions and an optional
@@ -90,5 +92,5 @@ rm -rf html/.{doctrees,buildinfo}
 %doc html 
 
 %changelog
-* Mon Aug 22 2016 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Apr 11 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

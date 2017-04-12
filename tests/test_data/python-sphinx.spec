@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.2.1
+# Created by pyp2rpm-3.2.2
 %global pypi_name Sphinx
 %global srcname sphinx
 
@@ -36,12 +36,19 @@ Requires:       python-Jinja2 >= 2.3
 Requires:       python-Pygments >= 2.0
 Requires:       python-docutils >= 0.11
 Requires:       python-snowballstemmer >= 1.1
-Conflicts:      python-babel = 2.0
 Requires:       python-babel >= 1.3
+Conflicts:      python-babel = 2.0
 Requires:       python-alabaster < 0.8
 Requires:       python-alabaster >= 0.7
 Requires:       python-imagesize
 Requires:       python-requests
+Requires:       python-nose
+Requires:       python-mock
+Requires:       python-simplejson
+Requires:       python-html5lib
+Requires:       python-sqlalchemy >= 0.9
+Requires:       python-whoosh >= 2.0
+Requires:       python-colorama >= 0.3.5
 Requires:       python-setuptools
 %description -n python2-%{srcname}
 Sphinx is a tool that makes it easy to create intelligent and beautiful
@@ -60,12 +67,19 @@ Requires:       python3-Jinja2 >= 2.3
 Requires:       python3-Pygments >= 2.0
 Requires:       python3-docutils >= 0.11
 Requires:       python3-snowballstemmer >= 1.1
-Conflicts:      python3-babel = 2.0
 Requires:       python3-babel >= 1.3
+Conflicts:      python3-babel = 2.0
 Requires:       python3-alabaster < 0.8
 Requires:       python3-alabaster >= 0.7
 Requires:       python3-imagesize
 Requires:       python3-requests
+Requires:       python3-nose
+Requires:       python3-mock
+Requires:       python3-simplejson
+Requires:       python3-html5lib
+Requires:       python3-sqlalchemy >= 0.9
+Requires:       python3-whoosh >= 2.0
+Requires:       python3-colorama >= 0.3.5
 Requires:       python3-setuptools
 %description -n python3-%{srcname}
 Sphinx is a tool that makes it easy to create intelligent and beautiful
@@ -153,5 +167,5 @@ ln -s %{_bindir}/sphinx-autogen-%{python2_version} %{buildroot}/%{_bindir}/sphin
 %doc html 
 
 %changelog
-* Fri Nov 25 2016 Iryna Shcherbina <ishcherb@redhat.com> - 1.4.9-1
+* Tue Apr 11 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
 - Initial package.
