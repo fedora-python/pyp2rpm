@@ -28,6 +28,16 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+def cut_to_length(text, length, delim):
+    """Shorten given text on first delimiter after given number
+    of characters.
+    """
+    cut = text.find(delim, length)
+    if cut > -1:
+        return text[:cut]
+    else:
+        return text
+
 
 def pypi_metadata_extension(extraction_fce):
     """Extracts data from PyPI and merges them with data from extraction method."""
@@ -94,7 +104,7 @@ def process_description(description_fce):
                             # general URLs
                             re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '',
                             # delimiters
-                            re.sub('(#|-|=|~|`)*', '',
+                            re.sub('(#|=|---|~|`)*', '',
                             # very short lines, typically titles
                             re.sub('((\r?\n)|^).{0,8}((\r?\n)|$)', '',
                             # PyPI's version and downloads tags
@@ -343,21 +353,15 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
     @property
     @process_description
-    def long_description(self):
-        return self.metadata['long_description']
-
-    @property
     def description(self):
-        """Shorten description on first newline after approx 10 lines"""
-        cut = self.long_description.find('\n', 80 * 8)
-        if cut > -1:
-            return self.long_description[:cut] + '\n...'
-        else:
-            return self.long_description
+        return cut_to_length(self.metadata['long_description'],
+                             80 * 8, '\n')
 
     @property
+    @process_description
     def summary(self):
-        return self.metadata['description']
+        return cut_to_length(self.metadata['description'].split('\n')[0],
+                             50, '.')
 
     @property
     def classifiers(self):

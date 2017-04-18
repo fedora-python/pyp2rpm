@@ -20,11 +20,11 @@ BuildRequires:  python%{python3_pkgversion}-setuptools
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
-inspired nonXML syntax but supports inline expressions and an optional
+inspired non-XML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
 extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
-user.username }}</a></li> {%...
+user.username }}</a></li>...
 
 %package -n     python2-%{pypi_name}
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
@@ -33,11 +33,11 @@ Requires:       python-MarkupSafe
 Requires:       python-Babel >= 0.8
 %description -n python2-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
-inspired nonXML syntax but supports inline expressions and an optional
+inspired non-XML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
 extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
-user.username }}</a></li> {%...
+user.username }}</a></li>...
 
 %package -n     python%{python3_pkgversion}-%{pypi_name}
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
@@ -46,11 +46,11 @@ Requires:       python%{python3_pkgversion}-MarkupSafe
 Requires:       python%{python3_pkgversion}-Babel >= 0.8
 %description -n python%{python3_pkgversion}-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
-inspired nonXML syntax but supports inline expressions and an optional
+inspired non-XML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
 extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
-user.username }}</a></li> {%...
+user.username }}</a></li>...
 
 %package -n python-%{pypi_name}-doc
 Summary:        Jinja2 documentation
@@ -92,5 +92,5 @@ rm -rf html/.{doctrees,buildinfo}
 %doc html 
 
 %changelog
-* Tue Apr 11 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Apr 18 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.
