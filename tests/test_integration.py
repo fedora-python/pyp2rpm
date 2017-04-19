@@ -86,7 +86,6 @@ class TestSclIntegration(object):
         self.default_options.update(expected_options)
         flexmock(SclConvertor).should_receive('convert').and_return(self.test_spec)
         flexmock(SclConvertor).should_receive('__init__').with_args(
-            spec=self.test_spec,
             options=self.default_options,
         ).once()
 
