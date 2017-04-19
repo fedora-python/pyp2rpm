@@ -36,19 +36,19 @@ Requires:       python-Jinja2 >= 2.3
 Requires:       python-Pygments >= 2.0
 Requires:       python-docutils >= 0.11
 Requires:       python-snowballstemmer >= 1.1
-Requires:       python-babel >= 1.3
 Conflicts:      python-babel = 2.0
-Requires:       python-alabaster < 0.8
+Requires:       python-babel >= 1.3
 Requires:       python-alabaster >= 0.7
+Requires:       python-alabaster < 0.8
 Requires:       python-imagesize
 Requires:       python-requests
+Requires:       python-colorama >= 0.3.5
 Requires:       python-nose
 Requires:       python-mock
 Requires:       python-simplejson
 Requires:       python-html5lib
 Requires:       python-sqlalchemy >= 0.9
 Requires:       python-whoosh >= 2.0
-Requires:       python-colorama >= 0.3.5
 Requires:       python-setuptools
 %description -n python2-%{srcname}
 Sphinx is a tool that makes it easy to create intelligent and beautiful
@@ -67,19 +67,19 @@ Requires:       python3-Jinja2 >= 2.3
 Requires:       python3-Pygments >= 2.0
 Requires:       python3-docutils >= 0.11
 Requires:       python3-snowballstemmer >= 1.1
-Requires:       python3-babel >= 1.3
 Conflicts:      python3-babel = 2.0
-Requires:       python3-alabaster < 0.8
+Requires:       python3-babel >= 1.3
 Requires:       python3-alabaster >= 0.7
+Requires:       python3-alabaster < 0.8
 Requires:       python3-imagesize
 Requires:       python3-requests
+Requires:       python3-colorama >= 0.3.5
 Requires:       python3-nose
 Requires:       python3-mock
 Requires:       python3-simplejson
 Requires:       python3-html5lib
 Requires:       python3-sqlalchemy >= 0.9
 Requires:       python3-whoosh >= 2.0
-Requires:       python3-colorama >= 0.3.5
 Requires:       python3-setuptools
 %description -n python3-%{srcname}
 Sphinx is a tool that makes it easy to create intelligent and beautiful
@@ -111,61 +111,62 @@ rm -rf html/.{doctrees,buildinfo}
 # Must do the subpackages' install first because the scripts in /usr/bin are
 # overwritten with every setup.py install.
 %py3_install
-cp %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart-%{python3_version}
-ln -s %{_bindir}/sphinx-quickstart-%{python3_version} %{buildroot}/%{_bindir}/sphinx-quickstart-3
-cp %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc-%{python3_version}
-ln -s %{_bindir}/sphinx-apidoc-%{python3_version} %{buildroot}/%{_bindir}/sphinx-apidoc-3
 cp %{buildroot}/%{_bindir}/sphinx-build %{buildroot}/%{_bindir}/sphinx-build-%{python3_version}
 ln -s %{_bindir}/sphinx-build-%{python3_version} %{buildroot}/%{_bindir}/sphinx-build-3
 cp %{buildroot}/%{_bindir}/sphinx-autogen %{buildroot}/%{_bindir}/sphinx-autogen-%{python3_version}
 ln -s %{_bindir}/sphinx-autogen-%{python3_version} %{buildroot}/%{_bindir}/sphinx-autogen-3
+cp %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc-%{python3_version}
+ln -s %{_bindir}/sphinx-apidoc-%{python3_version} %{buildroot}/%{_bindir}/sphinx-apidoc-3
+cp %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart-%{python3_version}
+ln -s %{_bindir}/sphinx-quickstart-%{python3_version} %{buildroot}/%{_bindir}/sphinx-quickstart-3
 
 %py2_install
-cp %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart-%{python2_version}
-ln -s %{_bindir}/sphinx-quickstart-%{python2_version} %{buildroot}/%{_bindir}/sphinx-quickstart-2
-cp %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc-%{python2_version}
-ln -s %{_bindir}/sphinx-apidoc-%{python2_version} %{buildroot}/%{_bindir}/sphinx-apidoc-2
 cp %{buildroot}/%{_bindir}/sphinx-build %{buildroot}/%{_bindir}/sphinx-build-%{python2_version}
 ln -s %{_bindir}/sphinx-build-%{python2_version} %{buildroot}/%{_bindir}/sphinx-build-2
 cp %{buildroot}/%{_bindir}/sphinx-autogen %{buildroot}/%{_bindir}/sphinx-autogen-%{python2_version}
 ln -s %{_bindir}/sphinx-autogen-%{python2_version} %{buildroot}/%{_bindir}/sphinx-autogen-2
+cp %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc-%{python2_version}
+ln -s %{_bindir}/sphinx-apidoc-%{python2_version} %{buildroot}/%{_bindir}/sphinx-apidoc-2
+cp %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart-%{python2_version}
+ln -s %{_bindir}/sphinx-quickstart-%{python2_version} %{buildroot}/%{_bindir}/sphinx-quickstart-2
 
 
 %files -n python2-%{srcname}
 %license LICENSE
 %doc README.rst
-%{_bindir}/sphinx-quickstart
-%{_bindir}/sphinx-quickstart-2
-%{_bindir}/sphinx-quickstart-%{python2_version}
-%{_bindir}/sphinx-apidoc
-%{_bindir}/sphinx-apidoc-2
-%{_bindir}/sphinx-apidoc-%{python2_version}
 %{_bindir}/sphinx-build
 %{_bindir}/sphinx-build-2
 %{_bindir}/sphinx-build-%{python2_version}
 %{_bindir}/sphinx-autogen
 %{_bindir}/sphinx-autogen-2
 %{_bindir}/sphinx-autogen-%{python2_version}
+%{_bindir}/sphinx-apidoc
+%{_bindir}/sphinx-apidoc-2
+%{_bindir}/sphinx-apidoc-%{python2_version}
+%{_bindir}/sphinx-quickstart
+%{_bindir}/sphinx-quickstart-2
+%{_bindir}/sphinx-quickstart-%{python2_version}
 %{python2_sitelib}/sphinx
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %files -n python3-%{srcname}
 %license LICENSE
 %doc README.rst
-%{_bindir}/sphinx-quickstart-3
-%{_bindir}/sphinx-quickstart-%{python3_version}
-%{_bindir}/sphinx-apidoc-3
-%{_bindir}/sphinx-apidoc-%{python3_version}
 %{_bindir}/sphinx-build-3
 %{_bindir}/sphinx-build-%{python3_version}
 %{_bindir}/sphinx-autogen-3
 %{_bindir}/sphinx-autogen-%{python3_version}
+%{_bindir}/sphinx-apidoc-3
+%{_bindir}/sphinx-apidoc-%{python3_version}
+%{_bindir}/sphinx-quickstart-3
+%{_bindir}/sphinx-quickstart-%{python3_version}
 %{python3_sitelib}/sphinx
 %{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %files -n python-%{srcname}-doc
-%doc html 
+%doc html
+%license LICENSE
 
 %changelog
-* Tue Apr 11 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
+* Wed Apr 19 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
 - Initial package.

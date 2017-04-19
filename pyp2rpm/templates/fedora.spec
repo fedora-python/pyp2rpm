@@ -121,7 +121,10 @@ ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildro
 {% endfor %}
 {%- if data.sphinx_dir %}
 %files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
-%doc html 
+%doc html
+{%- if data.doc_license %}
+%license {{data.doc_license|join(' ')}}
+{%- endif %}
 {% endif %}
 %changelog
 * {{ data.changelog_date_packager }} - {{ data.version }}-1
