@@ -17,7 +17,7 @@
 
 {# Foreach all python_versions, prints caller content.
    Content is surrounded by conditionals if use_with is True #}
-{%- macro foreach_python_versions(caller, use_with=True, v='') %}
+{%- macro foreach_python_versions(use_with=True, v='') %}
 {%- for pv in [data.base_python_version] + data.python_versions %}
 {%- if use_with %}
 %if %{with python{{ pv }}}
