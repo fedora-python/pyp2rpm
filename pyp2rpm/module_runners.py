@@ -10,7 +10,7 @@ from pyp2rpm import utils
 from pyp2rpm import main_dir
 from pyp2rpm import settings
 from pyp2rpm.exceptions import ExtractionError
-from command import extract_dist
+from pyp2rpm.command import extract_dist
 
 logger = logging.getLogger(__name__)
 
