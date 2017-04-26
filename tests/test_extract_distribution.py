@@ -2,7 +2,7 @@ import pytest
 
 from flexmock import flexmock
 
-from command.extract_dist import to_list, extract_dist
+from pyp2rpm.command.extract_dist import to_list, extract_dist
 
 
 class TestExtractDistribution(object):
