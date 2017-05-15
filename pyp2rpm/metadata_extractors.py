@@ -36,6 +36,7 @@ def pypi_metadata_extension(extraction_fce):
         data = extraction_fce(self)
         if client is None:
             logger.warning("Client is None, it was probably disabled")
+            data.update_attr('url', self.archive.name)
             return data
         try:
             release_data = client.release_data(self.name, self.version)
