@@ -49,7 +49,7 @@ Version:	{{ data.version }}
 Release:	0.1
 License:	{{ data.license }}
 Group:		Libraries/Python
-Source0:	{{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:	{{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 # Source0-md5:	-
 URL:		{{ data.home_page }}
 BuildRequires:	rpm-pythonprov

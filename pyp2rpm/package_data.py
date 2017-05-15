@@ -23,7 +23,7 @@ class PackageData(object):
 
     """A simple object that carries data about a package."""
 
-    def __init__(self, local_file, name, pkg_name, version, md5='', url='', srcname=None):
+    def __init__(self, local_file, name, pkg_name, version, md5='', source0='', srcname=None):
         object.__setattr__(self, 'data', {})
         self.data['local_file'] = local_file
         self.data['name'] = name
@@ -32,7 +32,7 @@ class PackageData(object):
         self.data['version'] = version
         self.data['python_versions'] = []
         self.data['md5'] = md5
-        self.data['url'] = url
+        self.data['source0'] = source0
         self.data['sphinx_dir'] = None
 
     def __getattr__(self, name):
