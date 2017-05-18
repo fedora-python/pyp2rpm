@@ -217,12 +217,14 @@ class Convertor(object):
 
     @property
     def client(self):
-        """Returns the XMLRPC client for PyPI. Always returns the same instance.
+        """XMLRPC client for PyPI. Always returns the same instance.
+
+        If the package is provided as a path to compressed source file,
+        PyPI will not be used and the client will not be instantiated.
 
         Returns:
-            XMLRPC client for PyPI.
+            XMLRPC client for PyPI or None.
         """
-        # cannot use "if self._client"...
         if self.proxy:
             proxyhandler = urllib.ProxyHandler({"http": self.proxy})
             opener = urllib.build_opener(proxyhandler)

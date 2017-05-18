@@ -15,7 +15,7 @@ Summary:        {{ data.summary }}
 
 License:        {{ data.license }}
 URL:            {{ data.home_page }}
-Source0:        {{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch

@@ -228,7 +228,7 @@ class TestPyPIMetadataExtension(object):
          'OSXInterpreters: Python versions 2.4 through to 3.2, Jython 2.5.1 '
          'and PyPy1.6/1.7Bugs and issues: page: (c) Holger Krekel and others, 20042012'),
         ('md5', '9a7a2f6943baba054cf1c28e05a9198e'),
-        ('url',  'https://files.pythonhosted.org/packages/source/p/pytest/restsh-0.1.tar.gz'),
+        ('source0', 'https://files.pythonhosted.org/packages/source/p/pytest/restsh-0.1.tar.gz'),
         ('license', 'MIT license'),
         ('summary', 'py.test: simple powerful testing with Python')
     ])
@@ -266,6 +266,7 @@ class TestSetupPyMetadataExtractor(object):
         (0, 'doc_files', ['README.rst']),
         (0, 'doc_license', ['LICENSE']),
         (0, 'sphinx_dir', None),
+        (0, 'source0', 'plumbum-0.9.0.tar.gz'),
         (1, 'runtime_deps', [['Requires', 'python-py', '>=', '1.4.7.dev2'],
                              ['Requires', 'python-setuptools']]),
         (1, 'build_deps', [['BuildRequires', 'python2-devel'],
@@ -284,6 +285,7 @@ class TestSetupPyMetadataExtractor(object):
         (1, 'doc_files', ['README.txt']),
         (1, 'doc_license', ['LICENSE']),
         (1, 'sphinx_dir', 'doc'),
+        (1, 'source0', 'pytest-2.2.3.zip'),
         (2, 'py_modules', set(['simpleeval'])),
         (3, 'runtime_deps', [['Requires', 'python-coverage']]),
         (3, 'python_versions', ['3']),
