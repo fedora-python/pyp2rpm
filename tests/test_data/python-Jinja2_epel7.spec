@@ -89,8 +89,9 @@ rm -rf html/.{doctrees,buildinfo}
 %{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %files -n python-%{pypi_name}-doc
-%doc html 
+%doc html
+%license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Tue Apr 18 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Mon May 22 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

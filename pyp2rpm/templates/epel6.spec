@@ -15,7 +15,7 @@ Summary:        {{ data.summary }}
 
 License:        {{ data.license }}
 URL:            {{ data.home_page }}
-Source0:        {{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch
@@ -36,6 +36,12 @@ Summary:        {{ data.summary }}
 %description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
 {{ data.description|truncate(400)|wordwrap }}
 {%- endcall %}
+{%- if data.sphinx_dir %}
+%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+Summary:        {{ data.name }} documentation
+%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+Documentation for {{ data.name }}
+{%- endif %}
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
@@ -106,7 +112,7 @@ popd
 
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
-%doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
+%doc {{ data.doc_files|join(' ') }}
 {%- if data.scripts %}
 {%- for script in data.scripts %}
 %{_bindir}/{{ script|script_name_for_python_version(pv, minor=False, default_number=False) }}
@@ -143,7 +149,13 @@ popd
 {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {% endcall %}
-
+{%- if data.sphinx_dir %}
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+%doc html
+{%- if data.doc_license %}
+%license {{data.doc_license|join(' ')}}
+{%- endif %}
+{% endif %}
 %changelog
 * {{ data.changelog_date_packager }} - {{ data.version }}-1
 - Initial package.

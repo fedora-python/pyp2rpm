@@ -77,7 +77,8 @@ class Archive(object):
 
     def __init__(self, local_file):
         self.file = local_file
-        self.name, self.suffix = os.path.splitext(local_file)
+        self.name = os.path.basename(local_file)
+        self.suffix = os.path.splitext(local_file)[1]
         self.handle = None
         ZipInfo.name = ZipInfo.filename
 

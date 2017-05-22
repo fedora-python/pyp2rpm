@@ -23,7 +23,7 @@ setup(
     author_email='bkabrda@redhat.com, rkuska@redhat.com, mcyprian@redhat.com, ishcherb@redhat.com',
     url='https://github.com/fedora-python/pyp2rpm',
     license='MIT',
-    packages=['pyp2rpm', 'command'],
+    packages=['pyp2rpm', 'pyp2rpm.command'],
     package_data={'pyp2rpm': ['templates/*.spec']},
     entry_points={'console_scripts': ['pyp2rpm = pyp2rpm.bin:main']},
     install_requires=['Jinja2',

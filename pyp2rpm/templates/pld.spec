@@ -17,7 +17,7 @@
 
 {# Foreach all python_versions, prints caller content.
    Content is surrounded by conditionals if use_with is True #}
-{%- macro foreach_python_versions(caller, use_with=True, v='') %}
+{%- macro foreach_python_versions(use_with=True, v='') %}
 {%- for pv in [data.base_python_version] + data.python_versions %}
 {%- if use_with %}
 %if %{with python{{ pv }}}
@@ -49,7 +49,7 @@ Version:	{{ data.version }}
 Release:	0.1
 License:	{{ data.license }}
 Group:		Libraries/Python
-Source0:	{{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:	{{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 # Source0-md5:	-
 URL:		{{ data.home_page }}
 BuildRequires:	rpm-pythonprov

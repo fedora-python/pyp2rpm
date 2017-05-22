@@ -46,6 +46,7 @@ def pypi_metadata_extension(extraction_fce):
         data = extraction_fce(self)
         if client is None:
             logger.warning("Client is None, it was probably disabled")
+            data.update_attr('source0', self.archive.name)
             return data
         try:
             release_data = client.release_data(self.name, self.version)
@@ -57,7 +58,7 @@ def pypi_metadata_extension(extraction_fce):
             url, md5_digest = get_url(client, self.name, self.version)
         except exc.MissingUrlException:
             url, md5_digest = ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
-        data_dict = {'url': url, 'md5': md5_digest}
+        data_dict = {'source0': url, 'md5': md5_digest}
 
         for data_field in settings.PYPI_USABLE_DATA:
             data_dict[data_field] = release_data.get(data_field, '')

@@ -26,6 +26,10 @@ extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
+%package -n python-%{pypi_name}-doc
+Summary:        Jinja2 documentation
+%description -n python-%{pypi_name}-doc
+Documentation for Jinja2
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
@@ -45,11 +49,14 @@ rm -rf html/.{doctrees,buildinfo}
 %{__python2} setup.py install --skip-build --root %{buildroot}
 
 %files
-%doc html README.rst
+%doc README.rst
 %{python2_sitelib}/jinja2
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
+%files -n python-%{pypi_name}-doc
+%doc html
+%license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Tue Apr 18 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Mon May 22 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

@@ -18,7 +18,7 @@ SPHINX_DIR_RE = r'[^/]+/doc.?'
 PYPI_URL = 'https://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'home_page', 'requires']
 PYTHON_INTERPRETER = '/usr/bin/python'
-EXTRACT_DIST_COMMAND_ARGS = ['--quiet', '--command-packages', 'command', 'extract_dist']
+EXTRACT_DIST_COMMAND_ARGS = ['--quiet', '--command-packages', 'pyp2rpm.command', 'extract_dist']
 CONSOLE_LOGGING = True
 
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',

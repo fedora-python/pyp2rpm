@@ -12,7 +12,7 @@ Summary:        {{ data.summary }}
 
 License:        {{ data.license }}
 URL:            {{ data.home_page }}
-Source0:        {{ data.url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch
@@ -121,6 +121,9 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 {%- if data.sphinx_dir %}
 %files -n python-%{pypi_name}-doc
 %doc html 
+{%- if data.doc_license %}
+%license {{data.doc_license|join(' ')}}
+{%- endif %}
 {% endif %}
 %changelog
 * {{ data.changelog_date_packager }} - {{ data.version }}-1
