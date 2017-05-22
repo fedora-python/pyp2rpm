@@ -125,7 +125,7 @@ and ``deactivate``, and virtualenvwrapper's ``workon``, and also
 virtualenv-burrito if you use that.''',
 '''Run a command in the named virtualenv.vex is an alternative to virtualenv's \
 source wherever/bin/activate and deactivate, and virtualenvwrapper's workon, \
-and also virtualenvburrito if you use that.'''),
+and also virtualenv-burrito if you use that.'''),
         (
 '''Python bindings to the OpenStack Cinder API
 ===========================================
@@ -142,7 +142,7 @@ This is a client for the OpenStack Cinder API. There's a Python API (the
 ``cinderclient`` module), and a command-line script (``cinder``). Each
 implements 100% of the OpenStack Cinder API.''',
 '''Python bindings to the OpenStack Cinder API This is a client for the OpenStack \
-Cinder API. There's a Python API (the cinderclient module), and a commandline \
+Cinder API. There's a Python API (the cinderclient module), and a command-line \
 script (cinder). Each implements 100% of the OpenStack Cinder API.'''),
         (
 '''.. image:: http://pytest.org/latest/_static/pytest1.png
@@ -164,7 +164,7 @@ script (cinder). Each implements 100% of the OpenStack Cinder API.'''),
     :target: https://ci.appveyor.com/project/pytestbot/pytest
 
 The ``pytest`` framework makes it easy to write small tests, yet
-scales to support complex functional testing for applications and libraries. 
+scales to support complex functional testing for applications and libraries.
 
 An example of a simple test:
 
@@ -185,10 +185,10 @@ To execute it::
     platform linux -- Python 3.4.3, pytest-2.8.5, py-1.4.31, pluggy-0.3.1
     collected 1 items''',
 ''' The pytest framework makes it easy to write small tests, yet scales to support \
-complex functional testing for applications and libraries. An example of a \
-simple test:.. codeblock:: python content of test_sample.py def func(x): return \
+complex functional testing for applications and libraries.An \
+example of a simple test:.. code-block:: python content of test_sample.py def func(x): return \
 x + 1 def test_answer(): assert func(3) 5 To execute it:: $ py.test test \
-session starts platform linux Python 3.4.3, pytest2.8.5, py1.4.31, pluggy0.3.1 \
+session starts platform linux -- Python 3.4.3, pytest-2.8.5, py-1.4.31, pluggy-0.3.1 \
 collected 1 items'''),
         (
 '''Some description text, http://docs.openstack.org/developer/python-designateclient/.
@@ -196,7 +196,19 @@ the rest of meaningful text...''',
 '''Some description text, the rest of meaningful text...''')
     ])
     def test_process_description(self, desc, expected):
-        assert self.desciption_fce(desc) == expected
+        assert set(self.desciption_fce(desc)
+                   .split('\n')) == set(expected.split('\n'))
+
+    @pytest.mark.parametrize(('text', 'length', 'delim', 'expected'), [
+        (
+'''Allow to inject warning filters during ``nosetest``.  Put the same arguments
+as ``warnings.filterwarnings`` in ``setup.cfg`` at the root of your project.
+Separated each argument by pipes ``|``, one filter per line. Whitespace are
+stripped.  for example:  ::      [nosetests]     warningfilters=default
+''', 50, '.', "Allow to inject warning filters during ``nosetest``")
+    ])
+    def test_cut_to_length(self, text, length, delim, expected):
+        assert me.cut_to_length(text, length, delim) == expected
 
 
 class TestPyPIMetadataExtension(object):
@@ -224,9 +236,9 @@ class TestPyPIMetadataExtension(object):
             '{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3')
 
     @pytest.mark.parametrize(('what', 'expected'), [
-        ('description', 'crossproject testing tool for Python.Platforms: Linux, Win32, '
+        ('description', 'cross-project testing tool for Python.Platforms: Linux, Win32, '
          'OSXInterpreters: Python versions 2.4 through to 3.2, Jython 2.5.1 '
-         'and PyPy1.6/1.7Bugs and issues: page: (c) Holger Krekel and others, 20042012'),
+         'and PyPy-1.6/1.7Bugs and issues: page: (c) Holger Krekel and others, 2004-2012'),
         ('md5', '9a7a2f6943baba054cf1c28e05a9198e'),
         ('source0', 'https://files.pythonhosted.org/packages/source/p/pytest/restsh-0.1.tar.gz'),
         ('license', 'MIT license'),

@@ -17,11 +17,11 @@ BuildRequires:  python3-sphinx
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
-inspired nonXML syntax but supports inline expressions and an optional
+inspired non-XML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
 extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
-user.username }}</a></li> {%...
+user.username }}</a></li>...
 
 %package -n     python3-%{pypi_name}
 Summary:        %{summary}
@@ -31,11 +31,11 @@ Requires:       python3-MarkupSafe
 Requires:       python3-Babel >= 0.8
 %description -n python3-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
-inspired nonXML syntax but supports inline expressions and an optional
+inspired non-XML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
 extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
-user.username }}</a></li> {%...
+user.username }}</a></li>...
 
 %package -n python-%{pypi_name}-doc
 Summary:        Jinja2 documentation
@@ -69,5 +69,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Wed Apr 19 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Mon May 22 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.
