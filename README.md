@@ -30,30 +30,57 @@ All of the options are (print this by running pyp2rpm -h):
 
     Convert PyPI package to RPM specfile or SRPM.
 
-    arguments:
-      PACKAGE             Provide PyPI name of the package or path to compressed
-                          source file.
+  Arguments:
+    PACKAGE             Provide PyPI name of the package or path to compressed source file.
 
-    optional arguments:
-      -h, --help          show this help message and exit
-      -v VERSION          Version of the package to download (ignored for local files).
-      -d SAVE_DIR         Where to save the package file (default: "~/rpmbuild")
-      -r RPM_NAME         Name of rpm package (overrides calculated name)
-      -t TEMPLATE         Template file (jinja2 format) to render (default: "fedora").
-                          Search order is 1) filesystem, 2) default templates.
-      -o DISTRO           Default distro whose conversion rules to use
-                          (default: "fedora"). Default templates have their rules
-                          associated and ignore this.
-      -b BASE_PYTHON      Base Python version to package for (default: "2").
-      -p PYTHON_VERSIONS  Additional Python versions to include in the specfile
-                          (e.g -p3 for %{?with_python3}). Can be specified multiple times
-                          (default: "3"). Specify additional version or use -b
-                          explicitly to disable default.
-      --srpm              When used pyp2rpm will produce srpm instead of printing
-                          specfile into stdout.
-      --proxy PROXY       Specify proxy in the form proxy.server:port.
-      --venv / --no-venv  Enable / disable metadata extraction from virtualenv
+  Options:
+    -t TEMPLATE             Template file (jinja2 format) to render (default:
+                            "fedora").Search order is 1) filesystem, 2) default
+                            templates.
+    -o [fedora|mageia|pld]  Default distro whose conversion rules to use
+                            (default:"fedora").Default templates have their
+                            rules associated and ignore this.
+    -b BASE_PYTHON          Base Python version to package for (default: "2").
+    -p PYTHON_VERSIONS      Additional Python versions to include in the
+                            specfile (e.g -p3 for %{?with_python3}).Can be
+                            specified multiple times (default: "3"). Specify
+                            additional version or use -b explicitly to disable
+                            default.
+    -s                      Spec file ~/rpmbuild/SPECS/python-package_name.spec
+                            will be created (default: prints spec file to
+                            stdout).
+    --srpm                  When used pyp2rpm will produce srpm instead of
+                            printing specfile into stdout.
+    --proxy PROXY           Specify proxy in the form proxy.server:port.
+    -r RPM_NAME             Name of rpm package (overrides calculated name).
+    -d SAVE_PATH            Specify where to save package file, specfile and
+                            generated SRPM (default: "/home/mcyprian/rpmbuild").
+    -v VERSION              Version of the package to download (ignored for
+                            local files).
+    --venv / --no-venv      Enable / disable metadata extraction from virtualenv
+                            (default: enabled).
+    --autonc / --no-autonc  Enable / disable using automatic provides with a
+                            standardized name in dependencies declaration
+                            (default: disabled).
+    --sclize                Convert tags and macro definitions to SCL-style
+                            using `spec2scl` module. NOTE: SCL related options
+                            can be provided alongside this option.
+    -h, --help              Show this message and exit.
 
+  SCL related options:
+    --no-meta-runtime-dep       Don't add the runtime dependency on the scl
+                                runtime package.
+    --no-meta-buildtime-dep     Don't add the buildtime dependency on the scl
+                                runtime package.
+    --skip-functions FUNCTIONS  Comma separated list of transformer functions to
+                                skip.
+    --no-deps-convert           Don't convert dependency tags (mutually
+                                exclusive with --list-file).
+    --list-file FILE_NAME       List of the packages/provides, that will be in
+                                the SCL (to convert Requires/BuildRequires
+                                properly). Lines in the file are in form of
+                                "pkg-name %%{?custom_prefix}", where the prefix
+                                part is optional.
 
 
 To run the unit tests, cd into the checked out directory and run:

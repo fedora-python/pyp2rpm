@@ -449,7 +449,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         if sphinx_dir:
             archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])
             archive_data['build_deps'].append(
-                ['BuildRequires', 'python-sphinx'])
+                ['BuildRequires', self.name_convertor.rpm_name(
+                    "sphinx", settings.DEFAULT_PYTHON_VERSION)])
 
         return archive_data
 

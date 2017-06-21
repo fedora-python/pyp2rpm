@@ -4,10 +4,9 @@ try:
     import dnf
 except ImportError:
     dnf = None
+from pkg_resources import safe_name
 
 from pyp2rpm import settings
-from pyp2rpm import utils
-from pyp2rpm.logger import LoggerWriter
 
 
 logger = logging.getLogger(__name__)
@@ -36,6 +35,7 @@ class NameConvertor(object):
             Versioned name or the original name if given version is None.
         """
         regexp = re.compile(r'^python(\d*|)-(.*)')
+        auto_provides_regexp = re.compile(r'^python(\d*|)dist(.*)')
 
         if not version or version == settings.DEFAULT_PYTHON_VERSION and not default_number:
             found = regexp.search(name)
@@ -50,6 +50,9 @@ class NameConvertor(object):
 
             if regexp.search(name):
                 versioned_name = re.sub(r'^python(\d*|)-', 'python{0}-'.format(version), name)
+            elif auto_provides_regexp.search(name):
+                versioned_name = re.sub(r'^python(\d*|)dist', 'python{0}dist'.format(version), name)
+
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
             if epel and version != settings.DEFAULT_PYTHON_VERSION:
@@ -58,7 +61,7 @@ class NameConvertor(object):
         return versioned_name
 
     def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION):
-        """Returns name of the package coverted to (possibly) correct package
+        """Returns name of the package converted to (possibly) correct package
            name according to Packaging Guidelines.
         Args:
             name: name to convert
@@ -200,3 +203,11 @@ class DandifiedNameConvertor(NameConvertor):
 
 def canonical_form(name):
     return name.lower().replace('-', '').replace('_', '')
+
+
+class AutoProvidesNameConvertor(NameConvertor):
+    """Name convertor based on Automatic Provides for Python RPM Packages."""
+
+    def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION):
+        canonical_name = safe_name(name).lower()
+        return "python{0}dist({1})".format(python_version, canonical_name)

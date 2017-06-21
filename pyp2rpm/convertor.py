@@ -42,7 +42,7 @@ class Convertor(object):
                  distro=settings.DEFAULT_DISTRO,
                  base_python_version=settings.DEFAULT_PYTHON_VERSION,
                  python_versions=[],
-                 rpm_name=None, proxy=None, venv=True):
+                 rpm_name=None, proxy=None, venv=True, autonc=False):
         self.package = package
         self.version = version
         self.save_dir = save_dir
@@ -55,6 +55,7 @@ class Convertor(object):
         self.rpm_name = rpm_name
         self.proxy = proxy
         self.venv = venv
+        self.autonc = autonc
         self.pypi = True
         suffix = os.path.splitext(self.package)[1]
         if os.path.exists(self.package) and suffix in settings.ARCHIVE_SUFFIXES\
@@ -65,7 +66,7 @@ class Convertor(object):
         """Merges python versions specified in command lines options with
         extracted versions, checks if some of the versions is not > 2 if EPEL6 template
         will be used. attributes base_python_version and python_versions contain
-        values specified by command line options or default values, 
+        values specified by command line options or default values,
         data.base_python_version and data.python_versions contain extracted data.
         """
         if self.template == "epel6.spec":
@@ -175,7 +176,12 @@ class Convertor(object):
     @property
     def name_convertor(self):
         if not hasattr(self, '_name_convertor'):
-            if dnf is None:
+            if self.autonc:
+                logger.debug("Using AutoProvidesNameConvertor to convert names "
+                             "of the packages.")
+                self._name_convertor = name_convertor.AutoProvidesNameConvertor(
+                    self.distro)
+            elif dnf is None:
                 logger.warn("Dnf module not found, please dnf install python{0}-dnf "
                         "to improve accuracy of name conversion.".format(sys.version[0]))
                 logger.debug("Using NameConvertor to convert names of the packages.")
@@ -187,7 +193,7 @@ class Convertor(object):
 
     @property
     def metadata_extractor(self):
-        """Returns an instance of proper MetadataExtractor subclass. 
+        """Returns an instance of proper MetadataExtractor subclass.
         Always returns the same instance.
 
         Returns:

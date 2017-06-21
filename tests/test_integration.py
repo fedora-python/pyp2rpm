@@ -23,6 +23,7 @@ class TestSpec(object):
         ('Jinja2', '-v2.8 -b3', 'python-Jinja2_base.spec'),
         ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7.spec'),
         ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6.spec'),
+        ('Jinja2', '-v2.8 --autonc', 'python-Jinja2_autonc.spec'),
         ('buildkit', '-v0.2.2 -b2', 'python-buildkit.spec'),
         ('StructArray', '-v0.1 -b2', 'python-StructArray.spec'),
         ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx.spec'),

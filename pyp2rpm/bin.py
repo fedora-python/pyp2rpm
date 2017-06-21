@@ -117,6 +117,10 @@ class SclizeOption(click.Option):
 @click.option('--venv / --no-venv',
               default=True,
               help='Enable / disable metadata extraction from virtualenv (default: enabled).')
+@click.option('--autonc/ --no-autonc',
+              default=False,
+              help='Enable / disable using automatic provides with a standardized '
+              'name in dependencies declaration (default: disabled).')
 @click.option('--sclize',
               help='Convert tags and macro definitions to SCL-style using `spec2scl` module.'
                    ' NOTE: SCL related options can be provided alongside this option.',
@@ -143,7 +147,7 @@ class SclizeOption(click.Option):
               default=None,
               metavar='FILE_NAME')
 @click.argument('package', nargs=1)
-def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, sclize, **scl_kwargs):
+def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize, **scl_kwargs):
     """Convert PyPI package to RPM specfile or SRPM.
 
     \b
@@ -171,7 +175,8 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, sclize, **scl_kwarg
                           python_versions=p,
                           rpm_name=r,
                           proxy=proxy,
-                          venv=venv)
+                          venv=venv,
+                          autonc=autonc)
 
     logger.debug('Convertor: {0} created. Trying to convert.'.format(convertor))
     converted = convertor.convert()

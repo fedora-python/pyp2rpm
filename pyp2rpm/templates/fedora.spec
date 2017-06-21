@@ -33,9 +33,9 @@ Summary:        %{summary}
 {{ data.description|truncate(400)|wordwrap }}
 {% endfor -%}
 {%- if data.sphinx_dir %}
-%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
 Summary:        {{ data.name }} documentation
-%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
 Documentation for {{ data.name }}
 {%- endif %}
 
@@ -120,7 +120,7 @@ ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildro
 {%- endif %}
 {% endfor %}
 {%- if data.sphinx_dir %}
-%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
 %doc html
 {%- if data.doc_license %}
 %license {{data.doc_license|join(' ')}}
