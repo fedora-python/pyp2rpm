@@ -12,7 +12,7 @@ Source0:        https://files.pythonhosted.org/packages/source/b/%{pypi_name}/%{
 BuildArch:      noarch
  
 BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python2-setuptools
 
 %description
 ++++++++.. contents :: Summary Cloud infrastructure and .deb file management
@@ -26,7 +26,7 @@ repo...
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pypi_name}}
  
-Requires:       python-Sphinx = 0.6.7
+Requires:       python2-Sphinx = 0.6.7
 %description -n python2-%{pypi_name}
 ++++++++.. contents :: Summary Cloud infrastructure and .deb file management
 software.Get Started * See the docsAuthor James Gardner <>_Changes--2011-12-10
@@ -55,5 +55,5 @@ rm -rf %{pypi_name}.egg-info
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Tue Apr 18 2017 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
+* Fri Jul 07 2017 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
 - Initial package.

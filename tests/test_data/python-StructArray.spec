@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.2.1
+# Created by pyp2rpm-3.2.2
 %global pypi_name StructArray
 
 Name:           python-%{pypi_name}
@@ -11,7 +11,7 @@ URL:            http://matthewmarshall.org/projects/structarray/
 Source0:        https://files.pythonhosted.org/packages/source/S/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
  
 BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python2-setuptools
 
 %description
  StructArray StructArray allows you to perform fast arithmetic operations on
@@ -52,5 +52,5 @@ rm -rf %{pypi_name}.egg-info
 %{python2_sitearch}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Tue Dec 06 2016 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
+* Fri Jul 07 2017 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
 - Initial package.
