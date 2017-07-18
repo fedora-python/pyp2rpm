@@ -91,6 +91,7 @@ class PackageData(object):
             packager = "John Doe <john@doe.com>"
             logger.warn(
                 'Package rpmdevtools is missing, using default name: {0}.'.format(packager))
-        date_str = time.strftime('%a %b %d %Y', time.gmtime())
+        with utils.c_time_locale():
+            date_str = time.strftime('%a %b %d %Y', time.gmtime())
         encoding = locale.getpreferredencoding()
         return u'{0} {1}'.format(date_str, packager.decode(encoding))
