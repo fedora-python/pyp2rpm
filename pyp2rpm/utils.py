@@ -1,4 +1,6 @@
+import contextlib
 import functools
+import locale
 import logging
 import os
 import subprocess
@@ -200,3 +202,12 @@ if PY3:
 else:
     def console_to_str(s):
         return s
+
+
+@contextlib.contextmanager
+def c_time_locale():
+    """Context manager with C LC_TIME locale"""
+    old_time_locale = locale.getlocale(locale.LC_TIME)
+    locale.setlocale(locale.LC_TIME, 'C')
+    yield
+    locale.setlocale(locale.LC_TIME, old_time_locale)
