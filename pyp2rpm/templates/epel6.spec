@@ -37,9 +37,9 @@ Summary:        {{ data.summary }}
 {{ data.description|truncate(400)|wordwrap }}
 {%- endcall %}
 {%- if data.sphinx_dir %}
-%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
 Summary:        {{ data.name }} documentation
-%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
+%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
 Documentation for {{ data.name }}
 {%- endif %}
 

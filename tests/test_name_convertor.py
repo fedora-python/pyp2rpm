@@ -1,6 +1,7 @@
 import pytest
 
-from pyp2rpm.name_convertor import NameConvertor, DandifiedNameConvertor, NameVariants
+from pyp2rpm.name_convertor import (NameConvertor, DandifiedNameConvertor,
+                                    AutoProvidesNameConvertor, NameVariants)
 from pyp2rpm import settings
 
 try:
@@ -44,6 +45,8 @@ class TestUtils(object):
         ('python-foo', '25', 'python25-foo'),
         ('python2-devel', 3, 'python3-devel'),
         ('python2-devel', None, 'python2-devel'),
+        ('python2dist(spam)', 3, 'python3dist(spam)'),
+        ('python2dist(spam)', 2, 'python2dist(spam)'),
     ])
     def test_rpm_versioned_name(self, name, version, expected):
         assert NameConvertor.rpm_versioned_name(name, version) == expected
@@ -104,10 +107,30 @@ class TestNameVariants(object):
                                                             'pyver_name': 'py3foo',
                                                             'name_python_ver': None,
                                                             'raw_name': 'foo'})
-
     ])
     def test_merge(self, first_list, second_list, expected):
         for first, second in zip(first_list, second_list):
             self.nv.find_match(first)
             self.mv.find_match(second)
         assert self.nv.merge(self.mv).variants == expected
+
+
+class TestAutoProvidesNameConvertor(object):
+
+    def setup_method(self, method):
+        self.anc = AutoProvidesNameConvertor('fedora')
+
+    @pytest.mark.parametrize(('input', 'py_ver', 'expected'), [
+        ('spam', None, 'python{0}dist(spam)'.format(
+            settings.DEFAULT_PYTHON_VERSION)),
+        ('spam', '2', 'python2dist(spam)'),
+        ('SPAM', '2', 'python2dist(spam)'),
+        ('Spam$SPam', '2', 'python2dist(spam-spam)'),
+        ('spam', '3', 'python3dist(spam)'),
+        ('spam.spam', '3', 'python3dist(spam.spam)'),
+    ])
+    def test_rpm_name(self, input, py_ver, expected):
+        if py_ver:
+            assert self.anc.rpm_name(input, py_ver) == expected
+        else:
+            assert self.anc.rpm_name(input) == expected
