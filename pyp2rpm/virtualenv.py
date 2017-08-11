@@ -92,13 +92,18 @@ class VirtualEnv(object):
         try:
             diff = self.dirs_after_install - self.dirs_before_install
         except ValueError:
-            raise VirtualenvFailException("Some of the DirsContent attributes is uninicialized")
-        self.data['has_pth'] = any([x for x in diff.lib_sitepackages if x.endswith('.pth')])
+            raise VirtualenvFailException(
+                "Some of the DirsContent attributes is uninicialized")
+        self.data['has_pth'] = \
+            any([x for x in diff.lib_sitepackages if x.endswith('.pth')])
+
         site_packages = site_packages_filter(diff.lib_sitepackages)
-        self.data['packages'] = set([p for p in site_packages if not p.endswith(MODULE_SUFFIXES)])
-        self.data['py_modules'] = set([os.path.splitext(m)[0]
-                                       for m in site_packages - self.data['packages']])
-        self.data['scripts'] = scripts_filter(list(diff.bindir))
+        self.data['packages'] = sorted(
+            [p for p in site_packages if not p.endswith(MODULE_SUFFIXES)])
+        self.data['py_modules'] = sorted(set(
+            [os.path.splitext(m)[0] for m in site_packages - set(
+                self.data['packages'])]))
+        self.data['scripts'] = scripts_filter(sorted(diff.bindir))
         logger.debug('Data from files differance in virtualenv:')
         logger.debug(pprint.pformat(self.data))
 

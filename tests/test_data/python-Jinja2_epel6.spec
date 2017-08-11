@@ -15,8 +15,8 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-sphinx
  
-Requires:       python2-MarkupSafe
 Requires:       python2-Babel >= 0.8
+Requires:       python2-MarkupSafe
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
@@ -58,5 +58,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Fri Jul 07 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Aug 15 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.
