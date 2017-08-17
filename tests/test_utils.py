@@ -31,11 +31,11 @@ class TestUtils(object):
         assert utils.license_from_trove(input) == expected
 
     @pytest.mark.parametrize(('input', 'expected'), [
-        (set(['script', 'script2', 'script-0.1']), set(['script', 'script2'])),
-        (set([]), set([])),
-        (set(['script-a']), set(['script-a'])),
-        (set(['script-3', 'script-3.4']), set([])),
-        (set(['script-3.4']), set([])),
+        (['script', 'script2', 'script-0.1'], ['script', 'script2']),
+        ([], []),
+        (['script-a'], ['script-a']),
+        (['script-3', 'script-3.4'], []),
+        (['script-3.4'], []),
     ])
     def test_remove_major_minor_suffix(self, input, expected):
         assert utils.remove_major_minor_suffix(input) == expected

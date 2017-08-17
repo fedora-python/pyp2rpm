@@ -35,7 +35,7 @@ class TestSpec(object):
         res = self.env.run('{0} {1} {2}'.format(self.exe, package, options),
                            expect_stderr=True)
         # changelog have to be cut from spec files
-        assert set(res.stdout.split('\n')[1:-4]) == set(self.spec_content.split('\n')[1:-4])
+        assert res.stdout.split('\n')[1:-4] == self.spec_content.split('\n')[1:-4]
 
 
 class TestSrpm(object):

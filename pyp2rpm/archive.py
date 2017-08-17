@@ -301,4 +301,5 @@ class Archive(object):
                     # strip everything from first occurance of slash
                     modules.append(re.sub('/.*', '', line))
 
-        return {'modules': set(modules), 'scripts': set(scripts)}
+        return {'modules': sorted(set(modules)),
+                'scripts': sorted(set(scripts))}

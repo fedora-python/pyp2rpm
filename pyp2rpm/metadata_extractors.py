@@ -28,6 +28,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+
 def cut_to_length(text, length, delim):
     """Shorten given text on first delimiter after given number
     of characters.
@@ -192,8 +193,8 @@ class LocalMetadataExtractor(object):
         # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
         # if virtualenv is disabled
-        if virtualenv is None and getattr(data, "packages") == set():
-            data.packages = set([data.name])
+        if virtualenv is None and getattr(data, "packages") == []:
+            data.packages = [data.name]
 
         return data
 
@@ -300,7 +301,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         if self.metadata['entry_points'] and 'setuptools' not in install_requires:
             install_requires.append('setuptools')  # entrypoints
 
-        return self.name_convert_deps_list(deps_from_pyp_format(install_requires, runtime=True))
+        return sorted(self.name_convert_deps_list(deps_from_pyp_format(
+            install_requires, runtime=True)))
 
     @property
     def build_deps(self):  # setup_requires + tests_require
@@ -313,8 +315,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         build_requires = self.metadata['setup_requires'] + self.metadata['tests_require']
         if 'setuptools' not in build_requires:
             build_requires.append('setuptools')
-        return self.name_convert_deps_list(deps_from_pyp_format(
-            build_requires, runtime=False))
+        return sorted(self.name_convert_deps_list(deps_from_pyp_format(
+            build_requires, runtime=False)))
 
     @property
     def has_packages(self):
@@ -325,14 +327,14 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         if self.has_packages:
             packages = [package.split('.', 1)[0]
                         for package in self.metadata['packages']]
-            return set(packages)
+            return sorted(set(packages))
 
     @property
     def py_modules(self):
         try:
-            return set(self.metadata['py_modules'])
+            return sorted(set(self.metadata['py_modules']))
         except TypeError:
-            return set()
+            return []
 
     @property
     def scripts(self):
@@ -346,7 +348,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
                     transformed.append(script)
                 else:
                     transformed.append(script[0:equal_sign].strip())
-        return set([os.path.basename(t) for t in transformed + self.metadata['scripts']])
+        transformed += self.metadata['scripts']
+        return sorted([os.path.basename(t) for t in set(transformed)])
 
     @property
     def home_page(self):
@@ -535,6 +538,7 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def doc_files(self):
-        return set([doc for doc in self.json_metadata.get('extensions', {})
-                                                     .get('python.details', {})
-                                                     .get('document_names', {}).values()])
+        return (self.json_metadata.get('extensions', {})
+                .get('python.details', {})
+                .get('document_names', {})
+                .values())

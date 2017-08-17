@@ -43,7 +43,7 @@ class PackageData(object):
         elif name in ['runtime_deps', 'build_deps', 'classifiers', 'doc_files', 'doc_license']:
             return self.data.get(name, [])
         elif name in ['packages', 'py_modules', 'scripts']:
-            return self.data.get(name, set())
+            return self.data.get(name, [])
         elif name in ['has_egg_info', 'has_test_suite', 'has_pth', 'has_extension']:
             return self.data.get(name, False)
         return self.data.get(name, 'TODO:')

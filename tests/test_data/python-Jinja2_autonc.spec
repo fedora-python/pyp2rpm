@@ -31,8 +31,8 @@ user.username }}</a></li>...
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pypi_name}}
  
-Requires:       python2dist(markupsafe)
 Requires:       python2dist(babel) >= 0.8
+Requires:       python2dist(markupsafe)
 %description -n python2-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
@@ -45,8 +45,8 @@ user.username }}</a></li>...
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
  
-Requires:       python3dist(markupsafe)
 Requires:       python3dist(babel) >= 0.8
+Requires:       python3dist(markupsafe)
 %description -n python3-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
@@ -98,5 +98,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Thu Jul 20 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Aug 15 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.
