@@ -1,3 +1,10 @@
+3.2.3
+* Make order of requires, scripts, modules and packages deterministic
+* Add name convertor using standardized name format of the dependencies based on virtual Provides
+* Update templates to follow the latest Packaging Guidelines for Python
+* Include extras require in metadata extraction
+* Enable generating sclized spec files using spec2scl
+
 3.2.2
 * Fix package rename option (-r), issue #87 (thanks to Sorin Sbarnea for reporting)
 * Improve detection of packages and modules, issue #86 (thanks to Joe Mullally for reporting)
