@@ -59,8 +59,8 @@ rm -rf html/.{doctrees,buildinfo}
 
 %install
 {%- if data.python_versions|length > 0 %}
-# Must do the subpackages' install first because the scripts in /usr/bin are
-# overwritten with every setup.py install.
+# Must install the subpackage containing unversioned scripts last because
+# the scripts in /usr/bin are overwritten with every setup.py install.
 {%- endif %}
 {%- for pv in data.python_versions + [data.base_python_version] %}
 %py{{ pv }}_install

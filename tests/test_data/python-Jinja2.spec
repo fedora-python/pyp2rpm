@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.2.2
+# Created by pyp2rpm-3.2.3
 %global pypi_name Jinja2
 
 Name:           python-%{pypi_name}
@@ -73,8 +73,8 @@ sphinx-build docs html
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-# Must do the subpackages' install first because the scripts in /usr/bin are
-# overwritten with every setup.py install.
+# Must install the subpackage containing unversioned scripts last because
+# the scripts in /usr/bin are overwritten with every setup.py install.
 %py3_install
 
 %py2_install
@@ -97,5 +97,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Tue Aug 15 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Wed Aug 30 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.
