@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.2.2
+# Created by pyp2rpm-3.2.3
 %global pypi_name Sphinx
 %global srcname sphinx
 
@@ -108,8 +108,8 @@ sphinx-build doc html
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-# Must do the subpackages' install first because the scripts in /usr/bin are
-# overwritten with every setup.py install.
+# Must install the subpackage containing unversioned scripts last because
+# the scripts in /usr/bin are overwritten with every setup.py install.
 %py3_install
 cp %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc-%{python3_version}
 ln -s %{_bindir}/sphinx-apidoc-%{python3_version} %{buildroot}/%{_bindir}/sphinx-apidoc-3
@@ -168,5 +168,5 @@ ln -s %{_bindir}/sphinx-quickstart-%{python2_version} %{buildroot}/%{_bindir}/sp
 %license LICENSE
 
 %changelog
-* Tue Aug 15 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
+* Wed Aug 30 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
 - Initial package.
