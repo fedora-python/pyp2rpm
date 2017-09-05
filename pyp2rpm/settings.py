@@ -1,4 +1,9 @@
-import os
+try:
+    import rpm
+    DEFAULT_PKG_SAVE_PATH = rpm.expandMacro("%{_topdir}")
+except ImportError:
+    import os
+    DEFAULT_PKG_SAVE_PATH = os.path.expanduser('~/rpmbuild')
 
 DEFAULT_PYTHON_VERSION = '2'
 DEFAULT_ADDITIONAL_VERSION = '3'
@@ -6,7 +11,6 @@ DEFAULT_PKG_SOURCE = 'pypi'
 DEFAULT_METADATA_SOURCE = 'pypi'
 DEFAULT_TEMPLATE = 'fedora'
 DEFAULT_DISTRO = 'fedora'
-DEFAULT_PKG_SAVE_PATH = os.path.expanduser('~/rpmbuild')
 KNOWN_DISTROS = ['fedora', 'mageia', 'pld']
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2',
                     '.gz', '.bz2', '.xz', '.zip', '.egg', '.whl']
