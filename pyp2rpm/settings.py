@@ -1,9 +1,4 @@
-try:
-    import rpm
-    DEFAULT_PKG_SAVE_PATH = rpm.expandMacro("%{_topdir}")
-except ImportError:
-    import os
-    DEFAULT_PKG_SAVE_PATH = os.path.expanduser('~/rpmbuild')
+from pyp2rpm import utils
 
 DEFAULT_PYTHON_VERSION = '2'
 DEFAULT_ADDITIONAL_VERSION = '3'
@@ -11,6 +6,7 @@ DEFAULT_PKG_SOURCE = 'pypi'
 DEFAULT_METADATA_SOURCE = 'pypi'
 DEFAULT_TEMPLATE = 'fedora'
 DEFAULT_DISTRO = 'fedora'
+DEFAULT_PKG_SAVE_PATH = utils.get_default_save_path()
 KNOWN_DISTROS = ['fedora', 'mageia', 'pld']
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2',
                     '.gz', '.bz2', '.xz', '.zip', '.egg', '.whl']
@@ -23,7 +19,6 @@ PYPI_URL = 'https://pypi.python.org/pypi'
 PYPI_USABLE_DATA = ['description', 'summary', 'license', 'home_page', 'requires']
 PYTHON_INTERPRETER = '/usr/bin/python'
 EXTRACT_DIST_COMMAND_ARGS = ['--quiet', '--command-packages', 'pyp2rpm.command', 'extract_dist']
-CONSOLE_LOGGING = True
 
 TROVE_LICENSES = {'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',
                   'License :: OSI Approved :: Apache Software License': 'ASL %(TODO: version)s',

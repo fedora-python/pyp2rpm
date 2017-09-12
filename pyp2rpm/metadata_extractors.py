@@ -40,6 +40,50 @@ def cut_to_length(text, length, delim):
         return text
 
 
+def get_interpreter_path(version=None):
+    """Return the executable of a specified or current version."""
+    if version and version != str(sys.version_info[0]):
+        return settings.PYTHON_INTERPRETER + version
+    else:
+        return sys.executable
+
+
+def license_from_trove(trove):
+    """Finds out license from list of trove classifiers.
+    Args:
+        trove: list of trove classifiers
+    Returns:
+        Fedora name of the package license or empty string, if no licensing
+        information is found in trove classifiers.
+    """
+    license = []
+    for classifier in trove:
+        if 'License' in classifier != -1:
+            stripped = classifier.strip()
+            # if taken from EGG-INFO, begins with Classifier:
+            stripped = stripped[stripped.find('License'):]
+            if stripped in settings.TROVE_LICENSES:
+                license.append(settings.TROVE_LICENSES[stripped])
+    return ' and '.join(license)
+
+
+def versions_from_trove(trove):
+    """Finds out python version from list of trove classifiers.
+    Args:
+        trove: list of trove classifiers
+    Returns:
+        python version string
+    """
+    versions = set()
+    for classifier in trove:
+        if 'Programming Language :: Python ::' in classifier:
+            ver = classifier.split('::')[-1]
+            major = ver.split('.')[0].strip()
+            if major:
+                versions.add(major)
+    return sorted([v for v in versions if v.replace('.', '', 1).isdigit()])
+
+
 def pypi_metadata_extension(extraction_fce):
     """Extracts data from PyPI and merges them with data from extraction method."""
 
@@ -65,7 +109,7 @@ def pypi_metadata_extension(extraction_fce):
             data_dict[data_field] = release_data.get(data_field, '')
 
         # we usually get better license representation from trove classifiers
-        data_dict["license"] = utils.license_from_trove(release_data.get('classifiers', ''))
+        data_dict["license"] = license_from_trove(release_data.get('classifiers', ''))
         data.set_from(data_dict, update=True)
         return data
     return inner
@@ -261,7 +305,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             *settings.EXTRACT_DIST_COMMAND_ARGS + ['--stdout'])
 
         current_version = self.base_python_version or str(sys.version_info[0])
-        paths_to_attempt = (utils.get_interpreter_path(version=ver) for ver in (
+        paths_to_attempt = (get_interpreter_path(version=ver) for ver in (
             current_version,  # the version provided with `-b` option or default
             '2' if current_version == '3' else '3'  # alternative Python version
         ))
@@ -381,7 +425,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             (str, list) base_python_version, python_versions
         """
-        py_vers = utils.versions_from_trove(self.metadata['classifiers'])
+        py_vers = versions_from_trove(self.metadata['classifiers'])
         if self.unsupported_version in py_vers:
             py_vers.remove(self.unsupported_version)
 
@@ -528,7 +572,7 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def versions_from_archive(self):
-        py_vers = utils.versions_from_trove(self.classifiers)
+        py_vers = versions_from_trove(self.classifiers)
         return (py_vers[0] if py_vers else settings.DEFAULT_PYTHON_VERSION,
                 py_vers[1:] if py_vers else [settings.DEFAULT_ADDITIONAL_VERSION])
 

@@ -9,8 +9,10 @@ import re
 import copy
 import itertools
 
-from pyp2rpm import settings
-
+try:
+    import rpm
+except ImportError:
+    rpm = None
 
 logger = logging.getLogger(__name__)
 
@@ -39,41 +41,6 @@ class ChangeDir(object):
         os.chdir(self.primary_path)
 
 
-class RedirectStdStreams(object):
-    """Temporarily redirect stdout/stderr"""
-
-    def __init__(self, stdout=None, stderr=None):
-        if settings.CONSOLE_LOGGING:
-            self.enabled = False
-        else:
-            self.enabled = True
-            if isinstance(stdout, str):
-                stdout = self.stdout_descriptor = open(stdout, "w")
-            if isinstance(stderr, str):
-                stderr = self.stdout_descriptor = open(stderr, "w")
-
-            self._stdout = stdout or sys.stdout
-            self._stderr = stderr or sys.stderr
-
-    def __enter__(self):
-        if self.enabled:
-            self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-            self.old_stdout.flush()
-            self.old_stderr.flush()
-            sys.stdout, sys.stderr = self._stdout, self._stderr
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        if self.enabled:
-            self._stdout.flush()
-            self._stderr.flush()
-            sys.stdout = self.old_stdout
-            sys.stderr = self.old_stderr
-            if hasattr(self, 'stdout_descriptor'):
-                self.stdout_descriptor.close()
-            if hasattr(self, 'stderr_descriptor'):
-                self.stderr_descriptor.close()
-
-
 def memoize_by_args(func):
     """Memoizes return value of a func based on args."""
     memory = {}
@@ -89,42 +56,6 @@ def memoize_by_args(func):
     return memoized
 
 
-def license_from_trove(trove):
-    """Finds out license from list of trove classifiers.
-    Args:
-        trove: list of trove classifiers
-    Returns:
-        Fedora name of the package license or empty string, if no licensing
-        information is found in trove classifiers.
-    """
-    license = []
-    for classifier in trove:
-        if 'License' in classifier != -1:
-            stripped = classifier.strip()
-            # if taken from EGG-INFO, begins with Classifier:
-            stripped = stripped[stripped.find('License'):]
-            if stripped in settings.TROVE_LICENSES:
-                license.append(settings.TROVE_LICENSES[stripped])
-    return ' and '.join(license)
-
-
-def versions_from_trove(trove):
-    """Finds out python version from list of trove classifiers.
-    Args:
-        trove: list of trove classifiers
-    Returns:
-        python version string
-    """
-    versions = set()
-    for classifier in trove:
-        if 'Programming Language :: Python ::' in classifier:
-            ver = classifier.split('::')[-1]
-            major = ver.split('.')[0].strip()
-            if major:
-                versions.add(major)
-    return sorted([v for v in versions if v.replace('.', '', 1).isdigit()])
-
-
 def build_srpm(specfile, save_dir):
     """Builds a srpm from given specfile using rpmbuild.
     Generated srpm is stored in directory specified by save_dir.
@@ -134,7 +65,7 @@ def build_srpm(specfile, save_dir):
         save_dir: path to source and build tree
     """
     logger.info('Starting rpmbuild to build: {0} SRPM.'.format(specfile))
-    if save_dir != settings.DEFAULT_PKG_SAVE_PATH:
+    if save_dir != get_default_save_path():
         try:
             msg = subprocess.Popen(['rpmbuild',
                                     '--define', '_sourcedir {0}'.format(save_dir),
@@ -185,14 +116,6 @@ def unique_deps(deps):
     return list(k for k, _ in itertools.groupby(deps))
 
 
-def get_interpreter_path(version=None):
-    """Return the executable of a specified or current version."""
-    if version and version != str(sys.version_info[0]):
-        return settings.PYTHON_INTERPRETER + version
-    else:
-        return sys.executable
-
-
 if PY3:
     def console_to_str(s):
         try:
@@ -211,3 +134,25 @@ def c_time_locale():
     locale.setlocale(locale.LC_TIME, 'C')
     yield
     locale.setlocale(locale.LC_TIME, old_time_locale)
+
+
+def rpm_eval(macro):
+    """Get value of given macro using rpm tool"""
+    try:
+        value = subprocess.Popen(
+            ['rpm', '--eval', macro],
+            stdout=subprocess.PIPE).communicate()[0].strip()
+    except OSError:
+        logger.error('Failed to get value of {0} rpm macro'.format(
+            macro), exc_info=True)
+        value = b''
+    return console_to_str(value)
+
+
+def get_default_save_path():
+    """Return default save path for the packages"""
+    macro = '%{_topdir}'
+    if rpm:
+        return rpm.expandMacro(macro)
+    else:
+        return rpm_eval(macro) or os.path.expanduser('~/rpmbuild')
