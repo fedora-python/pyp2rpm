@@ -153,6 +153,11 @@ def get_default_save_path():
     """Return default save path for the packages"""
     macro = '%{_topdir}'
     if rpm:
-        return rpm.expandMacro(macro)
+        save_path = rpm.expandMacro(macro)
     else:
-        return rpm_eval(macro) or os.path.expanduser('~/rpmbuild')
+        save_path = rpm_eval(macro)
+        if not save_path:
+            logger.warn("rpm tools are missing, using default save path "
+                        "~/rpmbuild/.")
+            save_path = os.path.expanduser('~/rpmbuild')
+    return save_path
