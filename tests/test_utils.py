@@ -1,7 +1,12 @@
 import pytest
+import os
+from flexmock import flexmock
+try:
+    import rpm
+except ImportError:
+    rpm = None
 
 from pyp2rpm import utils
-from pyp2rpm import settings
 
 
 class TestUtils(object):
@@ -19,16 +24,6 @@ class TestUtils(object):
             setattr(self, "memoized_called", True)
 
         return num
-
-    @pytest.mark.parametrize(("input", "expected"), [
-        ([], ""),
-        (['License :: OSI Approved :: Python Software Foundation License'], 'Python'),
-        (['Classifier: License :: OSI Approved :: Python Software Foundation License'], 'Python'),
-        (['License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
-          'License :: OSI Approved :: MIT License'], 'GPLv2+ and MIT'),
-    ])
-    def test_license_from_trove(self, input, expected):
-        assert utils.license_from_trove(input) == expected
 
     @pytest.mark.parametrize(('input', 'expected'), [
         (['script', 'script2', 'script-0.1'], ['script', 'script2']),
@@ -63,3 +58,27 @@ class TestUtils(object):
     ])
     def test_unique_deps(self, input, expected):
         assert utils.unique_deps(input) == expected
+
+    def test_rpm_eval(self):
+        if os.path.exists('/usr/bin/rpm'):
+            assert utils.rpm_eval('macro') == 'macro'
+        else:
+            assert utils.rpm_eval('macro') == ''
+
+    def test_get_default_save_path_eval_success(self):
+        if rpm:
+            flexmock(rpm).should_receive(
+                'expandMacro').once().and_return('foo')
+        else:
+            flexmock(utils).should_receive('rpm_eval').once().and_return('foo')
+        assert utils.get_default_save_path() == 'foo'
+
+    def test_get_default_save_path_eval_fail(self):
+        if rpm:
+            flexmock(rpm).should_receive(
+                'expandMacro').once().and_return('foo')
+        else:
+            flexmock(utils).should_receive('rpm_eval').once().and_return('')
+            flexmock(os).should_receive('path.expanduser').once(
+            ).and_return('foo')
+        assert utils.get_default_save_path() == 'foo'
