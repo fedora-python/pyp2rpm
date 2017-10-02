@@ -20,8 +20,7 @@ Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.
 {%- if not data.has_extension %}
 BuildArch:      noarch
 {%- endif %}
-{{ dependencies(data.build_deps, False, data.base_python_version, data.base_python_version) }}
-{%- for pv in data.python_versions %}
+{%- for pv in data.sorted_python_versions %}
 {{ dependencies(data.build_deps, False, pv, data.base_python_version) }}
 {%- endfor %}
 {{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version) }}
@@ -49,8 +48,7 @@ Documentation for {{ data.name }}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 {%- endif %}
-{% call(pv) for_python_versions([data.base_python_version] + data.python_versions,
-data.base_python_version) -%}
+{% call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
 rm -rf python{{pv}}
 cp -a . python{{pv}}
@@ -66,7 +64,7 @@ rm -rf html/.{doctrees,buildinfo}
 {%- endcall %}
 
 %build
-{%- call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
+{%- call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
 pushd python{{ pv }}
 {%- endif %}
@@ -99,7 +97,7 @@ popd
 
 {%- if data.has_test_suite %}
 %check
-{%- call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
+{%- call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
 pushd python{{ pv }}
 {%- endif %}
@@ -110,7 +108,7 @@ popd
 {%- endcall %}
 {%- endif %}
 
-{% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
+{% call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
 %doc {{ data.doc_files|join(' ') }}
 {%- if data.scripts %}

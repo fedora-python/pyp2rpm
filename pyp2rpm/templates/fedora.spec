@@ -17,14 +17,13 @@ Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.
 {%- if not data.has_extension %}
 BuildArch:      noarch
 {%- endif %}
-{{ dependencies(data.build_deps, False, data.base_python_version, data.base_python_version) }}
-{%- for pv in data.python_versions %}
+{%- for pv in data.sorted_python_versions %}
 {{ dependencies(data.build_deps, False, pv, data.base_python_version, False) }}
 {%- endfor %}
 
 %description
 {{ data.description|truncate(400)|wordwrap }}
-{% for pv in ([data.base_python_version] + data.python_versions) %}
+{% for pv in data.sorted_python_versions %}
 %package -n     {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 Summary:        %{summary}
 %{?python_provide:%python_provide {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True)}}}
@@ -47,7 +46,7 @@ rm -rf %{pypi_name}.egg-info
 {%- endif %}
 
 %build
-{%- for pv in [data.base_python_version] + data.python_versions %}
+{%- for pv in data.sorted_python_versions %}
 %py{{ pv }}_build
 {%- endfor %}
 {%- if data.sphinx_dir %}
@@ -72,11 +71,11 @@ ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildro
 {% if data.has_test_suite %}
 
 %check
-{%- for pv in [data.base_python_version] + data.python_versions %}
+{%- for pv in data.sorted_python_versions %}
 %{__python{{ pv }}} setup.py test
 {%- endfor %}
 {%- endif %}
-{% for pv in [data.base_python_version] + data.python_versions %}
+{% for pv in data.sorted_python_versions %}
 %files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 {%- if data.doc_license %}
 %license {{data.doc_license|join(' ')}}
