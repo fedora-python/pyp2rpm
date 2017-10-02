@@ -68,7 +68,7 @@ rm -rf html/.{doctrees,buildinfo}
 {%- if pv != data.base_python_version -%}
 pushd python{{ pv }}
 {%- endif %}
-{% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}{{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py build
+{% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}%{__python{{ pv }}} setup.py build
 {% if pv != data.base_python_version -%}
 popd
 {%- endif %}
@@ -84,7 +84,7 @@ popd
 {%- if pv != data.base_python_version -%}
 pushd python{{ pv }}
 {%- endif %}
-{{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py install --skip-build --root %{buildroot}
+%{__python{{ pv }}} setup.py install --skip-build --root %{buildroot}
 {%- if pv != data.base_python_version %}
 {%- if data.scripts %}
 {%- for script in data.scripts %}
@@ -101,7 +101,7 @@ popd
 {%- if pv != data.base_python_version -%}
 pushd python{{ pv }}
 {%- endif %}
-{{ '%{__python2}'|python_bin_for_python_version(pv) }} setup.py test
+%{__python{{ pv }}} setup.py test
 {% if pv != data.base_python_version -%}
 popd
 {%- endif %}
@@ -119,32 +119,32 @@ popd
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
 {%- if pv == '3' %}
-%dir {{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
+%dir %{python{{ pv }}_sitelib}/__pycache__/
+%{python{{ pv }}_sitelib}/__pycache__/*
 {%- endif %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
+%{python{{ pv }}_sitelib}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_extension %}
 {%- if data.has_packages %}
 {%- for package in data.packages %}
-{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ package | package_to_path(data.name) }}
+%{python{{ pv }}_sitearch}/{{ package | package_to_path(data.name) }}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
-{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- else %}
 {%- if data.has_packages %}
 {%- for package in data.packages %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ package | package_to_path(data.name) }}
+%{python{{ pv }}_sitelib}/{{ package | package_to_path(data.name) }}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {% endcall %}
 {%- if data.sphinx_dir %}

@@ -91,31 +91,31 @@ ln -s %{_bindir}/{{ script|script_name_for_python_version(pv, True) }} %{buildro
 {%- if data.py_modules %}
 {% for module in data.py_modules -%}
 {%- if pv == '3' %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/__pycache__/*
+%{python{{ pv }}_sitelib}/__pycache__/*
 {%- endif %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
+%{python{{ pv }}_sitelib}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_extension %}
 {%- if data.has_packages %}
 {%- for package in data.packages %}
-{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ package | package_to_path(data.name) }}
+%{python{{ pv }}_sitearch}/{{ package | package_to_path(data.name) }}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
-{{ '%{python2_sitearch}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- else %}
 {%- if data.has_packages %}
 {%- for package in data.packages %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ package | package_to_path(data.name) }}
+%{python{{ pv }}_sitelib}/{{ package | package_to_path(data.name) }}
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
-{{ '%{python2_sitelib}'|sitedir_for_python_version(pv) }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
 {% endfor %}
 {%- if data.sphinx_dir %}
