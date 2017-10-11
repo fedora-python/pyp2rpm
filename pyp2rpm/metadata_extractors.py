@@ -81,7 +81,7 @@ def versions_from_trove(trove):
             major = ver.split('.')[0].strip()
             if major:
                 versions.add(major)
-    return sorted([v for v in versions if v.replace('.', '', 1).isdigit()])
+    return sorted(set([v for v in versions if v.replace('.', '', 1).isdigit()]))
 
 
 def pypi_metadata_extension(extraction_fce):
@@ -181,12 +181,20 @@ class LocalMetadataExtractor(object):
         self.venv = venv
         self.base_python_version = base_python_version
         self.metadata_extension = metadata_extension
+        self.unsupported_version = None
 
     def name_convert_deps_list(self, deps_list):
         for dep in deps_list:
-            dep[1] = self.name_convertor.rpm_name(dep[1], settings.DEFAULT_PYTHON_VERSION)
+            dep[1] = self.name_convertor.rpm_name(
+                dep[1], self.base_python_version)
 
         return deps_list
+
+    @property
+    def versions_from_archive(self):
+        """Return Python versions extracted from trove classifiers. """
+        py_vers = versions_from_trove(self.classifiers)
+        return [ver for ver in py_vers if ver != self.unsupported_version]
 
     @property
     def has_pth(self):
@@ -273,8 +281,7 @@ class LocalMetadataExtractor(object):
         archive_data['has_extension'] = self.has_extension
         archive_data['has_test_suite'] = self.has_test_suite
 
-        (archive_data['base_python_version'],
-         archive_data['python_versions']) = self.versions_from_archive
+        archive_data['python_versions'] = self.versions_from_archive
 
         (archive_data['doc_files'],
          archive_data['doc_license']) = self.separate_license_files(self.doc_files)
@@ -290,7 +297,6 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
     def __init__(self, *args, **kwargs):
         super(SetupPyMetadataExtractor, self).__init__(*args, **kwargs)
 
-        self.unsupported_version = None
         temp_dir = tempfile.mkdtemp()
         try:
             with self.archive as package_archive:
@@ -420,22 +426,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         return self.metadata['license']
 
     @property
-    def versions_from_archive(self):
-        """Return Python versions extracted from trove classifiers or default.
-        Returns:
-            (str, list) base_python_version, python_versions
-        """
-        py_vers = versions_from_trove(self.metadata['classifiers'])
-        if self.unsupported_version in py_vers:
-            py_vers.remove(self.unsupported_version)
-
-        if not py_vers:
-            py_vers = [settings.DEFAULT_PYTHON_VERSION,
-                       settings.DEFAULT_ADDITIONAL_VERSION]
-            if self.unsupported_version in py_vers:
-                py_vers.remove(self.unsupported_version)
-
-        return (py_vers[0], py_vers[1:])
+    def classifiers(self):
+        return self.metadata['classifiers']
 
     @property
     def has_bundled_egg_info(self):
@@ -497,7 +489,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])
             archive_data['build_deps'].append(
                 ['BuildRequires', self.name_convertor.rpm_name(
-                    "sphinx", settings.DEFAULT_PYTHON_VERSION)])
+                    "sphinx", self.base_python_version)])
 
         return archive_data
 
@@ -569,12 +561,6 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
     @property
     def license(self):
         return self.json_metadata.get('license', None)
-
-    @property
-    def versions_from_archive(self):
-        py_vers = versions_from_trove(self.classifiers)
-        return (py_vers[0] if py_vers else settings.DEFAULT_PYTHON_VERSION,
-                py_vers[1:] if py_vers else [settings.DEFAULT_ADDITIONAL_VERSION])
 
     @property
     def has_test_suite(self):

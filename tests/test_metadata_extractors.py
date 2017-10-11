@@ -83,17 +83,16 @@ class TestMetadataExtractor(object):
             assert self.e[i].sphinx_dir == expected
 
     @pytest.mark.parametrize(('i', 'expected'), [
-        (0, ['2', ['3']]),
-        (2, ['2', ['3']]),
-        (3, ['2', ['3']]),
-        (4, ['2', []]),
+        (0, ['2', '3']),
+        (2, ['2', '3']),
+        (3, ['2', '3']),
+        (4, []),
     ])
     def test_extract_versions(self, i, expected):
         if i != 4 or utils.PY3:
             with self.e[i].archive:
                 pkgdata = self.e[i].extract_data()
-                assert [pkgdata.data['base_python_version'],
-                        pkgdata.data['python_versions']] == expected
+                assert pkgdata.data['python_versions'] == expected
 
     @staticmethod
     @me.process_description
@@ -300,7 +299,7 @@ class TestSetupPyMetadataExtractor(object):
         (1, 'source0', 'pytest-2.2.3.zip'),
         (2, 'py_modules', ['simpleeval']),
         (3, 'runtime_deps', [['Requires', 'python-coverage']]),
-        (3, 'python_versions', ['3']),
+        (3, 'python_versions', []),
     ])
     def test_extract(self, i, what, expected):
         data = self.e[i].extract_data()
@@ -357,7 +356,7 @@ class TestWheelMetadataExtractor(object):
         (0, 'doc_files', ['DESCRIPTION.rst']),
         (0, 'doc_license', []),
         (0, 'sphinx_dir', None),
-        (0, 'python_versions', ['3']),
+        (0, 'python_versions', ['2', '3']),
         (1, 'runtime_deps', [['Requires', 'python-setuptools']]),
         (1, 'build_deps', [['BuildRequires', 'python2-devel'],
                            ['BuildRequires', 'python-setuptools']]),
@@ -373,7 +372,7 @@ class TestWheelMetadataExtractor(object):
         (1, 'doc_files', []),
         (1, 'doc_license', []),
         (1, 'sphinx_dir', None),
-        (1, 'python_versions', []),
+        (1, 'python_versions', ['3']),
 
     ])
     def test_extract(self, i, what, expected):

@@ -1,6 +1,6 @@
 {# prints a single dependency for a specific python version #}
-{%- macro one_dep(dep, python_version, epel=False) %}
-{{ dep[0] }}:{{ ' ' * (15 - dep[0]|length) }}{{ dep[1]|name_for_python_version(python_version, True, epel) }}{% if dep[2] is defined %} {{ dep[2] }} {{ dep[3] }}{% endif %}
+{%- macro one_dep(dep, python_version) %}
+{{ dep[0] }}:{{ ' ' * (15 - dep[0]|length) }}{{ dep[1]|name_for_python_version(python_version, True) }}{% if dep[2] is defined %} {{ dep[2] }} {{ dep[3] }}{% endif %}
 {%- endmacro %}
 
 {# Prints given deps (runtime or buildtime for given python_version,
@@ -8,14 +8,14 @@
 {# This cannot be implemented by macro for_python_versions because it needs to
    decide on its own, whether to even use the %if 0%{?with_pythonX} or not. #}
 {%- macro dependencies(deps, runtime, python_version, base_python_version,
-use_with=True, epel=False) %}
+use_with=True) %}
 {%- if deps|length > 0 or not runtime %} {# for build deps, we always have at least 1 - pythonXX-devel #}
 {%- if python_version != base_python_version and use_with %}
 %if 0%{?with_python{{ python_version }}}
 {%- endif %}
 {%- for dep in deps -%}
 {%- if python_version == base_python_version or not 'sphinx' in dep[1] -%}
-{{ one_dep(dep, python_version, epel) }}
+{{ one_dep(dep, python_version) }}
 {%- endif -%}
 {%- endfor %}
 {%- if python_version != base_python_version and use_with %}

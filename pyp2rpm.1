@@ -28,10 +28,10 @@ Search order is: 1) filesystem, 2) default templates.
 Default distro whose conversion rules to use (default: "fedora"). Default templates have their rules associated and ignore this.
 .TP
 .B "\-b \-\-BASE_PYTHON"
-Base Python version to package for (default: "2").
+Base Python version to package for (fedora default: "3").
 .TP
 .B "\-p \-\-PYTHON_VERSIONS"
-Additional Python versions to include in the specfile (e.g. -p3 f or %{?with_python3}). Specify additional version or use -b explicitly to disable default.
+Additional Python versions to include in the specfile (e.g. -p2 for python2 subpackage). Specify additional version or use -b explicitly to disable default.
 .TP
 .B "\-s \"
 Spec file ~/rpmbuild/SPECS/python-package_name.spec will be created (default: prints spec file to stdout).

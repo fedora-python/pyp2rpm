@@ -80,15 +80,17 @@ class SclizeOption(click.Option):
               type=click.Choice(settings.KNOWN_DISTROS),
               default=settings.DEFAULT_DISTRO)
 @click.option('-b',
-              help='Base Python version to package for (default: "{0}").'.format(
+              help='Base Python version to package for (fedora default: "{0}").'.format(
                   settings.DEFAULT_PYTHON_VERSION),
               default=None,
               metavar='BASE_PYTHON')
 @click.option('-p',
-              help='Additional Python versions to include in the specfile (e.g -p3 for %{0}).'
-              'Can be specified multiple times (default: "{1}"). Specify additional version '
+              help='Additional Python versions to include in the specfile '
+              '(e.g -p2 for python2 subpackage). Can be specified multiple times '
+              '(fedora default: "{0}"). Specify additional version '
               'or use -b explicitly to disable default.'.format(
-                  '{?with_python3}', settings.DEFAULT_ADDITIONAL_VERSION),
+                  settings.DEFAULT_PYTHON_VERSIONS[
+                      settings.DEFAULT_DISTRO][1]),
               default=[],
               multiple=True,
               metavar='PYTHON_VERSIONS')
@@ -159,8 +161,12 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize, **s
         register_console_log_handler()
 
     distro = o
-    if t in settings.KNOWN_DISTROS:
+    if t and os.path.splitext(t)[0] in settings.KNOWN_DISTROS:
         distro = t
+    elif t and not (b or p):
+        raise click.UsageError("Default python versions for template {0} are "
+                               "missing in settings, add them or use flags "
+                               "-b/-p to set python versions.".format(t))
 
     logger = logging.getLogger(__name__)
 

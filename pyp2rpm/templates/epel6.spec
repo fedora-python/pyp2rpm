@@ -8,7 +8,7 @@
 %global with_python{{ pv }} 1
 {%- endfor %}
 
-Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(data.base_python_version) }}
+Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
 Version:        {{ data.version }}
 Release:        1%{?dist}
 Summary:        {{ data.summary }}
@@ -57,7 +57,7 @@ find python{{pv}} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|
 {%- if data.sphinx_dir %}
 # generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...)
 # #}
-sphinx-build{% if pv != data.base_python_version %}-{{ pv }}{% endif %} {{ data.sphinx_dir }} html
+{{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, False) }} {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 {%- endif %}

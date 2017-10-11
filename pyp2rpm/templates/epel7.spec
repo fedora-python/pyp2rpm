@@ -18,17 +18,16 @@ Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.
 BuildArch:      noarch
 {%- endif %}
 {%- for pv in data.sorted_python_versions %}
-{{ dependencies(data.build_deps, False, pv, data.base_python_version, use_with=False,
-epel=True) }}
+{{ dependencies(data.build_deps, False, pv, data.base_python_version, use_with=False) }}
 {%- endfor %}
 
 %description
 {{ data.description|truncate(400)|wordwrap }}
 {% for pv in data.sorted_python_versions %}
-%package -n     {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True, True)}}
+%package -n     {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True)}}
 Summary:        {{ data.summary }}
-{{ dependencies(data.runtime_deps, True, pv, pv, use_with=False, epel=True) }}
-%description -n {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True, True)}}
+{{ dependencies(data.runtime_deps, True, pv, pv, use_with=False) }}
+%description -n {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True)}}
 {{ data.description|truncate(400)|wordwrap }}
 {% endfor -%}
 {%- if data.sphinx_dir %}
@@ -76,7 +75,7 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 {%- endfor %}
 {%- endif %}
 {% for pv in data.sorted_python_versions %}
-%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True, True) }}
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 %doc {{data.doc_files|join(' ') }}
 {%- for script in data.scripts %}
 {%- if pv == data.base_python_version %}
