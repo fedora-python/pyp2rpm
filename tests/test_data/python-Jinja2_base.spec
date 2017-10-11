@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.2.2
+# Created by pyp2rpm-3.2.3
 %global pypi_name Jinja2
 
 Name:           python-%{pypi_name}
@@ -57,7 +57,6 @@ rm -rf html/.{doctrees,buildinfo}
 %install
 %py3_install
 
-
 %files -n python3-%{pypi_name}
 %license docs/_themes/LICENSE LICENSE
 %doc README.rst
@@ -69,5 +68,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Tue Aug 15 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Wed Oct 11 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

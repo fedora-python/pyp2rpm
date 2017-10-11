@@ -71,12 +71,10 @@ sphinx-build docs html
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-# Must install the subpackage containing unversioned scripts last because
+# Must do the default python version install last because
 # the scripts in /usr/bin are overwritten with every setup.py install.
 %{__python3} setup.py install --skip-build --root %{buildroot}
-
 %{__python2} setup.py install --skip-build --root %{buildroot}
-
 
 %files -n python2-%{pypi_name}
 %doc README.rst
@@ -93,5 +91,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Wed Aug 30 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Wed Oct 11 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

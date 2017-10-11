@@ -14,10 +14,10 @@ BuildArch:      noarch
  
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
-BuildRequires:  python2-sphinx
  
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-sphinx
 
 %description
 Sphinx is a tool that makes it easy to create intelligent and beautiful
@@ -103,63 +103,29 @@ rm -rf %{pypi_name}.egg-info
 %py2_build
 %py3_build
 # generate html docs 
-sphinx-build doc html
+sphinx-build-3 doc html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-# Must install the subpackage containing unversioned scripts last because
+# Must do the default python version install last because
 # the scripts in /usr/bin are overwritten with every setup.py install.
-%py3_install
-cp %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc-%{python3_version}
-ln -s %{_bindir}/sphinx-apidoc-%{python3_version} %{buildroot}/%{_bindir}/sphinx-apidoc-3
-cp %{buildroot}/%{_bindir}/sphinx-autogen %{buildroot}/%{_bindir}/sphinx-autogen-%{python3_version}
-ln -s %{_bindir}/sphinx-autogen-%{python3_version} %{buildroot}/%{_bindir}/sphinx-autogen-3
-cp %{buildroot}/%{_bindir}/sphinx-build %{buildroot}/%{_bindir}/sphinx-build-%{python3_version}
-ln -s %{_bindir}/sphinx-build-%{python3_version} %{buildroot}/%{_bindir}/sphinx-build-3
-cp %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart-%{python3_version}
-ln -s %{_bindir}/sphinx-quickstart-%{python3_version} %{buildroot}/%{_bindir}/sphinx-quickstart-3
-
 %py2_install
-cp %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc-%{python2_version}
-ln -s %{_bindir}/sphinx-apidoc-%{python2_version} %{buildroot}/%{_bindir}/sphinx-apidoc-2
-cp %{buildroot}/%{_bindir}/sphinx-autogen %{buildroot}/%{_bindir}/sphinx-autogen-%{python2_version}
-ln -s %{_bindir}/sphinx-autogen-%{python2_version} %{buildroot}/%{_bindir}/sphinx-autogen-2
-cp %{buildroot}/%{_bindir}/sphinx-build %{buildroot}/%{_bindir}/sphinx-build-%{python2_version}
-ln -s %{_bindir}/sphinx-build-%{python2_version} %{buildroot}/%{_bindir}/sphinx-build-2
-cp %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart-%{python2_version}
-ln -s %{_bindir}/sphinx-quickstart-%{python2_version} %{buildroot}/%{_bindir}/sphinx-quickstart-2
-
+%py3_install
 
 %files -n python2-%{srcname}
 %license LICENSE
 %doc README.rst
-%{_bindir}/sphinx-apidoc
-%{_bindir}/sphinx-apidoc-2
-%{_bindir}/sphinx-apidoc-%{python2_version}
-%{_bindir}/sphinx-autogen
-%{_bindir}/sphinx-autogen-2
-%{_bindir}/sphinx-autogen-%{python2_version}
-%{_bindir}/sphinx-build
-%{_bindir}/sphinx-build-2
-%{_bindir}/sphinx-build-%{python2_version}
-%{_bindir}/sphinx-quickstart
-%{_bindir}/sphinx-quickstart-2
-%{_bindir}/sphinx-quickstart-%{python2_version}
 %{python2_sitelib}/sphinx
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %files -n python3-%{srcname}
 %license LICENSE
 %doc README.rst
-%{_bindir}/sphinx-apidoc-3
-%{_bindir}/sphinx-apidoc-%{python3_version}
-%{_bindir}/sphinx-autogen-3
-%{_bindir}/sphinx-autogen-%{python3_version}
-%{_bindir}/sphinx-build-3
-%{_bindir}/sphinx-build-%{python3_version}
-%{_bindir}/sphinx-quickstart-3
-%{_bindir}/sphinx-quickstart-%{python3_version}
+%{_bindir}/sphinx-apidoc
+%{_bindir}/sphinx-autogen
+%{_bindir}/sphinx-build
+%{_bindir}/sphinx-quickstart
 %{python3_sitelib}/sphinx
 %{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
@@ -168,5 +134,5 @@ ln -s %{_bindir}/sphinx-quickstart-%{python2_version} %{buildroot}/%{_bindir}/sp
 %license LICENSE
 
 %changelog
-* Wed Aug 30 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
+* Wed Oct 11 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
 - Initial package.

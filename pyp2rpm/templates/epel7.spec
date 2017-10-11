@@ -57,15 +57,14 @@ rm -rf html/.{doctrees,buildinfo}
 
 %install
 {%- if data.python_versions|length > 0 %}
-# Must install the subpackage containing unversioned scripts last because
+# Must do the default python version install last because
 # the scripts in /usr/bin are overwritten with every setup.py install.
 {%- endif %}
 {%- for pv in data.python_versions + [data.base_python_version] %}
+{%- if pv == data.base_python_version and data.python_versions and data.scripts %}
+rm -rf %{buildroot}%{_bindir}/*
+{%- endif %}
 %{__python{{ pv }}} setup.py install --skip-build --root %{buildroot}
-{% for script in data.scripts -%}
-cp %{buildroot}/%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
-ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv, True) }}
-{% endfor %}
 {%- endfor -%}
 {% if data.has_test_suite %}
 
@@ -77,16 +76,14 @@ ln -sf %{_bindir}/{{ script|script_name_for_python_version(pv) }} %{buildroot}/%
 {% for pv in data.sorted_python_versions %}
 %files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 %doc {{data.doc_files|join(' ') }}
-{%- for script in data.scripts %}
 {%- if pv == data.base_python_version %}
+{%- for script in data.scripts %}
 %{_bindir}/{{ script }}
-{%- endif %}
-%{_bindir}/{{ script|script_name_for_python_version(pv) }}
-%{_bindir}/{{ script|script_name_for_python_version(pv, True) }}
 {%- endfor %}
+{%- endif %}
 {%- if data.py_modules %}
-{% for module in data.py_modules -%}
-{%- if pv == '3' -%}
+{%- for module in data.py_modules -%}
+{%- if pv == '3' %}
 %dir %{python{{ pv }}_sitelib}/__pycache__/
 %{python{{ pv }}_sitelib}/__pycache__/*
 {%- endif %}

@@ -83,14 +83,11 @@ popd
 {%- call(pv) for_python_versions(data.python_versions + [data.base_python_version], data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
 pushd python{{ pv }}
+{%- elif data.python_versions and data.scripts %}
+rm -rf %{buildroot}%{_bindir}/*
 {%- endif %}
 %{__python{{ pv }}} setup.py install --skip-build --root %{buildroot}
 {%- if pv != data.base_python_version %}
-{%- if data.scripts %}
-{%- for script in data.scripts %}
-mv %{buildroot}%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
-{%- endfor %}
-{%- endif %}
 popd
 {%- endif %}
 {%- endcall %}
@@ -111,13 +108,13 @@ popd
 {% call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
 %doc {{ data.doc_files|join(' ') }}
-{%- if data.scripts %}
+{%- if pv == data.base_python_version %}
 {%- for script in data.scripts %}
-%{_bindir}/{{ script|script_name_for_python_version(pv, minor=False, default_number=False) }}
+%{_bindir}/{{ script }}
 {%- endfor %}
 {%- endif %}
 {%- if data.py_modules %}
-{% for module in data.py_modules -%}
+{%- for module in data.py_modules -%}
 {%- if pv == '3' %}
 %dir %{python{{ pv }}_sitelib}/__pycache__/
 %{python{{ pv }}_sitelib}/__pycache__/*

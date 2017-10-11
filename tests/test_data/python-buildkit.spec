@@ -1,4 +1,4 @@
-# Created by pyp2rpm-3.2.2
+# Created by pyp2rpm-3.2.3
 %global pypi_name buildkit
 
 Name:           python-%{pypi_name}
@@ -47,7 +47,6 @@ rm -rf %{pypi_name}.egg-info
 %install
 %py2_install
 
-
 %files -n python2-%{pypi_name}
 %license LICENSE.txt
 %doc example/README.txt README.txt
@@ -55,5 +54,5 @@ rm -rf %{pypi_name}.egg-info
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Tue Aug 15 2017 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
+* Wed Oct 11 2017 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1
 - Initial package.

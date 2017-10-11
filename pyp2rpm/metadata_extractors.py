@@ -240,8 +240,6 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
-        if "scripts" in data.data:
-            setattr(data, "scripts", utils.remove_major_minor_suffix(data.data['scripts']))
         # for example nose has attribute `packages` but instead of name listing the pacakges
         # is using function to find them, that makes data.packages an empty set
         # if virtualenv is disabled
