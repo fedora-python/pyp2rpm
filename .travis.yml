@@ -1,23 +1,10 @@
-language: python
+sudo: required
 
-python:
-- '2.7'
-- '3.4'
-- '3.5'
-- '3.6'
-- 'nightly'
-
-matrix:
-    allow_failures:
-        - python: 'nightly'
-
-cache:
-  directories:
-    - $HOME/.cache/pip
-    - $HOME/virtualenv/python$TRAVIS_PYTHON_VERSION/lib/python$TRAVIS_PYTHON_VERSION/site-packages
-    - $HOME/virtualenv/python$TRAVIS_PYTHON_VERSION/bin
+services:
+  - docker
 
 install:
-    - pip install --upgrade tox tox-travis
+  - docker build -t pyp2rpm-test .
 
-script: tox
+script:
+  - docker run -v $(pwd):$(pwd):z -w $(pwd) -it pyp2rpm-test

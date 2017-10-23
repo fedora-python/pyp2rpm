@@ -60,7 +60,7 @@ class TestDandifiedNameConvertor(object):
     @pytest.mark.parametrize(('pypi_name', 'version', 'expected'), [
         ('Babel', '2', 'python2-babel'),
         ('Babel', '3', 'python3-babel'),
-        ('MarkupSafe', '2', 'python-markupsafe'),
+        ('MarkupSafe', '2', 'python2-markupsafe'),
         ('MarkupSafe', '3', 'python3-markupsafe'),
         ('Jinja2', '2', 'python2-jinja2'),
         ('Jinja2', '3', 'python3-jinja2'),
@@ -71,8 +71,6 @@ class TestDandifiedNameConvertor(object):
         ('pytest', '2', 'python2-pytest'),
         ('pytest', '3', 'python3-pytest'),
         ('vertica', '2', 'vertica-python'),
-        ('pycairo', '2', 'pycairo'),
-        ('pycairo', '3', 'python3-cairo'),
         ('oslosphinx', '2', 'python2-oslo-sphinx'),
         ('oslosphinx', '3', 'python3-oslo-sphinx'),
         ('mock', '2', 'python2-mock'),
