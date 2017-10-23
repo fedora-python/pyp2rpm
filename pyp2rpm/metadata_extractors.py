@@ -327,7 +327,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
                 directory, self.archive.top_directory or self.name))[0]
         except IndexError:
             sys.stderr.write(
-                "setup.py not found, maybe local_file is not proper source archive.\n")
+                "setup.py not found, maybe {} is not "
+                "proper source archive.\n".format(self.local_file))
             raise SystemExit(3)
 
     @property
