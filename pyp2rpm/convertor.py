@@ -62,30 +62,55 @@ class Convertor(object):
                 and not os.path.isdir(self.package):
             self.pypi = False
 
+    @property
+    def template_base_py_ver(self):
+        """Return default base python version for chosen template. """
+        return settings.DEFAULT_PYTHON_VERSIONS[os.path.splitext(
+            self.template)[0]][0]
+
+    @property
+    def template_py_vers(self):
+        """Return default python versions for chosen template. """
+        return settings.DEFAULT_PYTHON_VERSIONS[os.path.splitext(
+            self.template)[0]][1:]
+
     def merge_versions(self, data):
         """Merges python versions specified in command lines options with
         extracted versions, checks if some of the versions is not > 2 if EPEL6 template
         will be used. attributes base_python_version and python_versions contain
         values specified by command line options or default values,
-        data.base_python_version and data.python_versions contain extracted data.
+        data.python_versions contains extracted data.
         """
         if self.template == "epel6.spec":
-            # if user requested version greater than 2, writes error message and exits
-            if (any(int(ver[0]) > 2 for ver in self.python_versions
-                    + ([self.base_python_version] if self.base_python_version else [])
-                    + [data.base_python_version])):
-                sys.stderr.write("Invalid version, major number of python version for EPEL6 "
-                                 "spec file must not be greater than 2.\n".format(self.base_python_version))
+            # if user requested version greater than 2, writes error message
+            # and exits
+            if any(int(ver[0]) > 2 for ver in self.python_versions + ([
+                    self.base_python_version] if self.base_python_version else [])):
+                sys.stderr.write(
+                    "Invalid version, major number of python version for EPEL6 "
+                    "spec file must not be greater than 2.\n")
                 sys.exit(1)
             # if version greater than 2 were extracted it is removed
-            data.python_versions = [ver for ver in data.python_versions if not int(ver[0]) > 2]
+            data.python_versions = [
+                ver for ver in data.python_versions if not int(ver[0]) > 2]
 
+        # extracted versions are overwritten by python versions from
+        # command line options if present
         if self.base_python_version or self.python_versions:
-            data.base_python_version = self.base_python_version
+            data.base_python_version = (self.base_python_version or
+                                        self.python_versions.pop())
             data.python_versions = [v for v in self.python_versions
                                     if not v == data.base_python_version]
-        elif data.base_python_version in data.python_versions:
-            data.python_versions.remove(data.base_python_version)
+        elif data.python_versions:
+            if self.template_base_py_ver in data.python_versions:
+                data.base_python_version = self.template_base_py_ver
+                data.python_versions.remove(data.base_python_version)
+            else:
+                data.base_python_version, data.python_versions = (
+                    data.python_versions[0], data.python_versions[1:])
+        else:  # versions weren't extracted successfully, default will be used
+            data.base_python_version, data.python_versions = (
+                self.template_base_py_ver, self.template_py_vers)
 
     def convert(self):
         """Returns RPM SPECFILE.
@@ -176,6 +201,8 @@ class Convertor(object):
     @property
     def name_convertor(self):
         if not hasattr(self, '_name_convertor'):
+            name_convertor.NameConvertor.template = os.path.splitext(
+                self.template)[0]
             if self.autonc:
                 logger.debug("Using AutoProvidesNameConvertor to convert names "
                              "of the packages.")
@@ -210,6 +237,9 @@ class Convertor(object):
                 logger.info('Getting metadata from setup.py using SetupPyMetadataExtractor.')
                 extractor_cls = metadata_extractors.SetupPyMetadataExtractor
 
+            base_python_version = (
+                self.base_python_version or self.template_base_py_ver)
+
             self._metadata_extractor = extractor_cls(
                 self.local_file,
                 self.name,
@@ -217,7 +247,7 @@ class Convertor(object):
                 self.version,
                 self.rpm_name,
                 self.venv,
-                self.base_python_version)
+                base_python_version)
 
         return self._metadata_extractor
 

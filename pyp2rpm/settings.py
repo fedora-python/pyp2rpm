@@ -1,13 +1,19 @@
 from pyp2rpm import utils
 
-DEFAULT_PYTHON_VERSION = '2'
-DEFAULT_ADDITIONAL_VERSION = '3'
+DEFAULT_TEMPLATE = 'fedora'
+DEFAULT_PYTHON_VERSIONS = {
+    'fedora': ['3', '2'],
+    'epel7': ['2', '3'],
+    'epel6': ['2'],
+    'mageia': ['2', '3'],
+    'pld': ['2', '3']
+}
+DEFAULT_PYTHON_VERSION = DEFAULT_PYTHON_VERSIONS[DEFAULT_TEMPLATE][0]
 DEFAULT_PKG_SOURCE = 'pypi'
 DEFAULT_METADATA_SOURCE = 'pypi'
-DEFAULT_TEMPLATE = 'fedora'
 DEFAULT_DISTRO = 'fedora'
 DEFAULT_PKG_SAVE_PATH = utils.get_default_save_path()
-KNOWN_DISTROS = ['fedora', 'mageia', 'pld']
+KNOWN_DISTROS = DEFAULT_PYTHON_VERSIONS.keys()
 ARCHIVE_SUFFIXES = ['.tar', '.tgz', '.tar.gz', '.tar.bz2',
                     '.gz', '.bz2', '.xz', '.zip', '.egg', '.whl']
 EXTENSION_SUFFIXES = ['.c', '.cpp']

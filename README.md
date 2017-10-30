@@ -40,10 +40,10 @@ All of the options are (print this by running pyp2rpm -h):
       -o [fedora|mageia|pld]  Default distro whose conversion rules to use
                               (default:"fedora").Default templates have their
                               rules associated and ignore this.
-      -b BASE_PYTHON          Base Python version to package for (default: "2").
+      -b BASE_PYTHON          Base Python version to package for (fedora default: "3").
       -p PYTHON_VERSIONS      Additional Python versions to include in the
-                              specfile (e.g -p3 for %{?with_python3}).Can be
-                              specified multiple times (default: "3"). Specify
+                              specfile (e.g -p2 for python2 subpackage). Can be
+                              specified multiple times (fedora default: "2"). Specify
                               additional version or use -b explicitly to disable
                               default.
       -s                      Spec file ~/rpmbuild/SPECS/python-package_name.spec

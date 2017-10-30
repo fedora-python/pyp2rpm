@@ -13,7 +13,6 @@ BuildArch:      noarch
  
 BuildRequires:  python2-devel
 BuildRequires:  python2dist(setuptools)
-BuildRequires:  python2dist(sphinx)
  
 BuildRequires:  python3-devel
 BuildRequires:  python3dist(setuptools)
@@ -69,17 +68,15 @@ rm -rf %{pypi_name}.egg-info
 %py2_build
 %py3_build
 # generate html docs 
-sphinx-build docs html
+sphinx-build-3 docs html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-# Must install the subpackage containing unversioned scripts last because
+# Must do the default python version install last because
 # the scripts in /usr/bin are overwritten with every setup.py install.
-%py3_install
-
 %py2_install
-
+%py3_install
 
 %files -n python2-%{pypi_name}
 %license docs/_themes/LICENSE LICENSE
@@ -98,5 +95,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Wed Aug 30 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Wed Oct 11 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

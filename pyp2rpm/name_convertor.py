@@ -13,14 +13,26 @@ logger = logging.getLogger(__name__)
 
 
 class NameConvertor(object):
+    template = settings.DEFAULT_TEMPLATE
 
     def __init__(self, distro):
         self.distro = distro
         self.reg_start = re.compile(r'^[Pp]ython(\d*|)-(.*)')
         self.reg_end = re.compile(r'(.*)-(python)(\d*|)$')
 
-    @staticmethod
-    def rpm_versioned_name(name, version, default_number=False, epel=False):
+    @classmethod
+    def get_default_py_version(cls):
+        try:
+            return settings.DEFAULT_PYTHON_VERSIONS[cls.template][0]
+        except KeyError:
+            logger.error('Default python versions for template {0} are '
+                         'missing in settings, using versions of template '
+                         '{1}.'.format(cls.template, settings.DEFAULT_TEMPLATE))
+            return settings.DEFAULT_PYTHON_VERSIONS[
+                settings.DEFAULT_TEMPLATE][0]
+
+    @classmethod
+    def rpm_versioned_name(cls, name, version, default_number=False):
         """Properly versions the name.
         For example:
         rpm_versioned_name('python-foo', '26') will return python26-foo
@@ -37,11 +49,12 @@ class NameConvertor(object):
         regexp = re.compile(r'^python(\d*|)-(.*)')
         auto_provides_regexp = re.compile(r'^python(\d*|)dist(.*)')
 
-        if not version or version == settings.DEFAULT_PYTHON_VERSION and not default_number:
+        if (not version or version == cls.get_default_py_version() and
+                not default_number):
             found = regexp.search(name)
             # second check is to avoid renaming of python2-devel to python-devel
             if found and found.group(2) != 'devel':
-                if not epel:
+                if 'epel' not in cls.template:
                     return 'python-{0}'.format(regexp.search(name).group(2))
             return name
 
@@ -55,12 +68,13 @@ class NameConvertor(object):
 
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
-            if epel and version != settings.DEFAULT_PYTHON_VERSION:
+            if ('epel' in cls.template and version !=
+                    cls.get_default_py_version()):
                 versioned_name = versioned_name.replace('{0}'.format(
                     version), '%{{python{0}_pkgversion}}'.format(version))
         return versioned_name
 
-    def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION):
+    def rpm_name(self, name, python_version=None):
         """Returns name of the package converted to (possibly) correct package
            name according to Packaging Guidelines.
         Args:

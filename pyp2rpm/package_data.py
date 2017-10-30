@@ -46,6 +46,9 @@ class PackageData(object):
             return self.data.get(name, [])
         elif name in ['has_egg_info', 'has_test_suite', 'has_pth', 'has_extension']:
             return self.data.get(name, False)
+        elif name == 'sorted_python_versions':
+            return sorted([self.data.get('base_python_version')] +
+                          self.data.get('python_versions', []))
         return self.data.get(name, 'TODO:')
 
     def __setattr__(self, name, value):

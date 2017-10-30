@@ -3,6 +3,10 @@ import os
 
 from flexmock import flexmock
 from scripttest import TestFileEnvironment
+try:
+    import dnf
+except ImportError:
+    dnf = None
 
 from pyp2rpm.bin import Convertor, SclConvertor, main, convert_to_scl
 
@@ -19,18 +23,23 @@ class TestSpec(object):
         self.env = TestFileEnvironment('{0}/test_output/'.format(tests_dir))
 
     @pytest.mark.parametrize(('package', 'options', 'expected'), [
-        ('Jinja2', '-v2.8', 'python-Jinja2.spec'),
-        ('Jinja2', '-v2.8 -b3', 'python-Jinja2_base.spec'),
-        ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7.spec'),
-        ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6.spec'),
+        ('Jinja2', '-v2.8', 'python-Jinja2{0}.spec'),
+        ('Jinja2', '-v2.8 -b3', 'python-Jinja2_base{0}.spec'),
+        ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7{0}.spec'),
+        ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6{0}.spec'),
         ('Jinja2', '-v2.8 --autonc', 'python-Jinja2_autonc.spec'),
-        ('buildkit', '-v0.2.2 -b2', 'python-buildkit.spec'),
-        ('StructArray', '-v0.1 -b2', 'python-StructArray.spec'),
-        ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx.spec'),
+        ('buildkit', '-v0.2.2 -b2', 'python-buildkit{0}.spec'),
+        ('StructArray', '-v0.1 -b2', 'python-StructArray{0}.spec'),
+        ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx{0}.spec'),
     ])
     @pytest.mark.webtest
     def test_spec(self, package, options, expected):
-        with open(self.td_dir + expected) as fi:
+        if 'autonc' in expected:
+            variant = expected
+        else:
+            nc = '_dnfnc' if dnf is not None else ''
+            variant = expected.format(nc)
+        with open(self.td_dir + variant) as fi:
             self.spec_content = fi.read()
         res = self.env.run('{0} {1} {2}'.format(self.exe, package, options),
                            expect_stderr=True)
