@@ -32,8 +32,6 @@ Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{srcname}}
  
 Conflicts:      python2-babel = 2.0
-Requires:       python2-Jinja2 >= 2.3
-Requires:       python2-Pygments >= 2.0
 Requires:       python2-alabaster < 0.8
 Requires:       python2-alabaster >= 0.7
 Requires:       python2-babel >= 1.3
@@ -41,8 +39,10 @@ Requires:       python2-colorama >= 0.3.5
 Requires:       python2-docutils >= 0.11
 Requires:       python2-html5lib
 Requires:       python2-imagesize
+Requires:       python2-jinja2 >= 2.3
 Requires:       python2-mock
 Requires:       python2-nose
+Requires:       python2-pygments >= 2.0
 Requires:       python2-requests
 Requires:       python2-setuptools
 Requires:       python2-simplejson
@@ -63,8 +63,6 @@ Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{srcname}}
  
 Conflicts:      python3-babel = 2.0
-Requires:       python3-Jinja2 >= 2.3
-Requires:       python3-Pygments >= 2.0
 Requires:       python3-alabaster < 0.8
 Requires:       python3-alabaster >= 0.7
 Requires:       python3-babel >= 1.3
@@ -72,8 +70,10 @@ Requires:       python3-colorama >= 0.3.5
 Requires:       python3-docutils >= 0.11
 Requires:       python3-html5lib
 Requires:       python3-imagesize
+Requires:       python3-jinja2 >= 2.3
 Requires:       python3-mock
 Requires:       python3-nose
+Requires:       python3-pygments >= 2.0
 Requires:       python3-requests
 Requires:       python3-setuptools
 Requires:       python3-simplejson

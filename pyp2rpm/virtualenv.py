@@ -19,9 +19,10 @@ def site_packages_filter(site_packages_list):
 
 def scripts_filter(scripts):
     '''
-    Removes .pyc files from scripts
+    Removes .pyc files and __pycache__ from scripts
     '''
-    return [x for x in scripts if not x.split('.')[-1] == 'pyc']
+    return [x for x in scripts if not x.split('.')[-1] == 'pyc' and
+            not x == '__pycache__']
 
 
 class DirsContent(object):
