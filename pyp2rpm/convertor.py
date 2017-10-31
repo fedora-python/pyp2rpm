@@ -34,7 +34,9 @@ logger = logging.getLogger(__name__)
 
 
 class Convertor(object):
-    """Object that takes care of the actual process of converting the package."""
+    """Object that takes care of the actual process of converting
+    the package.
+    """
 
     def __init__(self, package=None, version=None,
                  save_dir=None,
@@ -58,8 +60,9 @@ class Convertor(object):
         self.autonc = autonc
         self.pypi = True
         suffix = os.path.splitext(self.package)[1]
-        if os.path.exists(self.package) and suffix in settings.ARCHIVE_SUFFIXES\
-                and not os.path.isdir(self.package):
+        if (os.path.exists(self.package)
+                and suffix in settings.ARCHIVE_SUFFIXES
+                and not os.path.isdir(self.package)):
             self.pypi = False
 
     @property
@@ -76,19 +79,21 @@ class Convertor(object):
 
     def merge_versions(self, data):
         """Merges python versions specified in command lines options with
-        extracted versions, checks if some of the versions is not > 2 if EPEL6 template
-        will be used. attributes base_python_version and python_versions contain
-        values specified by command line options or default values,
-        data.python_versions contains extracted data.
+        extracted versions, checks if some of the versions is not > 2 if EPEL6
+        template will be used. attributes base_python_version and
+        python_versions contain values specified by command line options or
+        default values, data.python_versions contains extracted data.
         """
         if self.template == "epel6.spec":
             # if user requested version greater than 2, writes error message
             # and exits
-            if any(int(ver[0]) > 2 for ver in self.python_versions + ([
-                    self.base_python_version] if self.base_python_version else [])):
+            requested_versions = self.python_versions
+            if self.base_python_version:
+                requested_versions += [self.base_python_version]
+            if any(int(ver[0]) > 2 for ver in requested_versions):
                 sys.stderr.write(
-                    "Invalid version, major number of python version for EPEL6 "
-                    "spec file must not be greater than 2.\n")
+                    "Invalid version, major number of python version for "
+                    "EPEL6 spec file must not be greater than 2.\n")
                 sys.exit(1)
             # if version greater than 2 were extracted it is removed
             data.python_versions = [
@@ -122,8 +127,8 @@ class Convertor(object):
             local_file = self.getter.get()
         except (exceptions.NoSuchPackageException, OSError) as e:
             logger.error(
-                'Failed and exiting:', exc_info=True)
-            logger.info('Pyp2rpm failed. See log for more info.')
+                "Failed and exiting:", exc_info=True)
+            logger.info("Pyp2rpm failed. See log for more info.")
 
             sys.exit(e)
 
@@ -132,7 +137,7 @@ class Convertor(object):
 
         self.local_file = local_file
         data = self.metadata_extractor.extract_data(self.client)
-        logger.debug('Extracted metadata:')
+        logger.debug("Extracted metadata:")
         logger.debug(pprint.pformat(data.data))
         self.merge_versions(data)
 
@@ -148,8 +153,9 @@ class Convertor(object):
                 os.path.abspath(self.template))
         except jinja2.exceptions.TemplateNotFound:
             # absolute path not found => search in default template dir
-            logger.warn('Template: {0} was not found in {1} using default template dir.'.format(
-                self.template, os.path.abspath(self.template)))
+            logger.warn('Template: {0} was not found in {1} using default '
+                        'template dir.'.format(
+                            self.template, os.path.abspath(self.template)))
 
             jinja_template = jinja_env.get_template(self.template)
             logger.info('Using default template: {0}.'.format(self.template))
@@ -158,10 +164,12 @@ class Convertor(object):
 
     @property
     def getter(self):
-        """Returns an instance of proper PackageGetter subclass. Always returns the same instance.
+        """Returns an instance of proper PackageGetter subclass. Always
+        returns the same instance.
 
         Returns:
-            Instance of the proper PackageGetter subclass according to provided argument.
+            Instance of the proper PackageGetter subclass according to
+            provided argument.
         Raises:
             NoSuchSourceException if source to get the package from is unknown
             NoSuchPackageException if the package is unknown on PyPI
@@ -172,7 +180,9 @@ class Convertor(object):
                     self.package,
                     self.save_dir)
             else:
-                logger.debug('{0} doesnt exists as local file trying PyPI.'.format(self.package))
+                logger.debug(
+                    '{0} does not exist as local file trying PyPI.'.format(
+                        self.package))
                 self._getter = package_getters.PypiDownloader(
                     self.client,
                     self.package,
@@ -204,18 +214,23 @@ class Convertor(object):
             name_convertor.NameConvertor.template = os.path.splitext(
                 self.template)[0]
             if self.autonc:
-                logger.debug("Using AutoProvidesNameConvertor to convert names "
-                             "of the packages.")
+                logger.debug("Using AutoProvidesNameConvertor to convert "
+                             "names of the packages.")
                 self._name_convertor = name_convertor.AutoProvidesNameConvertor(
                     self.distro)
             elif dnf is None:
-                logger.warn("Dnf module not found, please dnf install python{0}-dnf "
-                        "to improve accuracy of name conversion.".format(sys.version[0]))
-                logger.debug("Using NameConvertor to convert names of the packages.")
-                self._name_convertor = name_convertor.NameConvertor(self.distro)
+                logger.warn("Dnf module not found, please dnf install "
+                            "python{0}-dnf to improve accuracy of name "
+                            "conversion.".format(sys.version[0]))
+                logger.debug(
+                    "Using NameConvertor to convert names of the packages.")
+                self._name_convertor = name_convertor.NameConvertor(
+                    self.distro)
             else:
-                logger.debug("Using DandifiedNameConvertor to convert names of the packages.")
-                self._name_convertor = name_convertor.DandifiedNameConvertor(self.distro)
+                logger.debug("Using DandifiedNameConvertor to convert names "
+                             "of the packages.")
+                self._name_convertor = name_convertor.DandifiedNameConvertor(
+                    self.distro)
         return self._name_convertor
 
     @property
@@ -224,17 +239,20 @@ class Convertor(object):
         Always returns the same instance.
 
         Returns:
-            The proper MetadataExtractor subclass according to local file suffix.
+            The proper MetadataExtractor subclass according to local file
+            suffix.
         """
         if not hasattr(self, '_local_file'):
-            raise AttributeError(
-                'local_file attribute must be set before calling metadata_extractor')
+            raise AttributeError("local_file attribute must be set before "
+                                 "calling metadata_extractor")
         if not hasattr(self, '_metadata_extractor'):
             if self.local_file.endswith('.whl'):
-                logger.info('Getting metadata from wheel using WheelMetadataExtractor.')
+                logger.info("Getting metadata from wheel using "
+                            "WheelMetadataExtractor.")
                 extractor_cls = metadata_extractors.WheelMetadataExtractor
             else:
-                logger.info('Getting metadata from setup.py using SetupPyMetadataExtractor.')
+                logger.info("Getting metadata from setup.py using "
+                            "SetupPyMetadataExtractor.")
                 extractor_cls = metadata_extractors.SetupPyMetadataExtractor
 
             base_python_version = (
@@ -270,8 +288,10 @@ class Convertor(object):
             transport = None
             if self.pypi:
                 if self.proxy:
-                    logger.info('Using provided proxy: {0}.'.format(self.proxy))
-                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL, transport=transport)
+                    logger.info('Using provided proxy: {0}.'.format(
+                        self.proxy))
+                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL,
+                                                     transport=transport)
                 self._client_set = True
             else:
                 self._client = None

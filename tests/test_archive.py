@@ -49,7 +49,8 @@ class TestArchive(object):
         (0, 'setup.cfg', False,
          '[egg_info]\r\ntag_build = \r\ntag_date = 0\r\ntag_svn_revision = 0\r\n\r\n'),
         (1, 'requires.txt', False, 'py>=1.4.7.dev2'),
-        (1, 'pytest-2.2.3/pytest.egg-info/requires.txt', True, 'py>=1.4.7.dev2'),
+        (1, 'pytest-2.2.3/pytest.egg-info/requires.txt',
+         True, 'py>=1.4.7.dev2'),
         (2, 'does_not_exist.dne', False,  None),
         (4, 'in_unextractable', False, None),
     ])
@@ -67,12 +68,16 @@ class TestArchive(object):
             assert a.has_file_with_suffix(suf) == expected
 
     @pytest.mark.parametrize(('i', 'r', 'f', 'c', 'expected'), [
-        (0, r'PKG-INFO', False, False, ['plumbum-0.9.0/PKG-INFO',
-                                        'plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
-        (0, r'[a-z]/PKG-INFO', True, False, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
-        (0, r'[a-z]/pKg-InfO', True, True, ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'PKG-INFO', False, False, [
+            'plumbum-0.9.0/PKG-INFO',
+            'plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'[a-z]/PKG-INFO', True, False,
+         ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
+        (0, r'[a-z]/pKg-InfO', True, True,
+         ['plumbum-0.9.0/plumbum.egg-info/PKG-INFO']),
         (0, r'spam/PKG-INFO', True, False, []),
-        (0, r'plumbum-0.9.0$', True, False, []),  # should ignore directory in tarfile
+        # should ignore directory in tarfile
+        (0, r'plumbum-0.9.0$', True, False, []),
     ])
     def test_get_files_re(self, i, r, f, c, expected):
         with self.a[i] as a:
@@ -87,8 +92,9 @@ class TestArchive(object):
         (0, r'spam/plumbum.*', True, False, []),
         (0, r'setup.py', True, False, []),  # should ignore file
         # test for zipfile separately - some more logic going on there...
-        (1, r'pytest.*', False, False, ['pytest-2.2.3',
-                                        'pytest-2.2.3/pytest.egg-info', 'pytest-2.2.3/_pytest']),
+        (1, r'pytest.*', False, False, [
+            'pytest-2.2.3',
+            'pytest-2.2.3/pytest.egg-info', 'pytest-2.2.3/_pytest']),
         (1, r't/assertion$', True, False, ['pytest-2.2.3/_pytest/assertion']),
         (1, r'[0-9]/_pYtEsT$', True, True, ['pytest-2.2.3/_pytest']),
         (1, r'spam/.*_pytest.*', True, False, []),

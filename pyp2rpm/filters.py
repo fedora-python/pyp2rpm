@@ -7,7 +7,8 @@ def name_for_python_version(name, version, default_number=False):
         name, version, default_number)
 
 
-def script_name_for_python_version(name, version, minor=False, default_number=True):
+def script_name_for_python_version(name, version, minor=False,
+                                   default_number=True):
     if not default_number:
         if version == settings.DEFAULT_PYTHON_VERSIONS[
                 name_convertor.NameConvertor.template][0]:

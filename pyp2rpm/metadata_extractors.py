@@ -15,12 +15,12 @@ except AttributeError:
 
 import pyp2rpm.exceptions as exc
 from pyp2rpm import archive
-from pyp2rpm.dependency_parser import deps_from_pyp_format, deps_from_pydit_json
+from pyp2rpm.dependency_parser import (deps_from_pyp_format,
+                                       deps_from_pydit_json)
 from pyp2rpm.package_data import PackageData
 from pyp2rpm.package_getters import get_url
 from pyp2rpm.module_runners import SubprocessModuleRunner
 from pyp2rpm import settings
-from pyp2rpm import utils
 try:
     from pyp2rpm import virtualenv
 except ImportError:
@@ -81,11 +81,14 @@ def versions_from_trove(trove):
             major = ver.split('.')[0].strip()
             if major:
                 versions.add(major)
-    return sorted(set([v for v in versions if v.replace('.', '', 1).isdigit()]))
+    return sorted(
+        set([v for v in versions if v.replace('.', '', 1).isdigit()]))
 
 
 def pypi_metadata_extension(extraction_fce):
-    """Extracts data from PyPI and merges them with data from extraction method."""
+    """Extracts data from PyPI and merges them with data from extraction
+    method.
+    """
 
     def inner(self, client=None):
         data = extraction_fce(self)
@@ -95,21 +98,23 @@ def pypi_metadata_extension(extraction_fce):
             return data
         try:
             release_data = client.release_data(self.name, self.version)
-        except:
-            logger.warning('Some kind of error while communicating with client: {0}.'.format(
-                client), exc_info=True)
+        except BaseException:
+            logger.warning("Some kind of error while communicating with "
+                           "client: {0}.".format(client), exc_info=True)
             return data
         try:
             url, md5_digest = get_url(client, self.name, self.version)
         except exc.MissingUrlException:
-            url, md5_digest = ('FAILED TO EXTRACT FROM PYPI', 'FAILED TO EXTRACT FROM PYPI')
+            url, md5_digest = ('FAILED TO EXTRACT FROM PYPI',
+                               'FAILED TO EXTRACT FROM PYPI')
         data_dict = {'source0': url, 'md5': md5_digest}
 
         for data_field in settings.PYPI_USABLE_DATA:
             data_dict[data_field] = release_data.get(data_field, '')
 
         # we usually get better license representation from trove classifiers
-        data_dict["license"] = license_from_trove(release_data.get('classifiers', ''))
+        data_dict["license"] = license_from_trove(release_data.get(
+            'classifiers', ''))
         data.set_from(data_dict, update=True)
         return data
     return inner
@@ -133,7 +138,8 @@ def venv_metadata_extension(extraction_fce):
                                               self.base_python_version)
             data.set_from(extractor.get_venv_data, update=True)
         except exc.VirtualenvFailException as e:
-            logger.error("{}, skipping virtualenv metadata extraction.".format(e))
+            logger.error("{}, skipping virtualenv metadata extraction.".format(
+                e))
         finally:
             shutil.rmtree(temp_dir)
         return data
@@ -145,17 +151,18 @@ def process_description(description_fce):
     and wraps paragraphs.
     """
     def inner(description):
-                            # multiple whitespaces
-        clear_description = re.sub(r'\s+', ' ',
-                            # general URLs
-                            re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '',
-                            # delimiters
-                            re.sub('(#|=|---|~|`)*', '',
-                            # very short lines, typically titles
-                            re.sub('((\r?\n)|^).{0,8}((\r?\n)|$)', '',
-                            # PyPI's version and downloads tags
-                            re.sub('((\r*.. image::|:target:) https?|(:align:|:alt:))[^\n]*\n', '',
-                                description_fce(description))))))
+        clear_description = \
+            re.sub(r'\s+', ' ',  # multiple whitespaces
+            # general URLs
+            re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '',
+            # delimiters
+            re.sub('(#|=|---|~|`)*', '',
+            # very short lines, typically titles
+            re.sub('((\r?\n)|^).{0,8}((\r?\n)|$)', '',
+            # PyPI's version and downloads tags
+            re.sub(
+                '((\r*.. image::|:target:) https?|(:align:|:alt:))[^\n]*\n', '',
+                description_fce(description))))))
         return ' '.join(textwrap.wrap(clear_description, 80))
     return inner
 
@@ -240,9 +247,9 @@ class LocalMetadataExtractor(object):
         with self.archive:
             data.set_from(self.data_from_archive)
 
-        # for example nose has attribute `packages` but instead of name listing the pacakges
-        # is using function to find them, that makes data.packages an empty set
-        # if virtualenv is disabled
+        # for example nose has attribute `packages` but instead of name
+        # listing the pacakges is using function to find them, that makes
+        # data.packages an empty set if virtualenv is disabled
         if virtualenv is None and getattr(data, "packages") == []:
             data.packages = [data.name]
 
@@ -265,7 +272,8 @@ class LocalMetadataExtractor(object):
         archive_data = {}
 
         archive_data['runtime_deps'] = self.runtime_deps
-        archive_data['build_deps'] = [['BuildRequires', 'python2-devel']] + self.build_deps
+        archive_data['build_deps'] = [
+            ['BuildRequires', 'python2-devel']] + self.build_deps
 
         archive_data['py_modules'] = self.py_modules
         archive_data['scripts'] = self.scripts
@@ -282,7 +290,8 @@ class LocalMetadataExtractor(object):
         archive_data['python_versions'] = self.versions_from_archive
 
         (archive_data['doc_files'],
-         archive_data['doc_license']) = self.separate_license_files(self.doc_files)
+         archive_data['doc_license']) = self.separate_license_files(
+             self.doc_files)
 
         archive_data['dirname'] = self.archive.top_directory
 
@@ -290,7 +299,9 @@ class LocalMetadataExtractor(object):
 
 
 class SetupPyMetadataExtractor(LocalMetadataExtractor):
-    """Class to extract metadata from setup.py using custom extract_dist command."""
+    """Class to extract metadata from setup.py using custom extract_dist
+    command.
+    """
 
     def __init__(self, *args, **kwargs):
         super(SetupPyMetadataExtractor, self).__init__(*args, **kwargs)
@@ -309,17 +320,20 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             *settings.EXTRACT_DIST_COMMAND_ARGS + ['--stdout'])
 
         current_version = self.base_python_version or str(sys.version_info[0])
+        # the version provided with `-b` option or default
         paths_to_attempt = (get_interpreter_path(version=ver) for ver in (
-            current_version,  # the version provided with `-b` option or default
+            current_version,
             '2' if current_version == '3' else '3'  # alternative Python version
         ))
         for path in paths_to_attempt:
             try:
-                logger.info("Running extract_dist command with: {0}".format(path))
+                logger.info("Running extract_dist command with: {0}".format(
+                    path))
                 runner.run(path)
                 return runner.results
             except (JSONDecodeError, exc.ExtractionError):
-                logger.error("Could not extract metadata with: {0}".format(path))
+                logger.error("Could not extract metadata with: {0}".format(
+                    path))
                 self.unsupported_version = current_version
         else:
             sys.stdout.write("Failed to extract data from setup.py script.\n")
@@ -337,17 +351,19 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def runtime_deps(self):  # install_requires
-        """Returns list of runtime dependencies of the package specified in setup.py.
+        """Returns list of runtime dependencies of the package specified in
+        setup.py.
 
-        Dependencies are in RPM SPECFILE format - see dependency_to_rpm() for details,
-        but names are already
-        transformed according to current distro.
+        Dependencies are in RPM SPECFILE format - see dependency_to_rpm()
+        for details, but names are already transformed according to
+        current distro.
 
         Returns:
             list of runtime dependencies of the package
         """
         install_requires = self.metadata['install_requires']
-        if self.metadata['entry_points'] and 'setuptools' not in install_requires:
+        if self.metadata[
+                'entry_points'] and 'setuptools' not in install_requires:
             install_requires.append('setuptools')  # entrypoints
 
         return sorted(self.name_convert_deps_list(deps_from_pyp_format(
@@ -361,7 +377,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             list of build dependencies of the package
         """
-        build_requires = self.metadata['setup_requires'] + self.metadata['tests_require']
+        build_requires = self.metadata['setup_requires'] + self.metadata[
+            'tests_require']
         if 'setuptools' not in build_requires:
             build_requires.append('setuptools')
         return sorted(self.name_convert_deps_list(deps_from_pyp_format(
@@ -425,14 +442,11 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         return self.metadata['license']
 
     @property
-    def classifiers(self):
-        return self.metadata['classifiers']
-
-    @property
     def has_bundled_egg_info(self):
         """Finds out if there is a bundled .egg-info dir in the archive.
         Returns:
-            True if the archive contains bundled .egg-info directory, False otherwise
+            True if the archive contains bundled .egg-info directory,
+            False otherwise
         """
         return self.archive.has_file_with_suffix('.egg-info')
 
@@ -442,13 +456,15 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             True if the package contains setup.py test suite, False otherwise
         """
-        return self.metadata['test_suite'] or self.metadata['tests_require'] != []
+        return self.metadata['test_suite'] or self.metadata[
+            'tests_require'] != []
 
     @property
     def doc_files(self):
         """Returns list of doc files that should be used for %doc in specfile.
         Returns:
-            List of doc files from the archive - only basenames, not full paths.
+            List of doc files from the archive - only basenames, not full
+            paths.
         """
         doc_files = []
         for doc_file_re in settings.DOC_FILES_RE:
@@ -460,14 +476,16 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
     def sphinx_dir(self):
         """Returns directory with sphinx documentation, if there is such.
         Returns:
-            Full path to sphinx documentation dir inside the archive, or None if there is no such.
+            Full path to sphinx documentation dir inside the archive, or None
+            if there is no such.
         """
         # search for sphinx dir doc/ or docs/ under the first directory in
         # archive (e.g. spam-1.0.0/doc)
         candidate_dirs = self.archive.get_directories_re(
             settings.SPHINX_DIR_RE, full_path=True)
 
-        for directory in candidate_dirs:  # search for conf.py in the dirs (TODO: what if more are found?)
+        # search for conf.py in the dirs (TODO: what if more are found?)
+        for directory in candidate_dirs:
             contains_conf_py = self.archive.get_files_re(
                 r'{0}/conf.py$'.format(re.escape(directory)), full_path=True)
             in_tests = 'tests' in directory.split(os.sep)
@@ -503,7 +521,9 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
         return self._json_metadata
 
     def get_requires(self, requires_types):
-        "Extracts requires of given types from metadata file, filter windows specific requires"
+        """Extracts requires of given types from metadata file, filter windows
+        specific requires.
+        """
         if not isinstance(requires_types, list):
             requires_types = list(requires_types)
         extracted_requires = []
@@ -526,7 +546,8 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
         build_requires = self.get_requires(['build_requires', 'test_requires'])
         if 'setuptools' not in build_requires:
             build_requires.append('setuptools')
-        return self.name_convert_deps_list(deps_from_pydit_json(build_requires, runtime=False))
+        return self.name_convert_deps_list(deps_from_pydit_json(
+            build_requires, runtime=False))
 
     @property
     def py_modules(self):
@@ -539,8 +560,8 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
     @property
     def home_page(self):
         urls = [url for url in self.json_metadata.get('extensions', {})
-                                                 .get('python.details', {})
-                                                 .get('project_urls', {}).values()]
+                .get('python.details', {})
+                .get('project_urls', {}).values()]
         if urls:
             return urls[0]
 

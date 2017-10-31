@@ -11,8 +11,8 @@ try:
 except ImportError:
     import xmlrpc.client as xmlrpclib
 
-from pyp2rpm.package_getters import *
-from pyp2rpm.exceptions import *
+from pyp2rpm.package_getters import LocalFileGetter, PypiDownloader, get_url
+from pyp2rpm.exceptions import MissingUrlException, NoSuchPackageException
 from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -36,17 +36,21 @@ class TestPackageGetters(object):
          '771f376bf9c936a90159cd94235998c2'),
     ])
     @pytest.mark.webtest
-    def test_get_url(self, name, version, wheel, hf, expected_url, expected_md5):
-        assert (expected_url, expected_md5) == get_url(self.client, name, version, wheel, hf)
+    def test_get_url(self, name, version, wheel, hf,
+                     expected_url, expected_md5):
+        assert (expected_url, expected_md5) == get_url(
+            self.client, name, version, wheel, hf)
 
-    @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf', 'exception', 'error_msg'), [
+    @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf',
+                              'exception', 'error_msg'), [
         ('nonexistent_pkg', '0.0.0', False, False, MissingUrlException,
          'Url of source archive not found.'),
         ('Pymacs', '0.25', False, False, MissingUrlException,
          'Pymacs package has no sources on PyPI, Please ask the maintainer to upload sources.'),
     ])
     @pytest.mark.webtest
-    def test_get_url_raises(self, name, version, wheel, hf, exception, error_msg):
+    def test_get_url_raises(self, name, version, wheel, hf,
+                            exception, error_msg):
         with pytest.raises(exception) as exc_info:
             get_url(self.client, name, version, wheel, hf)
         assert error_msg == str(exc_info.value)
@@ -55,7 +59,8 @@ class TestPackageGetters(object):
 class TestPypiFileGetter(object):
     client = flexmock(
         package_releases=lambda n: n == 'spam' and ['2', '1'] or [],
-        release_urls=lambda n, v: n == 'spam' and v in ['2', '1'] and [{'url': 'spam'}] or []
+        release_urls=lambda n, v: n == 'spam' and v in [
+            '2', '1'] and [{'url': 'spam'}] or []
     )
 
     @pytest.mark.parametrize(('name', 'version'), [
@@ -79,11 +84,18 @@ class TestLocalFileGetter(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
 
     def setup_method(self, method):
-        self.l = [LocalFileGetter('{0}plumbum-0.9.0.tar.gz'.format(self.td_dir)),
-                  LocalFileGetter('{0}Sphinx-1.1.3-py2.6.egg'.format(self.td_dir)),
-                  LocalFileGetter('{0}unextractable-1.tar'.format(self.td_dir)),
-                  LocalFileGetter('{0}setuptools-19.6-py2.py3-none-any.whl'.format(self.td_dir)),
-                  LocalFileGetter('{0}py2exe-0.9.2.2-py33.py34-none-any.whl'.format(self.td_dir)),
+        self.l = [LocalFileGetter('{0}plumbum-0.9.0.tar.gz'.format(
+            self.td_dir)),
+                  LocalFileGetter('{0}Sphinx-1.1.3-py2.6.egg'.format(
+                      self.td_dir)),
+                  LocalFileGetter('{0}unextractable-1.tar'.format(
+                      self.td_dir)),
+                  LocalFileGetter(
+                      '{0}setuptools-19.6-py2.py3-none-any.whl'.format(
+                          self.td_dir)),
+                  LocalFileGetter(
+                      '{0}py2exe-0.9.2.2-py33.py34-none-any.whl'.format(
+                          self.td_dir)),
                   LocalFileGetter('python-foo-1.tar'),
                   LocalFileGetter('python-many-dashes-foo-1.tar'),
                   ]
@@ -100,17 +112,7 @@ class TestLocalFileGetter(object):
         (3, 'setuptools-19.6-py2.py3-none-any'),
         (4, 'py2exe-0.9.2.2-py33.py34-none-any'),
     ])
-    def test__stripped_name_version(self, i, expected):
-        assert self.l[i]._stripped_name_version == expected
-
-    @pytest.mark.parametrize(('i', 'expected'), [
-        (0, 'plumbum-0.9.0'),
-        (1, 'Sphinx-1.1.3-py2.6'),
-        (2, 'unextractable-1'),
-        (3, 'setuptools-19.6-py2.py3-none-any'),
-        (4, 'py2exe-0.9.2.2-py33.py34-none-any'),
-    ])
-    def test__stripped_name_version(self, i, expected):
+    def test_stripped_name_version(self, i, expected):
         assert self.l[i]._stripped_name_version == expected
 
     @pytest.mark.parametrize(('i', 'expected'), [
@@ -126,7 +128,8 @@ class TestLocalFileGetter(object):
 
     def test_get_non_existent_file(self):
         with pytest.raises(EnvironmentError):
-            LocalFileGetter('/this/path/doesnot/exist', tempfile.gettempdir()).get()
+            LocalFileGetter('/this/path/doesnot/exist',
+                            tempfile.gettempdir()).get()
 
     def test_get_existent_file(self):
         tmpdir = tempfile.gettempdir()
@@ -143,4 +146,5 @@ class TestLocalFileGetter(object):
         self.l[1].save_dir = self.td_dir
         assert os.path.samefile(self.l[1].get(), os.path.join(
             self.td_dir, 'Sphinx-1.1.3-py2.6.egg'))
-        assert not os.path.exists(os.path.join(tmpdir, 'Sphinx-1.1.3-py2.6.egg'))
+        assert not os.path.exists(os.path.join(tmpdir,
+                                               'Sphinx-1.1.3-py2.6.egg'))

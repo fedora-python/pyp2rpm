@@ -5,7 +5,8 @@ import os
 from pyp2rpm.convertor import Convertor
 from pyp2rpm import settings
 from pyp2rpm import utils
-from pyp2rpm.logger import register_file_log_handler, register_console_log_handler
+from pyp2rpm.logger import (register_file_log_handler,
+                            register_console_log_handler)
 
 import click
 try:
@@ -29,7 +30,9 @@ class Pyp2rpmCommand(click.Command):
     """
 
     def format_options(self, ctx, formatter):
-        """Writes SCL related options into the formatter as a separate group."""
+        """Writes SCL related options into the formatter as a separate
+        group.
+        """
         super(Pyp2rpmCommand, self).format_options(ctx, formatter)
         scl_opts = []
         for param in self.get_params(ctx):
@@ -50,16 +53,19 @@ class SclizeOption(click.Option):
     def handle_parse_result(self, ctx, opts, args):
         """Validate SCL related options before parsing."""
         if 'sclize' in opts and not SclConvertor:
-            raise click.UsageError(
-                "Please install spec2scl package to perform SCL-style conversion")
+            raise click.UsageError("Please install spec2scl package to "
+                                   "perform SCL-style conversion")
         if self.name in opts and 'sclize' not in opts:
             raise click.UsageError(
-                "`--{}` can only be used with --sclize option".format(self.name))
+                "`--{}` can only be used with --sclize option".format(
+                    self.name))
 
         return super(SclizeOption, self).handle_parse_result(ctx, opts, args)
 
     def get_help_record(self, ctx):
-        """Remove help record, so that it does not appear in Options section."""
+        """Remove help record, so that it does not appear in Options
+        section.
+        """
         pass
 
     def get_scl_help_record(self, ctx):
@@ -74,32 +80,31 @@ class SclizeOption(click.Option):
                   settings.DEFAULT_TEMPLATE),
               metavar='TEMPLATE')
 @click.option('-o',
-              help='Default distro whose conversion rules to use (default:"{0}").'
-              'Default templates have their rules associated and ignore this.'.format(
-                  settings.DEFAULT_DISTRO),
+              help='Default distro whose conversion rules to use '
+              '(default:"{0}"). Default templates have their rules associated '
+              'and ignore this.'.format(settings.DEFAULT_DISTRO),
               type=click.Choice(settings.KNOWN_DISTROS),
               default=settings.DEFAULT_DISTRO)
 @click.option('-b',
-              help='Base Python version to package for (fedora default: "{0}").'.format(
-                  settings.DEFAULT_PYTHON_VERSION),
+              help='Base Python version to package for (fedora '
+              'default: "{0}").'.format(settings.DEFAULT_PYTHON_VERSION),
               default=None,
               metavar='BASE_PYTHON')
 @click.option('-p',
               help='Additional Python versions to include in the specfile '
-              '(e.g -p2 for python2 subpackage). Can be specified multiple times '
-              '(fedora default: "{0}"). Specify additional version '
+              '(e.g -p2 for python2 subpackage). Can be specified multiple '
+              'times (fedora default: "{0}"). Specify additional version '
               'or use -b explicitly to disable default.'.format(
-                  settings.DEFAULT_PYTHON_VERSIONS[
-                      settings.DEFAULT_DISTRO][1]),
+                  settings.DEFAULT_PYTHON_VERSIONS[settings.DEFAULT_DISTRO][1]),
               default=[],
-              multiple=True,
-              metavar='PYTHON_VERSIONS')
+              multiple=True, metavar='PYTHON_VERSIONS')
 @click.option('-s',
-              help='Spec file ~/rpmbuild/SPECS/python-package_name.spec will be created (default: '
-              'prints spec file to stdout).',
+              help='Spec file ~/rpmbuild/SPECS/python-package_name.spec will '
+              'be created (default: prints spec file to stdout).',
               is_flag=True)
 @click.option('--srpm',
-              help='When used pyp2rpm will produce srpm instead of printing specfile into stdout.',
+              help='When used pyp2rpm will produce srpm instead of printing '
+              'specfile into stdout.',
               is_flag=True)
 @click.option('--proxy',
               help='Specify proxy in the form proxy.server:port.',
@@ -110,51 +115,68 @@ class SclizeOption(click.Option):
               default=None,
               metavar='RPM_NAME')
 @click.option('-d',
-              help='Specify where to save package file, specfile and generated SRPM (default: "{0}").'.format(
+              help='Specify where to save package file, specfile and '
+              'generated SRPM (default: "{0}").'.format(
                   settings.DEFAULT_PKG_SAVE_PATH),
               default=settings.DEFAULT_PKG_SAVE_PATH,
               metavar='SAVE_PATH')
-@click.option('-v', help='Version of the package to download (ignored for local files).',
+@click.option('-v',
+              help='Version of the package to download (ignored for '
+              'local files).',
               metavar='VERSION')
 @click.option('--venv / --no-venv',
-              default=True,
-              help='Enable / disable metadata extraction from virtualenv (default: enabled).')
+              help='Enable / disable metadata extraction from virtualenv '
+              '(default: enabled).',
+              default=True)
 @click.option('--autonc/ --no-autonc',
-              default=False,
-              help='Enable / disable using automatic provides with a standardized '
-              'name in dependencies declaration (default: disabled).')
+              help='Enable / disable using automatic provides with '
+              'a standardized name in dependencies declaration ('
+              'default: disabled).',
+              default=False)
 @click.option('--sclize',
-              help='Convert tags and macro definitions to SCL-style using `spec2scl` module.'
-                   ' NOTE: SCL related options can be provided alongside this option.',
+              help='Convert tags and macro definitions to SCL-style using '
+              '`spec2scl` module. NOTE: SCL related options can be provided '
+              'alongside this option.',
               is_flag=True)
 # SCL related options
-@click.option('--no-meta-runtime-dep', cls=SclizeOption,
-              help='Don\'t add the runtime dependency on the scl runtime package.',
+@click.option('--no-meta-runtime-dep',
+              cls=SclizeOption,
+              help='Don\'t add the runtime dependency on the scl '
+              'runtime package.',
               is_flag=True)
-@click.option('--no-meta-buildtime-dep', cls=SclizeOption,
-              help='Don\'t add the buildtime dependency on the scl runtime package.',
+@click.option('--no-meta-buildtime-dep',
+              cls=SclizeOption,
+              help='Don\'t add the buildtime dependency on the scl '
+              'runtime package.',
               is_flag=True)
-@click.option('--skip-functions', cls=SclizeOption,
+@click.option('--skip-functions',
+              cls=SclizeOption,
               help='Comma separated list of transformer functions to skip.',
               default='',
               metavar='FUNCTIONS')
-@click.option('--no-deps-convert', cls=SclizeOption,
-              help='Don\'t convert dependency tags (mutually exclusive with --list-file).',
+@click.option('--no-deps-convert',
+              cls=SclizeOption,
+              help='Don\'t convert dependency tags (mutually exclusive '
+              'with --list-file).',
               is_flag=True)
-@click.option('--list-file', cls=SclizeOption,
+@click.option('--list-file',
+              cls=SclizeOption,
               help='List of the packages/provides, that will be in the SCL '
-                   '(to convert Requires/BuildRequires properly). Lines in '
-                   'the file are in form of "pkg-name %%{?custom_prefix}", '
-                   'where the prefix part is optional.',
+              '(to convert Requires/BuildRequires properly). Lines in '
+              'the file are in form of "pkg-name %%{?custom_prefix}", where '
+              'the prefix part is optional.',
               default=None,
               metavar='FILE_NAME')
 @click.argument('package', nargs=1)
-def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize, **scl_kwargs):
+def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize,
+         **scl_kwargs):
     """Convert PyPI package to RPM specfile or SRPM.
 
     \b
     \b\bArguments:
-    PACKAGE             Provide PyPI name of the package or path to compressed source file."""
+    PACKAGE             Provide PyPI name of the package or path to compressed
+                        source file.
+    """
     register_file_log_handler('/tmp/pyp2rpm-{0}.log'.format(getpass.getuser()))
 
     if srpm or s:
@@ -184,7 +206,8 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize, **s
                           venv=venv,
                           autonc=autonc)
 
-    logger.debug('Convertor: {0} created. Trying to convert.'.format(convertor))
+    logger.debug(
+        'Convertor: {0} created. Trying to convert.'.format(convertor))
     converted = convertor.convert()
     logger.debug('Convertor: {0} succesfully converted.'.format(convertor))
 
@@ -195,7 +218,8 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize, **s
         if r:
             spec_name = r + '.spec'
         else:
-            prefix = 'python-' if not convertor.name.startswith('python-') else ''
+            prefix = 'python-' if not convertor.name.startswith(
+                'python-') else ''
             spec_name = prefix + convertor.name + '.spec'
         logger.info('Using name: {0} for specfile.'.format(spec_name))
         if d == settings.DEFAULT_PKG_SAVE_PATH:

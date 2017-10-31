@@ -1,10 +1,6 @@
-import time
-
 import pytest
 
-from flexmock import flexmock
-
-from pyp2rpm.package_data import *
+from pyp2rpm.package_data import PackageData
 
 
 class TestPackageData(object):
@@ -42,7 +38,8 @@ class TestPackageData(object):
     @pytest.mark.parametrize(('key', 'init', 'update_data', 'expected'), [
         ('name', 'Spam', {'name': 'Spam'}, 'Spam'),
         ('name', ['Spam'], {'name': ['Spam2']}, ['Spam', 'Spam2']),
-        ('name', set(['Spam']), {'name': set(['Spam2'])}, set(['Spam', 'Spam2'])),
+        ('name', set(['Spam']), {'name': set(['Spam2'])},
+         set(['Spam', 'Spam2'])),
         ('name', [], {'name': ['Spam', 'Spam2']}, ['Spam', 'Spam2']),
         ('name', False, {'name': True}, False),
         ('name', 'Spam', {'name': ''}, 'Spam'),
