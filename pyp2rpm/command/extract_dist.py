@@ -5,14 +5,16 @@ from distutils.core import Command
 
 class extract_dist(Command):
     """Custom distutils command to extract metadata form setup function."""
-    description = "Assigns self.distribution to class attribute to make it accessible from outside a class."
+    description = ("Assigns self.distribution to class attribute to make "
+                   "it accessible from outside a class.")
     user_options = [('stdout', None,
                      'print metadata in json format to stdout')]
     class_metadata = None
 
     def __init__(self, *args, **kwargs):
-        """Metadata dictionary is created, all the metadata attributes, that were
-        not found are set to default empty values. Checks of data types are performed.
+        """Metadata dictionary is created, all the metadata attributes,
+        that were not found are set to default empty values. Checks of data
+        types are performed.
         """
         Command.__init__(self, *args, **kwargs)
 
@@ -23,7 +25,8 @@ class extract_dist(Command):
             self.metadata[attr] = to_list(getattr(self.distribution, attr, []))
 
         try:
-            for k, v in getattr(self.distribution, 'extras_require', {}).items():
+            for k, v in getattr(
+                    self.distribution, 'extras_require', {}).items():
                 if k in ['test, docs', 'doc', 'dev']:
                     attr = 'setup_requires'
                 else:
@@ -35,17 +38,19 @@ class extract_dist(Command):
             pass
 
         for attr in ['url', 'long_description', 'description', 'license']:
-            self.metadata[attr] = to_str(getattr(self.distribution.metadata, attr, None))
+            self.metadata[attr] = to_str(
+                getattr(self.distribution.metadata, attr, None))
 
-        self.metadata['classifiers'] = to_list(getattr(self.distribution.metadata,
-                                                       'classifiers', []))
+        self.metadata['classifiers'] = to_list(
+            getattr(self.distribution.metadata, 'classifiers', []))
 
         if isinstance(getattr(self.distribution, "entry_points", None), dict):
             self.metadata['entry_points'] = self.distribution.entry_points
         else:
             self.metadata['entry_points'] = None
 
-        self.metadata['test_suite'] = getattr(self.distribution, "test_suite", None) is not None
+        self.metadata['test_suite'] = getattr(
+            self.distribution, "test_suite", None) is not None
 
     def initialize_options(self):
         """Sets default value of the stdout option."""
@@ -56,8 +61,9 @@ class extract_dist(Command):
         pass
 
     def run(self):
-        """Sends extracted metadata in json format to stdout if stdout opotion
-        is specified, assigns metadata dictionary to class_metadata variable otherwise.
+        """Sends extracted metadata in json format to stdout if stdout
+        option is specified, assigns metadata dictionary to class_metadata
+        variable otherwise.
         """
         if self.stdout:
             sys.stdout.write("extracted json data:\n" + json.dumps(

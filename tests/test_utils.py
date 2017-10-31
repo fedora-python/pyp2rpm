@@ -38,7 +38,8 @@ class TestUtils(object):
     @pytest.mark.parametrize(('input', 'expected'), [
         ([['Requires', 'pkg'], ['Requires', 'pkg2']],
          [['BuildRequires', 'pkg'], ['BuildRequires', 'pkg2']]),
-        ([['Requires', 'pkg', '>=', '1.4.29'], ['Requires', 'python-setuptools']],
+        ([['Requires', 'pkg', '>=', '1.4.29'],
+          ['Requires', 'python-setuptools']],
          [['BuildRequires', 'pkg', '>=', '1.4.29'], ['BuildRequires',
                                                      'python-setuptools']]),
         ([], []),

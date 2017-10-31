@@ -21,17 +21,22 @@ class TestMetadataExtractor(object):
         self.e = [me.SetupPyMetadataExtractor('{0}plumbum-0.9.0.tar.gz'.format(
             self.td_dir), 'plumbum', self.nc, '0.9.0'),
             me.SetupPyMetadataExtractor(
-            '{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3'),
+            '{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest',
+                self.nc, '2.2.3'),
             me.SetupPyMetadataExtractor(
-            '{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray', self.nc, '0.8.0'),
+            '{0}bitarray-0.8.0.tar.gz'.format(self.td_dir), 'bitarray',
+                self.nc, '0.8.0'),
             me.SetupPyMetadataExtractor(
-            '{0}versiontools-1.9.1.tar.gz'.format(self.td_dir), 'versiontools', self.nc, '1.9.1'),
+            '{0}versiontools-1.9.1.tar.gz'.format(self.td_dir),
+                'versiontools', self.nc, '1.9.1'),
             me.SetupPyMetadataExtractor(
-            '{0}isholiday-0.1.tar.gz'.format(self.td_dir), 'isholiday', self.nc, '0.1'),
+            '{0}isholiday-0.1.tar.gz'.format(self.td_dir),
+                'isholiday', self.nc, '0.1'),
         ]
 
     @pytest.mark.parametrize(('b_version', 'what', 'expected'), [
-        ('2', 'install_requires', ['jinja2', 'jsonschema', 'six', 'py2-ipaddress']),
+        ('2', 'install_requires', ['jinja2', 'jsonschema', 'six',
+                                   'py2-ipaddress']),
         ('3', 'install_requires', ['jinja2', 'jsonschema', 'six']),
     ])
     def test_init_extractor(self, b_version, what, expected):
@@ -42,10 +47,13 @@ class TestMetadataExtractor(object):
             assert extractor.metadata.get(what) == expected
 
     @pytest.mark.parametrize(('lst', 'expected'), [
-        ([['Requires', 'pyfoo', 'spam', 'spam']], [['Requires', 'python-pyfoo', 'spam', 'spam']]),
-        ([['Requires', 'foo', 'spam', 'spam']], [['Requires', 'python-foo', 'spam', 'spam']]),
+        ([['Requires', 'pyfoo', 'spam', 'spam']],
+         [['Requires', 'python-pyfoo', 'spam', 'spam']]),
+        ([['Requires', 'foo', 'spam', 'spam']],
+         [['Requires', 'python-foo', 'spam', 'spam']]),
         ([['Requires', 'foo-python']], [['Requires', 'python-foo']]),
-        ([['Requires', 'python-foo', 'spam']], [['Requires', 'python-foo', 'spam']]),
+        ([['Requires', 'python-foo', 'spam']],
+         [['Requires', 'python-foo', 'spam']]),
     ])
     def test_name_convert_deps_list(self, lst, expected):
         assert self.e[0].name_convert_deps_list(lst) == expected
@@ -213,33 +221,38 @@ stripped.  for example:  ::      [nosetests]     warningfilters=default
 class TestPyPIMetadataExtension(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
     client = flexmock(
-        release_urls=lambda n, v: [{'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
-                                    'url': 'https://files.pythonhosted.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
-        release_data=lambda n, v: {'description': 'UNKNOWN',
-                                   'release_url': 'http://pypi.python.org/pypi/restsh/0.1',
-                                   'classifiers': ['Development Status :: 4 - Beta',
-                                                   'Intended Audience :: Developers',
-                                                   'License :: OSI Approved :: BSD License',
-                                                   'Operating System :: OS Independent'
-                                                   ],
-                                   'license': 'BSD',
-                                   'summary': 'A simple rest shell client',
-                                   'spam': 'eggs and beans'
-                                   }
+        release_urls=lambda n, v: [
+            {'md5_digest': '9a7a2f6943baba054cf1c28e05a9198e',
+             'url': 'https://files.pythonhosted.org/packages/source/r/restsh/restsh-0.1.tar.gz'}],
+        release_data=lambda n, v: {
+            'description': 'UNKNOWN',
+            'release_url': 'http://pypi.python.org/pypi/restsh/0.1',
+            'classifiers': ['Development Status :: 4 - Beta',
+                            'Intended Audience :: Developers',
+                            'License :: OSI Approved :: BSD License',
+                            'Operating System :: OS Independent'
+                            ],
+            'license': 'BSD',
+            'summary': 'A simple rest shell client',
+            'spam': 'eggs and beans'
+            }
     )
 
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
         # we will only test getting stuff from the client => pass spam as file
         self.e = me.SetupPyMetadataExtractor(
-            '{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest', self.nc, '2.2.3')
+            '{0}pytest-2.2.3.zip'.format(self.td_dir), 'pytest',
+            self.nc, '2.2.3')
 
     @pytest.mark.parametrize(('what', 'expected'), [
-        ('description', 'cross-project testing tool for Python.Platforms: Linux, Win32, '
+        ('description',
+         'cross-project testing tool for Python.Platforms: Linux, Win32, '
          'OSXInterpreters: Python versions 2.4 through to 3.2, Jython 2.5.1 '
          'and PyPy-1.6/1.7Bugs and issues: page: (c) Holger Krekel and others, 2004-2012'),
         ('md5', '9a7a2f6943baba054cf1c28e05a9198e'),
-        ('source0', 'https://files.pythonhosted.org/packages/source/p/pytest/restsh-0.1.tar.gz'),
+        ('source0',
+         'https://files.pythonhosted.org/packages/source/p/pytest/restsh-0.1.tar.gz'),
         ('license', 'MIT license'),
         ('summary', 'py.test: simple powerful testing with Python')
     ])
@@ -254,8 +267,10 @@ class TestSetupPyMetadataExtractor(object):
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
         self.e = []
-        for archive in ('plumbum-0.9.0.tar.gz', 'pytest-2.2.3.zip',
-                        'simpleeval-0.8.7.tar.gz', 'coverage_pth-0.0.1.tar.gz'):
+        for archive in ('plumbum-0.9.0.tar.gz',
+                        'pytest-2.2.3.zip',
+                        'simpleeval-0.8.7.tar.gz',
+                        'coverage_pth-0.0.1.tar.gz'):
             name, version = archive.split('-')
             self.e.append(me.SetupPyMetadataExtractor('{0}{1}'.format(
                 self.td_dir, archive), name, self.nc, version[:5]))
@@ -309,7 +324,8 @@ class TestSetupPyMetadataExtractor(object):
         (['LICENSE', 'README'], ['LICENSE'], ['README']),
         ([], [], []),
         (['README', 'DESCRIPTION'], [], ['README', 'DESCRIPTION']),
-        (['LICENSE', './dir/LICENSE', 'README'], ['LICENSE', './dir/LICENSE'], ['README']),
+        (['LICENSE', './dir/LICENSE', 'README'],
+         ['LICENSE', './dir/LICENSE'], ['README']),
         (['LICENSE.MIT', './LICENSE.CC-BY-SA-3.0'],
          ['LICENSE.MIT', './LICENSE.CC-BY-SA-3.0'], []),
         (['README', 'COPYRIGHT'], ['COPYRIGHT'], ['README']),
@@ -317,7 +333,8 @@ class TestSetupPyMetadataExtractor(object):
         (['README', 'COPYING'], ['COPYING'], ['README']),
     ])
     def test_doc_files(self, doc_files, license, other):
-        flexmock(me.SetupPyMetadataExtractor).should_receive('doc_files').and_return(doc_files)
+        flexmock(me.SetupPyMetadataExtractor).should_receive(
+            'doc_files').and_return(doc_files)
         data = self.e[0].extract_data()
         assert data.data['doc_license'] == license
         assert data.data['doc_files'] == other
@@ -330,8 +347,10 @@ class TestWheelMetadataExtractor(object):
         self.nc = NameConvertor('fedora')
         self.e = []
         for archive, name, version in [
-                ('setuptools-19.6-py2.py3-none-any.whl', 'setuptools', '19.6.2'),
-                ('py2exe-0.9.2.2-py33.py34-none-any.whl', 'py2exe', '0.9.2.2')]:
+                ('setuptools-19.6-py2.py3-none-any.whl',
+                 'setuptools', '19.6.2'),
+                ('py2exe-0.9.2.2-py33.py34-none-any.whl',
+                 'py2exe', '0.9.2.2')]:
             self.e.append(me.WheelMetadataExtractor('{0}{1}'.format(
                 self.td_dir, archive), name, self.nc, version))
             self.e[-1].venv = None

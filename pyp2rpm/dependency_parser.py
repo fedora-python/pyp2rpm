@@ -7,15 +7,20 @@ logger = logging.getLogger(__name__)
 
 
 def dependency_to_rpm(dep, runtime):
-    """Converts a dependency got by pkg_resources.Requirement.parse() to RPM format.
+    """Converts a dependency got by pkg_resources.Requirement.parse()
+    to RPM format.
     Args:
         dep - a dependency retrieved by pkg_resources.Requirement.parse()
-        runtime - whether the returned dependency should be runtime (True) or build time (False)
+        runtime - whether the returned dependency should be runtime (True)
+        or build time (False)
     Returns:
-        List of semi-SPECFILE dependencies (package names are not properly converted yet).
-        For example: [['Requires', 'jinja2'], ['Conflicts', 'jinja2', '=', '2.0.1']]
+        List of semi-SPECFILE dependencies (package names are not properly
+        converted yet).
+        For example: [['Requires', 'jinja2'],
+                      ['Conflicts', 'jinja2', '=', '2.0.1']]
     """
-    logger.debug('Dependencies provided: {0} runtime: {1}.'.format(dep, runtime))
+    logger.debug('Dependencies provided: {0} runtime: {1}.'.format(
+        dep, runtime))
     converted = []
     if not len(dep.specs):
         converted.append(['Requires', dep.project_name])
@@ -48,18 +53,21 @@ def deps_from_pyp_format(requires, runtime=True):
         List of semi-SPECFILE dependencies (see dependency_to_rpm for format).
     """
     parsed = []
-    logger.debug('Dependencies from setup.py: {0} runtime: {1}.'.format(requires, runtime))
+    logger.debug("Dependencies from setup.py: {0} runtime: {1}.".format(
+        requires, runtime))
 
     for req in requires:
         try:
             parsed.append(Requirement.parse(req))
         except ValueError:
-            logger.warn('Unparsable dependency {0}.'.format(req), exc_info=True)
+            logger.warn("Unparsable dependency {0}.".format(req),
+                        exc_info=True)
 
     in_rpm_format = []
     for dep in parsed:
         in_rpm_format.extend(dependency_to_rpm(dep, runtime))
-    logger.debug('Dependencies from setup.py in rpm format: {0}.'.format(in_rpm_format))
+    logger.debug("Dependencies from setup.py in rpm format: {0}.".format(
+        in_rpm_format))
 
     return in_rpm_format
 
@@ -76,10 +84,12 @@ def deps_from_pydit_json(requires, runtime=True):
     """
     parsed = []
     for req in requires:
-        # req looks like 'some-name (>=X.Y,!=Y.X)' or 'someme-name' where 'some-name' is the
-        # name of required package and '(>=X.Y,!=Y.X)' are specs
+        # req looks like 'some-name (>=X.Y,!=Y.X)' or 'someme-name' where
+        # 'some-name' is the name of required package and '(>=X.Y,!=Y.X)'
+        # are specs
         name, specs = None, None
-        reqs = req.split(' ')  # len(reqs) == 1 if there are not specified versions, 2 otherwise
+        # len(reqs) == 1 if there are not specified versions, 2 otherwise
+        reqs = req.split(' ')
         name = reqs[0]
         if len(reqs) == 2:
             specs = reqs[1]

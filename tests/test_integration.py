@@ -44,7 +44,8 @@ class TestSpec(object):
         res = self.env.run('{0} {1} {2}'.format(self.exe, package, options),
                            expect_stderr=True)
         # changelog have to be cut from spec files
-        assert res.stdout.split('\n')[1:-4] == self.spec_content.split('\n')[1:-4]
+        assert res.stdout.split('\n')[1:-4] == self.spec_content.split(
+            '\n')[1:-4]
 
 
 class TestSrpm(object):
@@ -57,7 +58,8 @@ class TestSrpm(object):
 
     @pytest.mark.webtest
     def test_srpm(self):
-        res = self.env.run('{0} Jinja2 --srpm'.format(self.exe), expect_stderr=True)
+        res = self.env.run('{0} Jinja2 --srpm'.format(self.exe),
+                           expect_stderr=True)
         assert res.returncode == 0
 
 
@@ -82,19 +84,25 @@ class TestSclIntegration(object):
             'meta_spec': None
         }
         flexmock(Convertor).should_receive('__init__').and_return(None)
-        flexmock(Convertor).should_receive('convert').and_return(self.test_spec)
+        flexmock(Convertor).should_receive('convert').and_return(
+            self.test_spec)
 
     @pytest.mark.parametrize(('options', 'expected_options'), [
         (['--no-meta-runtime-dep'], {'no_meta_runtime_dep': True}),
         (['--no-meta-buildtime-dep'], {'no_meta_buildtime_dep': True}),
-        (['--skip-functions=func1,func2'], {'skip_functions': ['func1', 'func2']}),
+        (['--skip-functions=func1,func2'], {'skip_functions':
+                                            ['func1', 'func2']}),
         (['--no-deps-convert'], {'no_deps_convert': True}),
         (['--list-file=file_name'], {'list_file': 'file_name'}),
     ])
-    def test_scl_convertor_args_correctly_passed(self, options, expected_options, capsys):
-        """Test that pyp2rpm command passes correct options to SCL convertor."""
+    def test_scl_convertor_args_correctly_passed(self, options,
+                                                 expected_options, capsys):
+        """Test that pyp2rpm command passes correct options to
+        SCL convertor.
+        """
         self.default_options.update(expected_options)
-        flexmock(SclConvertor).should_receive('convert').and_return(self.test_spec)
+        flexmock(SclConvertor).should_receive('convert').and_return(
+            self.test_spec)
         flexmock(SclConvertor).should_receive('__init__').with_args(
             options=self.default_options,
         ).once()
@@ -106,7 +114,8 @@ class TestSclIntegration(object):
 
     @pytest.mark.parametrize(('options', 'omit_from_spec'), [
         ({'no_meta_runtime_dep': True}, '%{?scl:Requires: %{scl}-runtime}'),
-        ({'no_meta_buildtime_dep': True}, '{?scl:BuildRequires: %{scl}-runtime}'),
+        ({'no_meta_buildtime_dep': True},
+         '{?scl:BuildRequires: %{scl}-runtime}'),
         ({'skip_functions': 'handle_python_specific_commands'},
          '%{?scl:scl enable %{scl} - << \\EOF}\nset -e\nsphinx-build doc html\n%{?scl:EOF}'),
     ])
