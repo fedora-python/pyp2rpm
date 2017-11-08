@@ -137,8 +137,6 @@ class PypiDownloader(PackageGetter):
 
         # If versions is empty list then there is no such package on PyPI
         if not self.versions:
-            logger.error('Package "{0}" could not be found on PyPI.'.format(
-                name))
             raise exceptions.NoSuchPackageException(
                 'Package "{0}" could not be found on PyPI.'.format(name))
 
@@ -149,8 +147,6 @@ class PypiDownloader(PackageGetter):
             raise exceptions.NoSuchPackageException(
                 'Package with name "{0}" and version "{1}" could not be '
                 'found on PyPI.'.format(name, version))
-            logger.error('Package with name "{0}" and version "{1}" could '
-                         'not be found on PyPI.'.format(name, version))
         self.save_dir_init(save_dir)
 
     def get(self, wheel=False):
@@ -231,10 +227,6 @@ class LocalFileGetter(PackageGetter):
         else:
             raise exceptions.UnknownArchiveFormatException(
                 'Unkown archive format of file {0}.'.format(filename))
-            logger.error(
-                "Unkown archive format of file {0}.".format(filename),
-                exc_info=True)
-            logger.info("Rpmbuild failed. See log for more info.")
 
     def get_name_version(self):
         try:
