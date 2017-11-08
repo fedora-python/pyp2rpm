@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
-    return set([x for x in site_packages_list if not x.endswith(('dist-info', '.pth'))])
+    return set([x for x in site_packages_list if not x.endswith(
+        ('dist-info', '.pth'))])
 
 
 def scripts_filter(scripts):
@@ -40,7 +41,8 @@ class DirsContent(object):
         Scans content of directories
         '''
         self.bindir = set(os.listdir(path + 'bin/'))
-        self.lib_sitepackages = set(os.listdir(glob.glob(path + 'lib/python?.?/site-packages/')[0]))
+        self.lib_sitepackages = set(os.listdir(glob.glob(
+            path + 'lib/python?.?/site-packages/')[0]))
 
     def __sub__(self, other):
         '''
@@ -64,10 +66,12 @@ class VirtualEnv(object):
         if not base_python_version:
             base_python_version = DEFAULT_PYTHON_VERSION
         python_version = 'python' + base_python_version
-        self.env = VirtualEnvironment(temp_dir + '/venv', python=python_version)
+        self.env = VirtualEnvironment(temp_dir + '/venv',
+                                      python=python_version)
         try:
             self.env.open_or_create()
-        except (ve.VirtualenvCreationException, ve.VirtualenvReadonlyException):
+        except (ve.VirtualenvCreationException,
+                ve.VirtualenvReadonlyException):
             raise VirtualenvFailException('Failed to create virtualenv')
         self.dirs_before_install = DirsContent()
         self.dirs_after_install = DirsContent()
@@ -81,8 +85,10 @@ class VirtualEnv(object):
         '''
         try:
             self.env.install(self.name, force=True, options=["--no-deps"])
-        except (ve.PackageInstallationException, ve.VirtualenvReadonlyException):
-            raise VirtualenvFailException('Failed to install package to virtualenv')
+        except (ve.PackageInstallationException,
+                ve.VirtualenvReadonlyException):
+            raise VirtualenvFailException(
+                'Failed to install package to virtualenv')
         self.dirs_after_install.fill(self.temp_dir + '/venv/')
 
     def get_dirs_differance(self):

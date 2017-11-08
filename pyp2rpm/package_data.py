@@ -23,7 +23,8 @@ class PackageData(object):
 
     """A simple object that carries data about a package."""
 
-    def __init__(self, local_file, name, pkg_name, version, md5='', source0='', srcname=None):
+    def __init__(self, local_file, name, pkg_name, version,
+                 md5='', source0='', srcname=None):
         object.__setattr__(self, 'data', {})
         self.data['local_file'] = local_file
         self.data['name'] = name
@@ -40,11 +41,13 @@ class PackageData(object):
             return self.data['name'].replace('-', '_')
         elif name == 'changelog_date_packager':
             return self.get_changelog_date_packager()
-        elif name in ['runtime_deps', 'build_deps', 'classifiers', 'doc_files', 'doc_license']:
+        elif name in ['runtime_deps', 'build_deps', 'classifiers',
+                      'doc_files', 'doc_license']:
             return self.data.get(name, [])
         elif name in ['packages', 'py_modules', 'scripts']:
             return self.data.get(name, [])
-        elif name in ['has_egg_info', 'has_test_suite', 'has_pth', 'has_extension']:
+        elif name in ['has_egg_info', 'has_test_suite',
+                      'has_pth', 'has_extension']:
             return self.data.get(name, False)
         elif name == 'sorted_python_versions':
             return sorted([self.data.get('base_python_version')] +
@@ -59,7 +62,7 @@ class PackageData(object):
 
     def update_attr(self, name, value):
         if name in self.data and value:
-            if name in ['runtime_deps', 'build_deps']:  # compare lowercase names of deps
+            if name in ['runtime_deps', 'build_deps']:
                 for item in value:
                     if not item[1].lower() in get_deps_names(self.data[name]):
                         self.data[name].append(item)
@@ -88,12 +91,13 @@ class PackageData(object):
         """
         try:
             packager = subprocess.Popen(
-                'rpmdev-packager', stdout=subprocess.PIPE).communicate()[0].strip()
+                'rpmdev-packager', stdout=subprocess.PIPE).communicate(
+                )[0].strip()
         except OSError:
             # Hi John Doe, you should install rpmdevtools
             packager = "John Doe <john@doe.com>"
-            logger.warn(
-                'Package rpmdevtools is missing, using default name: {0}.'.format(packager))
+            logger.warn("Package rpmdevtools is missing, using default "
+                        "name: {0}.".format(packager))
         with utils.c_time_locale():
             date_str = time.strftime('%a %b %d %Y', time.gmtime())
         encoding = locale.getpreferredencoding()

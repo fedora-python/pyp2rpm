@@ -6,7 +6,8 @@ import sys
 logger = logging.getLogger('pyp2rpm')
 logger.setLevel(logging.DEBUG)
 
-file_formatter = logging.Formatter(u'%(asctime)s::%(name)s::%(levelname)s::%(message)s')
+file_formatter = logging.Formatter(
+    u'%(asctime)s::%(name)s::%(levelname)s::%(message)s')
 console_formatter = logging.Formatter(u'%(levelname)s  %(message)s')
 
 
@@ -35,7 +36,8 @@ class LevelFilter(logging.Filter):
         return record.levelno == self.level
 
 
-def register_file_log_handler(log_file, level=logging.DEBUG, fmt=file_formatter):
+def register_file_log_handler(log_file, level=logging.DEBUG,
+                              fmt=file_formatter):
     dirname = os.path.dirname(log_file)
     try:
         if not os.path.exists(dirname):

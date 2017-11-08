@@ -101,10 +101,12 @@ class TestNameVariants(object):
         assert self.nv.best_matching == expected
 
     @pytest.mark.parametrize(('first_list', 'second_list', 'expected'), [
-        (['python3-foo', 'py3foo'], ['foo', 'python-foo'], {'python_ver_name': 'python3-foo',
-                                                            'pyver_name': 'py3foo',
-                                                            'name_python_ver': None,
-                                                            'raw_name': 'foo'})
+        (['python3-foo', 'py3foo'],
+         ['foo', 'python-foo'],
+         {'python_ver_name': 'python3-foo',
+                             'pyver_name': 'py3foo',
+                             'name_python_ver': None,
+                             'raw_name': 'foo'})
     ])
     def test_merge(self, first_list, second_list, expected):
         for first, second in zip(first_list, second_list):

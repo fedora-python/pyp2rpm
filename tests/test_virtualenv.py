@@ -1,9 +1,9 @@
 import pytest
-import os
 import shutil
 import tempfile
 from flexmock import flexmock
-from pyp2rpm.virtualenv import *
+from pyp2rpm.virtualenv import (DirsContent, VirtualEnv, site_packages_filter,
+                                scripts_filter)
 from pyp2rpm.name_convertor import NameConvertor
 from pyp2rpm.settings import DEFAULT_DISTRO, DEFAULT_PYTHON_VERSION
 
@@ -15,7 +15,8 @@ class TestUtils(object):
         (['foo', 'foo-1.0.0.dist-info', 'foo2'], set(['foo', 'foo2'])),
         (['foo', 'foo-1.0.0.dist-info', 'foo2-1.0.0-py2.7.egg-info'],
          set(['foo', 'foo2-1.0.0-py2.7.egg-info'])),
-        (['foo', 'foo2-1.0.0-py2.7.egg-info'], set(['foo', 'foo2-1.0.0-py2.7.egg-info'])),
+        (['foo', 'foo2-1.0.0-py2.7.egg-info'],
+         set(['foo', 'foo2-1.0.0-py2.7.egg-info'])),
         ([], set()),
     ])
     def test_site_packages_filter(self, input, expected):
@@ -35,7 +36,8 @@ class TestUtils(object):
 class TestDirsContent(object):
 
     @pytest.mark.parametrize(('before', 'after', 'expected'), [
-        (set(['activate', 'pip']), set(['activate', 'pip', 'foo']), set(['foo'])),
+        (set(['activate', 'pip']), set(['activate', 'pip', 'foo']),
+         set(['foo'])),
         (set(['activate', 'pip']), set(['activate', 'pip']), set()),
     ])
     def test_sub_bin(self, before, after, expected):
@@ -44,7 +46,8 @@ class TestDirsContent(object):
         assert result.bindir == expected
 
     @pytest.mark.parametrize(('before', 'after', 'expected'), [
-        (set(['setuptools', 'pip']), set(['setuptools', 'pip', 'foo']), set(['foo'])),
+        (set(['setuptools', 'pip']), set(['setuptools', 'pip', 'foo']),
+         set(['foo'])),
         (set(['wheel', 'pip']), set(['foo', 'pip']), set(['foo'])),
         (set(['wheel', 'pip']), set(['pip']), set()),
     ])

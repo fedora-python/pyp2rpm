@@ -1,13 +1,14 @@
 import pytest
+import os
 
 from flexmock import flexmock
 
 from pyp2rpm.convertor import Convertor
-from pyp2rpm.exceptions import *
-from pyp2rpm.metadata_extractors import *
-from pyp2rpm.package_getters import *
+from pyp2rpm.exceptions import NoSuchPackageException
+from pyp2rpm.metadata_extractors import (SetupPyMetadataExtractor,
+                                         WheelMetadataExtractor)
+from pyp2rpm.package_getters import PypiDownloader, LocalFileGetter
 from pyp2rpm.package_data import PackageData
-from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -36,7 +37,8 @@ class TestConvertor(object):
 
     @pytest.mark.parametrize(('sf', 'expected'), [
         ('{0}plumbum-0.9.0.tar.gz'.format(td_dir), SetupPyMetadataExtractor),
-        ('{0}setuptools-19.6-py2.py3-none-any.whl'.format(td_dir), WheelMetadataExtractor)
+        ('{0}setuptools-19.6-py2.py3-none-any.whl'.format(td_dir),
+         WheelMetadataExtractor)
     ])
     def test_get_metadata_extractor(self, sf, expected):
         c = Convertor(package=sf)
@@ -73,8 +75,8 @@ class TestConvertor(object):
     ])
     def test_merge_versions_epel6(self, self_bv, self_pv, data_bv, data_pv,
                                   expected_bv, expected_pv):
-        c = Convertor(package='pkg', base_python_version=self_bv, python_versions=self_pv,
-                      template='epel6.spec')
+        c = Convertor(package='pkg', base_python_version=self_bv,
+                      python_versions=self_pv, template='epel6.spec')
         data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
         data.base_python_version = data_bv
         data.python_versions = data_pv
@@ -88,8 +90,8 @@ class TestConvertor(object):
         ('3', ['3'])
     ])
     def test_bad_versions(self, self_bv, self_pv):
-        c = Convertor(package='pkg', base_python_version=self_bv, python_versions=self_pv,
-                      template='epel6.spec')
+        c = Convertor(package='pkg', base_python_version=self_bv,
+                      python_versions=self_pv, template='epel6.spec')
         data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
         with pytest.raises(SystemExit):
             c.merge_versions(data)

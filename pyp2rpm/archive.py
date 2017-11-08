@@ -67,7 +67,8 @@ class ZipWrapper(object):
 
 class Archive(object):
 
-    """Class representing package archive. All the operations must be run using with statement.
+    """Class representing package archive. All the operations must be run using
+    with statement.
     For example:
 
     archive = Archive('/spam/beans.egg')
@@ -106,7 +107,8 @@ class Archive(object):
                 self.handle = self.extractor_cls.open(self.file)
         except BaseException:
             self.handle = None
-            logger.error('Failed to open archive: {0}.'.format(self.file), exc_info=True)
+            logger.error('Failed to open archive: {0}.'.format(
+                self.file), exc_info=True)
 
         return self
 
@@ -134,12 +136,14 @@ class Archive(object):
         elif self.is_zip:
             file_cls = ZipFile
         else:
-            logger.info("Couldn't recognize archive suffix: {0}.".format(self.suffix))
+            logger.info("Couldn't recognize archive suffix: {0}.".format(
+                self.suffix))
 
         return file_cls
 
     @utils.memoize_by_args
-    def get_content_of_file(self, name, full_path=False):  # TODO: log if file can't be opened
+    # TODO: log if file can't be opened
+    def get_content_of_file(self, name, full_path=False):
         """Returns content of file from archive.
 
         If full_path is set to False and two files with given name exist,
@@ -153,35 +157,43 @@ class Archive(object):
         """
         if self.handle:
             for member in self.handle.getmembers():
-                if (full_path and member.name == name)\
-                        or (not full_path and os.path.basename(member.name) == name):
+                if (full_path and member.name == name) or (
+                        not full_path and os.path.basename(
+                            member.name) == name):
                     extracted = self.handle.extractfile(member)
-                    return extracted.read().decode(locale.getpreferredencoding())
+                    return extracted.read().decode(
+                        locale.getpreferredencoding())
 
         return None
 
     def extract_file(self, name, full_path=False, directory="."):
         """Extract a member from the archive to the specified working directory.
-        Behaviour of name and pull_path is the same as in function get_content_of_file.
+        Behaviour of name and pull_path is the same as in function
+        get_content_of_file.
         """
         if self.handle:
             for member in self.handle.getmembers():
                 if (full_path and member.name == name or
-                        not full_path and os.path.basename(member.name) == name):
-                    self.handle.extract(member, path=directory)   # TODO handle KeyError exception
+                        not full_path and os.path.basename(
+                            member.name) == name):
+                    # TODO handle KeyError exception
+                    self.handle.extract(member, path=directory)
 
     def extract_all(self, directory=".", members=None):
-        """Extract all member from the archive to the specified working directory."""
+        """Extract all member from the archive to the specified working
+        directory.
+        """
         if self.handle:
             self.handle.extractall(path=directory, members=members)
 
-    def has_file_with_suffix(self, suffixes):  # TODO: maybe implement this using get_files_re
+    # TODO: maybe implement this using get_files_re
+    def has_file_with_suffix(self, suffixes):
         """Finds out if there is a file with one of suffixes in the archive.
         Args:
             suffixes: list of suffixes or single suffix to look for
         Returns:
-            True if there is at least one file with at least one given suffix in the archive,
-            False otherwise (or archive can't be opened)
+            True if there is at least one file with at least one given suffix
+            in the archive, False otherwise (or archive can't be opened)
         """
         if not isinstance(suffixes, list):
             suffixes = [suffixes]
@@ -205,10 +217,12 @@ class Archive(object):
 
         Args:
             file_re: raw string to match files against (gets compiled into re)
-            full_path: whether to match against full path inside the archive or just the filenames
+            full_path: whether to match against full path inside the archive
+            or just the filenames
             ignorecase: whether to ignore case when using the given re
         Returns:
-            List of full paths of files inside the archive that match the given file_re.
+            List of full paths of files inside the archive that match the given
+            file_re.
         """
         try:
             if ignorecase:
@@ -225,13 +239,18 @@ class Archive(object):
             for member in self.handle.getmembers():
                 if isinstance(member, TarInfo) and member.isdir():
                     pass  # for TarInfo files, filter out directories
-                elif (full_path and compiled_re.search(member.name))\
-                        or (not full_path and compiled_re.search(os.path.basename(member.name))):
+                elif (full_path and compiled_re.search(member.name)) or (
+                    not full_path and compiled_re.search(os.path.basename(
+                        member.name))):
                     found.append(member.name)
 
         return found
 
-    def get_directories_re(self, directory_re, full_path=False, ignorecase=False):
+    def get_directories_re(
+            self,
+            directory_re,
+            full_path=False,
+            ignorecase=False):
         """Same as get_files_re, but for directories"""
         if ignorecase:
             compiled_re = re.compile(directory_re, re.I)
@@ -251,8 +270,9 @@ class Archive(object):
                 else:
                     to_match = None
                 if to_match:
-                    if ((full_path and compiled_re.search(to_match))
-                            or (not full_path and compiled_re.search(os.path.basename(to_match)))):
+                    if ((full_path and compiled_re.search(to_match)) or (
+                            not full_path and compiled_re.search(
+                                os.path.basename(to_match)))):
                         found.add(to_match)
 
         return list(found)
