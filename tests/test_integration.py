@@ -29,7 +29,7 @@ class TestSpec(object):
         ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6{0}.spec'),
         ('Jinja2', '-v2.8 --autonc', 'python-Jinja2_autonc.spec'),
         ('buildkit', '-v0.2.2 -b2', 'python-buildkit{0}.spec'),
-        ('StructArray', '-v0.1 -b2', 'python-StructArray{0}.spec'),
+        ('StructArray', '-v0.1 -b2 --no-venv', 'python-StructArray{0}.spec'),
         ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx{0}.spec'),
     ])
     @pytest.mark.webtest

@@ -2,10 +2,18 @@ import pytest
 import shutil
 import tempfile
 from flexmock import flexmock
-from pyp2rpm.virtualenv import (DirsContent, VirtualEnv, site_packages_filter,
-                                scripts_filter)
+try:
+    from pyp2rpm.virtualenv import (DirsContent,
+                                    VirtualEnv,
+                                    site_packages_filter,
+                                    scripts_filter)
+except ImportError:
+    VirtualEnv = None
 from pyp2rpm.name_convertor import NameConvertor
 from pyp2rpm.settings import DEFAULT_DISTRO, DEFAULT_PYTHON_VERSION
+
+pytestmark = pytest.mark.skipif(VirtualEnv is None,
+                                reason="virtualenv-api not installed")
 
 
 class TestUtils(object):

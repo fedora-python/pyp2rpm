@@ -198,6 +198,10 @@ class LocalMetadataExtractor(object):
         return deps_list
 
     @property
+    def venv_extraction_disabled(self):
+        return virtualenv is None or not self.venv
+
+    @property
     def versions_from_archive(self):
         """Return Python versions extracted from trove classifiers. """
         py_vers = versions_from_trove(self.classifiers)
@@ -206,7 +210,7 @@ class LocalMetadataExtractor(object):
     @property
     def has_pth(self):
         """Figure out if package has pth file """
-        if virtualenv is None:
+        if self.venv_extraction_disabled:
             return "." in self.name
         else:
             return None
@@ -250,7 +254,7 @@ class LocalMetadataExtractor(object):
         # for example nose has attribute `packages` but instead of name
         # listing the pacakges is using function to find them, that makes
         # data.packages an empty set if virtualenv is disabled
-        if virtualenv is None and getattr(data, "packages") == []:
+        if self.venv_extraction_disabled and getattr(data, "packages") == []:
             data.packages = [data.name]
 
         return data

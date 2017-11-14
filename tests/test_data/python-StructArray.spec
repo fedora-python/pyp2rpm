@@ -47,9 +47,9 @@ rm -rf %{pypi_name}.egg-info
 
 %files -n python2-%{pypi_name}
 %doc 
-%{python2_sitearch}/structarray.so
+%{python2_sitearch}/%{pypi_name}
 %{python2_sitearch}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Wed Oct 11 2017 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
+* Tue Nov 14 2017 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
 - Initial package.
