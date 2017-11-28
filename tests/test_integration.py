@@ -1,5 +1,7 @@
 import pytest
 import os
+import tempfile
+import shutil
 
 from flexmock import flexmock
 from scripttest import TestFileEnvironment
@@ -20,7 +22,11 @@ class TestSpec(object):
     exe = 'python {0}mybin.py'.format(bin_dir)
 
     def setup_method(self, method):
-        self.env = TestFileEnvironment('{0}/test_output/'.format(tests_dir))
+        self.temp_dir = tempfile.mkdtemp()
+        self.env = TestFileEnvironment(self.temp_dir, start_clear=False)
+
+    def teardown_method(self, method):
+        shutil.rmtree(self.temp_dir)
 
     @pytest.mark.parametrize(('package', 'options', 'expected'), [
         ('Jinja2', '-v2.8', 'python-Jinja2{0}.spec'),
@@ -29,7 +35,7 @@ class TestSpec(object):
         ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6{0}.spec'),
         ('Jinja2', '-v2.8 --autonc', 'python-Jinja2_autonc.spec'),
         ('buildkit', '-v0.2.2 -b2', 'python-buildkit{0}.spec'),
-        ('StructArray', '-v0.1 -b2', 'python-StructArray{0}.spec'),
+        ('StructArray', '-v0.1 -b2 --no-venv', 'python-StructArray{0}.spec'),
         ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx{0}.spec'),
     ])
     @pytest.mark.webtest
@@ -54,7 +60,11 @@ class TestSrpm(object):
     exe = 'python {0}mybin.py'.format(bin_dir)
 
     def setup_method(self, method):
-        self.env = TestFileEnvironment('{0}/test_output/'.format(tests_dir))
+        self.temp_dir = tempfile.mkdtemp()
+        self.env = TestFileEnvironment(self.temp_dir, start_clear=False)
+
+    def teardown_method(self, method):
+        shutil.rmtree(self.temp_dir)
 
     @pytest.mark.webtest
     def test_srpm(self):

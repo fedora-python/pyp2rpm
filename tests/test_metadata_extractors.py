@@ -352,8 +352,7 @@ class TestWheelMetadataExtractor(object):
                 ('py2exe-0.9.2.2-py33.py34-none-any.whl',
                  'py2exe', '0.9.2.2')]:
             self.e.append(me.WheelMetadataExtractor('{0}{1}'.format(
-                self.td_dir, archive), name, self.nc, version))
-            self.e[-1].venv = None
+                self.td_dir, archive), name, self.nc, version, venv=False))
 
     @pytest.mark.parametrize(('i', 'what', 'expected'), [
         (0, 'runtime_deps', [['Requires', 'python-certifi', '==', '2015.11.20'],
@@ -364,7 +363,7 @@ class TestWheelMetadataExtractor(object):
                            ['BuildRequires', 'python-setuptools']]),
 
         (0, 'py_modules', ['_markerlib', 'pkg_resources', 'setuptools']),
-        (0, 'packages', []),
+        (0, 'packages', ['setuptools']),
         (0, 'scripts', []),
         (0, 'home_page', 'https://bitbucket.org/pypa/setuptools'),
         (0, 'summary', 'Easily download, build, install, upgrade, and uninstall Python packages'),
@@ -380,7 +379,7 @@ class TestWheelMetadataExtractor(object):
         (1, 'build_deps', [['BuildRequires', 'python2-devel'],
                            ['BuildRequires', 'python-setuptools']]),
         (1, 'py_modules', ['py2exe']),
-        (1, 'packages', []),
+        (1, 'packages', ['py2exe']),
         (1, 'scripts', ['build_exe-script.py', 'build_exe.exe']),
         (1, 'home_page', 'TODO:'),
         (1, 'summary', 'Build standalone executables for Windows (python 3 version)'),
