@@ -217,6 +217,17 @@ stripped.  for example:  ::      [nosetests]     warningfilters=default
     def test_cut_to_length(self, text, length, delim, expected):
         assert me.cut_to_length(text, length, delim) == expected
 
+    @pytest.mark.parametrize(('i', 'expected'), [
+        (0, False),
+        (1, True),
+        (2, True),
+        (3, False),
+        (4, False),
+    ])
+    def test_has_test_files(self, i, expected):
+        with self.e[i].archive:
+            assert self.e[i].has_test_files == expected
+
 
 class TestPyPIMetadataExtension(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
@@ -305,7 +316,7 @@ class TestSetupPyMetadataExtractor(object):
         (1, 'license', 'MIT license'),
         (1, 'has_pth', False),
         (1, 'has_extension', False),
-        (1, 'has_test_suite', False),
+        (1, 'has_test_suite', True),
         (1, 'has_packages', True),
         (1, 'has_bundled_egg_info', True),
         (1, 'doc_files', ['README.txt']),

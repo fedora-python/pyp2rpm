@@ -224,6 +224,14 @@ class LocalMetadataExtractor(object):
         return self.archive.has_file_with_suffix(settings.EXTENSION_SUFFIXES)
 
     @property
+    def has_test_files(self):
+        """Check if the archive contains files, which can be collected
+        by pytest.
+        """
+        return (self.archive.get_files_re('test_.*.py') +
+                self.archive.get_files_re('.*_test.py')) != []
+
+    @property
     def srcname(self):
         """Return srcname for the macro if the pypi name should be changed.
 
@@ -460,8 +468,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             True if the package contains setup.py test suite, False otherwise
         """
-        return self.metadata['test_suite'] or self.metadata[
-            'tests_require'] != []
+        return (self.has_test_files or self.metadata['test_suite'] or
+                self.metadata['tests_require'] != [])
 
     @property
     def doc_files(self):
@@ -588,7 +596,8 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def has_test_suite(self):
-        return self.json_metadata.get('test_requires', False) is not False
+        return self.has_test_files or self.json_metadata.get(
+            'test_requires', False) is not False
 
     @property
     def doc_files(self):
