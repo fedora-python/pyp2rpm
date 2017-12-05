@@ -12,6 +12,8 @@ Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{
 BuildArch:      noarch
  
 BuildRequires:  python3-devel
+BuildRequires:  python3-babel >= 0.8
+BuildRequires:  python3-markupsafe
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-sphinx
 
@@ -57,6 +59,9 @@ rm -rf html/.{doctrees,buildinfo}
 %install
 %py3_install
 
+%check
+%{__python3} setup.py test
+
 %files -n python3-%{pypi_name}
 %license docs/_themes/LICENSE LICENSE
 %doc README.rst
@@ -68,5 +73,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Mon Oct 23 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

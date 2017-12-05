@@ -12,6 +12,8 @@ Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{
 BuildArch:      noarch
  
 BuildRequires:  python2-devel
+BuildRequires:  python2-babel >= 0.8
+BuildRequires:  python2-markupsafe
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-sphinx
  
@@ -47,6 +49,9 @@ rm -rf html/.{doctrees,buildinfo}
 
 %install
 %{__python2} setup.py install --skip-build --root %{buildroot}
+%check
+%{__python2} setup.py test
+
 
 %files
 %doc README.rst
@@ -58,5 +63,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Mon Oct 23 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.
