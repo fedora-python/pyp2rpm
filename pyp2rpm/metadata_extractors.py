@@ -382,15 +382,20 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             install_requires, runtime=True)))
 
     @property
-    def build_deps(self):  # setup_requires + tests_require
-        """Same as runtime_deps, but build dependencies. Test requires
-        are included only if package contains test suite.
+    def build_deps(self):  # setup_requires [tests_require, install_requires]
+        """Same as runtime_deps, but build dependencies. Test and install
+        requires are included if package contains test suite to prevent
+        %check phase crashes because of missing dependencies
 
         Returns:
             list of build dependencies of the package
         """
-        build_requires = self.metadata['setup_requires'] + self.metadata[
-            'tests_require']
+        build_requires = self.metadata['setup_requires']
+
+        if self.has_test_suite:
+            build_requires += self.metadata['tests_require'] + self.metadata[
+                'install_requires']
+
         if 'setuptools' not in build_requires:
             build_requires.append('setuptools')
         return sorted(self.name_convert_deps_list(deps_from_pyp_format(
@@ -555,7 +560,10 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def build_deps(self):
-        build_requires = self.get_requires(['build_requires', 'test_requires'])
+        build_requires = self.get_requires(['build_requires'])
+        if self.has_test_suite:
+            build_requires += self.get_requires([
+                'test_requires', 'run_requires'])
         if 'setuptools' not in build_requires:
             build_requires.append('setuptools')
         return self.name_convert_deps_list(deps_from_pydit_json(

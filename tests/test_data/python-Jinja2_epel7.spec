@@ -12,10 +12,14 @@ Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{
 BuildArch:      noarch
  
 BuildRequires:  python2-devel
+BuildRequires:  python2-Babel >= 0.8
+BuildRequires:  python2-MarkupSafe
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-sphinx
  
 BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  python%{python3_pkgversion}-Babel >= 0.8
+BuildRequires:  python%{python3_pkgversion}-MarkupSafe
 BuildRequires:  python%{python3_pkgversion}-setuptools
 
 %description
@@ -76,6 +80,10 @@ rm -rf html/.{doctrees,buildinfo}
 %{__python3} setup.py install --skip-build --root %{buildroot}
 %{__python2} setup.py install --skip-build --root %{buildroot}
 
+%check
+%{__python2} setup.py test
+%{__python3} setup.py test
+
 %files -n python2-%{pypi_name}
 %doc README.rst
 %{python2_sitelib}/jinja2
@@ -91,5 +99,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Wed Oct 11 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

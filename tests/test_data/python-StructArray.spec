@@ -45,11 +45,14 @@ rm -rf %{pypi_name}.egg-info
 %install
 %py2_install
 
+%check
+%{__python2} setup.py test
+
 %files -n python2-%{pypi_name}
 %doc 
 %{python2_sitearch}/%{pypi_name}
 %{python2_sitearch}/%{pypi_name}-%{version}-py?.?.egg-info
 
 %changelog
-* Tue Nov 14 2017 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
+* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
 - Initial package.

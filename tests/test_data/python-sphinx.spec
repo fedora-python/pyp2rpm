@@ -13,10 +13,46 @@ Source0:        https://files.pythonhosted.org/packages/source/S/%{pypi_name}/%{
 BuildArch:      noarch
  
 BuildRequires:  python2-devel
+BuildConflicts: python2-babel = 2.0
+BuildRequires:  python2-Jinja2 >= 2.3
+BuildRequires:  python2-Pygments >= 2.0
+BuildRequires:  python2-alabaster < 0.8
+BuildRequires:  python2-alabaster >= 0.7
+BuildRequires:  python2-babel >= 1.3
+BuildRequires:  python2-colorama >= 0.3.5
+BuildRequires:  python2-docutils >= 0.11
+BuildRequires:  python2-html5lib
+BuildRequires:  python2-imagesize
+BuildRequires:  python2-mock
+BuildRequires:  python2-nose
+BuildRequires:  python2-requests
 BuildRequires:  python2-setuptools
+BuildRequires:  python2-simplejson
+BuildRequires:  python2-six >= 1.5
+BuildRequires:  python2-snowballstemmer >= 1.1
+BuildRequires:  python2-sqlalchemy >= 0.9
+BuildRequires:  python2-whoosh >= 2.0
  
 BuildRequires:  python3-devel
+BuildConflicts: python3-babel = 2.0
+BuildRequires:  python3-Jinja2 >= 2.3
+BuildRequires:  python3-Pygments >= 2.0
+BuildRequires:  python3-alabaster < 0.8
+BuildRequires:  python3-alabaster >= 0.7
+BuildRequires:  python3-babel >= 1.3
+BuildRequires:  python3-colorama >= 0.3.5
+BuildRequires:  python3-docutils >= 0.11
+BuildRequires:  python3-html5lib
+BuildRequires:  python3-imagesize
+BuildRequires:  python3-mock
+BuildRequires:  python3-nose
+BuildRequires:  python3-requests
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-simplejson
+BuildRequires:  python3-six >= 1.5
+BuildRequires:  python3-snowballstemmer >= 1.1
+BuildRequires:  python3-sqlalchemy >= 0.9
+BuildRequires:  python3-whoosh >= 2.0
 BuildRequires:  python3-sphinx
 
 %description
@@ -114,6 +150,10 @@ rm -rf html/.{doctrees,buildinfo}
 rm -rf %{buildroot}%{_bindir}/*
 %py3_install
 
+%check
+%{__python2} setup.py test
+%{__python3} setup.py test
+
 %files -n python2-%{srcname}
 %license LICENSE
 %doc README.rst
@@ -135,5 +175,5 @@ rm -rf %{buildroot}%{_bindir}/*
 %license LICENSE
 
 %changelog
-* Tue Oct 24 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
+* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 1.5-1
 - Initial package.

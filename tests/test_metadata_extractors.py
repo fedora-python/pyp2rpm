@@ -307,6 +307,7 @@ class TestSetupPyMetadataExtractor(object):
         (1, 'runtime_deps', [['Requires', 'python-py', '>=', '1.4.7.dev2'],
                              ['Requires', 'python-setuptools']]),
         (1, 'build_deps', [['BuildRequires', 'python2-devel'],
+                           ['BuildRequires', 'python-py', '>=', '1.4.7.dev2'],
                            ['BuildRequires', 'python-setuptools'],
                            ['BuildRequires', 'python-sphinx']]),
         (1, 'py_modules', ['pytest']),
@@ -371,6 +372,8 @@ class TestWheelMetadataExtractor(object):
         (0, 'build_deps', [['BuildRequires', 'python2-devel'],
                            ['BuildRequires', 'python-pytest', '>=', '2.8'],
                            ['BuildRequires', 'python-setuptools[ssl]'],
+                           ['BuildRequires', 'python-certifi', '==',
+                            '2015.11.20'],
                            ['BuildRequires', 'python-setuptools']]),
 
         (0, 'py_modules', ['_markerlib', 'pkg_resources', 'setuptools']),
