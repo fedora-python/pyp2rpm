@@ -252,7 +252,8 @@ class LocalMetadataExtractor(object):
         data = PackageData(
             local_file=self.local_file,
             name=self.name,
-            pkg_name=self.rpm_name or self.name_convertor.rpm_name(self.name),
+            pkg_name=self.rpm_name or self.name_convertor.rpm_name(
+                self.name, pkg_name=True),
             version=self.version,
             srcname=self.srcname)
 
