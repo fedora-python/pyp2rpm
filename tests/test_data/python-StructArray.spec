@@ -49,7 +49,6 @@ rm -rf %{pypi_name}.egg-info
 %{__python2} setup.py test
 
 %files -n python2-%{pypi_name}
-%doc 
 %{python2_sitearch}/%{pypi_name}
 %{python2_sitearch}/%{pypi_name}-%{version}-py?.?.egg-info
 
