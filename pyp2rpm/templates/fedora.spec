@@ -79,7 +79,9 @@ rm -rf %{buildroot}%{_bindir}/*
 {%- if data.doc_license %}
 %license {{data.doc_license|join(' ')}}
 {%- endif %}
+{%- if data.doc_files %}
 %doc {{data.doc_files|join(' ') }}
+{%- endif %}
 {%- if pv == data.base_python_version %}
 {%- for script in data.scripts %}
 %{_bindir}/{{ script }}

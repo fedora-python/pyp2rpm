@@ -75,7 +75,9 @@ rm -rf %{buildroot}%{_bindir}/*
 {%- endif %}
 {% for pv in data.sorted_python_versions %}
 %files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
+{%- if data.doc_files %}
 %doc {{data.doc_files|join(' ') }}
+{%- endif %}
 {%- if pv == data.base_python_version %}
 {%- for script in data.scripts %}
 %{_bindir}/{{ script }}

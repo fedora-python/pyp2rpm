@@ -107,7 +107,9 @@ popd
 
 {% call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
+{%- if data.doc_files %}
 %doc {{ data.doc_files|join(' ') }}
+{%- endif %}
 {%- if pv == data.base_python_version %}
 {%- for script in data.scripts %}
 %{_bindir}/{{ script }}
