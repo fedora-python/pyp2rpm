@@ -29,21 +29,21 @@ class TestSpec(object):
         shutil.rmtree(self.temp_dir)
 
     @pytest.mark.parametrize(('package', 'options', 'expected'), [
-        ('Jinja2', '-v2.8', 'python-Jinja2{0}.spec'),
-        ('Jinja2', '-v2.8 -b3', 'python-Jinja2_base{0}.spec'),
+        ('Jinja2', '-v2.8', 'python-Jinja2_autonc.spec'),
+        ('Jinja2', '-v2.8 -b3', 'python-Jinja2_base_autonc.spec'),
         ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7{0}.spec'),
         ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6{0}.spec'),
-        ('Jinja2', '-v2.8 --autonc', 'python-Jinja2_autonc.spec'),
-        ('buildkit', '-v0.2.2 -b2', 'python-buildkit{0}.spec'),
-        ('StructArray', '-v0.1 -b2 --no-venv', 'python-StructArray{0}.spec'),
-        ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx{0}.spec'),
+        ('Jinja2', '-v2.8 --no-autonc', 'python-Jinja2{0}.spec'),
+        ('buildkit', '-v0.2.2 -b2', 'python-buildkit_autonc.spec'),
+        ('StructArray', '-v0.1 -b2 --no-venv', 'python-StructArray_autonc.spec'),
+        ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx_autonc.spec'),
     ])
     @pytest.mark.webtest
     def test_spec(self, package, options, expected):
         if 'autonc' in expected:
             variant = expected
         else:
-            nc = '_dnfnc' if dnf is not None else ''
+            nc = '_dnfnc' if dnf is not None else '_nc'
             variant = expected.format(nc)
         with open(self.td_dir + variant) as fi:
             self.spec_content = fi.read()
@@ -77,7 +77,7 @@ class TestSrpm(object):
 class TestSclIntegration(object):
     """
     """
-    sphinx_spec = '{0}/test_data/python-sphinx.spec'.format(tests_dir)
+    sphinx_spec = '{0}/test_data/python-sphinx_autonc.spec'.format(tests_dir)
 
     @classmethod
     def setup_class(cls):

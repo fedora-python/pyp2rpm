@@ -12,10 +12,10 @@ Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{
 BuildArch:      noarch
  
 BuildRequires:  python3-devel
-BuildRequires:  python3-babel >= 0.8
-BuildRequires:  python3-markupsafe
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-sphinx
+BuildRequires:  python3dist(babel) >= 0.8
+BuildRequires:  python3dist(markupsafe)
+BuildRequires:  python3dist(setuptools)
+BuildRequires:  python3dist(sphinx)
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
@@ -29,8 +29,8 @@ user.username }}</a></li>...
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
  
-Requires:       python3-babel >= 0.8
-Requires:       python3-markupsafe
+Requires:       python3dist(babel) >= 0.8
+Requires:       python3dist(markupsafe)
 %description -n python3-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
@@ -73,5 +73,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

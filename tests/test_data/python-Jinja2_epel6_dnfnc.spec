@@ -63,5 +63,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.

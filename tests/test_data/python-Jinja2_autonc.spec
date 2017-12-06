@@ -1,7 +1,7 @@
 # Created by pyp2rpm-3.2.3
 %global pypi_name Jinja2
 
-Name:           %{pypi_name}
+Name:           python-%{pypi_name}
 Version:        2.8
 Release:        1%{?dist}
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
@@ -58,9 +58,9 @@ extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
-%package -n %{pypi_name}-doc
+%package -n python-%{pypi_name}-doc
 Summary:        Jinja2 documentation
-%description -n %{pypi_name}-doc
+%description -n python-%{pypi_name}-doc
 Documentation for Jinja2
 
 %prep
@@ -98,10 +98,10 @@ rm -rf html/.{doctrees,buildinfo}
 %{python3_sitelib}/jinja2
 %{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
-%files -n %{pypi_name}-doc
+%files -n python-%{pypi_name}-doc
 %doc html
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Tue Dec 05 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
+* Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
 - Initial package.
