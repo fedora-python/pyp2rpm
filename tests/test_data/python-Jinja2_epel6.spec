@@ -39,7 +39,7 @@ Documentation for Jinja2
 rm -rf %{pypi_name}.egg-info
 
 # generate html docs 
-sphinx-build docs html
+PYTHONPATH=${PWD} sphinx-build docs html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 

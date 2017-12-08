@@ -139,7 +139,7 @@ rm -rf %{pypi_name}.egg-info
 %py2_build
 %py3_build
 # generate html docs 
-sphinx-build-3 doc html
+PYTHONPATH=${PWD} sphinx-build-3 doc html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 

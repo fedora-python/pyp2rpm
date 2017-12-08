@@ -57,7 +57,7 @@ find python{{pv}} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|
 {%- if data.sphinx_dir %}
 # generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...)
 # #}
-{{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, False) }} {{ data.sphinx_dir }} html
+PYTHONPATH=${PWD} {{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, False) }} {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
