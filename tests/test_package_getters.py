@@ -29,7 +29,7 @@ class TestPackageGetters(object):
          'https://files.pythonhosted.org/packages/source/s/setuptools/setuptools-18.3.1-py2.py3-none-any.whl',
          'a21a4d02d0bab2eac499cca72faeb076'),
         ('setuptools', '18.3.1', False, True,
-         'https://pypi.python.org/packages/86/8a/c4666b05c74e840eb9b09d28f4e7ae76fc9075e8c653d0eb4d265a5b49d9/setuptools-18.3.1.tar.gz',
+         'https://files.pythonhosted.org/packages/86/8a/c4666b05c74e840eb9b09d28f4e7ae76fc9075e8c653d0eb4d265a5b49d9/setuptools-18.3.1.tar.gz',
          '748187b93152fa60287dfb896837fd7c'),
         ('pypandoc', '1.1.3', False, False,
          'https://files.pythonhosted.org/packages/source/p/pypandoc/pypandoc-1.1.3.zip',
