@@ -58,7 +58,7 @@ class TestPackageGetters(object):
 
 class TestPypiFileGetter(object):
     client = flexmock(
-        package_releases=lambda n: n == 'spam' and ['2', '1'] or [],
+        package_releases=lambda n: n == 'spam' and ['1', '2'] or [],
         release_urls=lambda n, v: n == 'spam' and v in [
             '2', '1'] and [{'url': 'spam'}] or []
     )
