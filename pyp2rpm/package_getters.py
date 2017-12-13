@@ -140,7 +140,7 @@ class PypiDownloader(PackageGetter):
             raise exceptions.NoSuchPackageException(
                 'Package "{0}" could not be found on PyPI.'.format(name))
 
-        self.version = version or self.versions[0]
+        self.version = version or self.versions[-1]
 
         # if version is specified, will check if such version exists
         if version and self.client.release_urls(name, version) == []:
