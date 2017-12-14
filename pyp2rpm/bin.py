@@ -132,7 +132,7 @@ class SclizeOption(click.Option):
               help='Enable / disable using automatic provides with '
               'a standardized name in dependencies declaration ('
               'default: disabled).',
-              default=False)
+              default=None)
 @click.option('--sclize',
               help='Convert tags and macro definitions to SCL-style using '
               '`spec2scl` module. NOTE: SCL related options can be provided '

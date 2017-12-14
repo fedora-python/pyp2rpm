@@ -80,13 +80,15 @@ class NameConvertor(object):
                     version), '%{{python{0}_pkgversion}}'.format(version))
         return versioned_name
 
-    def rpm_name(self, name, python_version=None):
+    def rpm_name(self, name, python_version=None, pkg_name=False):
         """Returns name of the package converted to (possibly) correct package
            name according to Packaging Guidelines.
         Args:
             name: name to convert
             python_version: python version for which to retrieve the name of
-            the package
+                            the package
+            pkg_name: flag to perform conversion of rpm package name,
+                      present in this class just for API compatibility reason
         Returns:
             Converted name of the package, that should be in line with
             Fedora Packaging Guidelines. If for_python is not None,
@@ -190,10 +192,19 @@ class DandifiedNameConvertor(NameConvertor):
             base.fill_sack()
             self.query = base.sack.query()
 
-    def rpm_name(self, name, python_version=None):
+    def rpm_name(self, name, python_version=None, pkg_name=False):
         """Checks if name converted using superclass rpm_name_method match name
         of package in the query. Searches for correct name if it doesn't.
+        Args:
+            name: name to convert
+            python_version: python version for which to retrieve the name of
+                            the package
+            pkg_name: flag to perform conversion of rpm package name
+                      (foo -> python-foo)
         """
+        if pkg_name:
+            return super(DandifiedNameConvertor, self).rpm_name(
+                name, python_version)
         original_name = name
         converted = super(DandifiedNameConvertor, self).rpm_name(
             name, python_version)
@@ -233,8 +244,18 @@ def canonical_form(name):
 
 
 class AutoProvidesNameConvertor(NameConvertor):
-    """Name convertor based on Automatic Provides for Python RPM Packages."""
-
-    def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION):
+    """Name convertor based on Automatic Provides for Python RPM Packages.
+    Args:
+        name: name to convert
+        python_version: python version for which to retrieve the name of
+                        the package
+        pkg_name: flag to perform conversion of rpm package name
+                  (foo -> python-foo)
+    """
+    def rpm_name(self, name, python_version=settings.DEFAULT_PYTHON_VERSION,
+                 pkg_name=False):
+        if pkg_name:
+            return super(AutoProvidesNameConvertor, self).rpm_name(
+                name, python_version)
         canonical_name = safe_name(name).lower()
         return "python{0}dist({1})".format(python_version, canonical_name)

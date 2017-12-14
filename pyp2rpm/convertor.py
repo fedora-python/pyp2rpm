@@ -213,7 +213,8 @@ class Convertor(object):
         if not hasattr(self, '_name_convertor'):
             name_convertor.NameConvertor.template = os.path.splitext(
                 self.template)[0]
-            if self.autonc:
+            if self.autonc or (self.autonc is None and
+                self.template == 'fedora.spec'):
                 logger.debug("Using AutoProvidesNameConvertor to convert "
                              "names of the packages.")
                 self._name_convertor = name_convertor.AutoProvidesNameConvertor(

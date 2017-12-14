@@ -11,7 +11,7 @@ URL:            http://matthewmarshall.org/projects/structarray/
 Source0:        https://files.pythonhosted.org/packages/source/S/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
  
 BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
+BuildRequires:  python2dist(setuptools)
 
 %description
  StructArray StructArray allows you to perform fast arithmetic operations on
