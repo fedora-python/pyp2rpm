@@ -1,3 +1,9 @@
+3.3.0
+* Use name convertor based on Automatic PyPI provides as default for Fedora
+* Use the warehouse installation URL for XMLRPC client for PyPI
+* Make Python 3 default python version for Fedora
+* Stop creating -MAJOR.MINOR suffixed executables for each python version
+
 3.2.3
 * Make order of requires, scripts, modules and packages deterministic
 * Add name convertor using standardized name format of the dependencies based on virtual Provides
