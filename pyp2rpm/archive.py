@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import sre_constants
+import sys
 
 from zipfile import ZipFile, ZipInfo
 from tarfile import TarFile, TarInfo
@@ -287,13 +288,21 @@ class Archive(object):
     def json_wheel_metadata(self):
         """Simple getter that get content of metadata.json file in .whl archive
         Returns:
-            metadata from metadata.json in json format
+            metadata from metadata.json or pydist.json in json format
         """
-        try:
-            json_file = json.loads(self.get_content_of_file('metadata.json'))
-        except TypeError:
-            json_file = json.loads(self.get_content_of_file('pydist.json'))
-        return json_file
+        for meta_file in ("metadata.json", "pydist.json"):
+            try:
+                return json.loads(self.get_content_of_file(meta_file))
+            except TypeError as err:
+                logger.warning(
+                    'Could not extract metadata from {}.'
+                    ' Error: {}'.format(meta_file, err))
+        sys.exit(
+            'Unable to extract package metadata from .whl archive. '
+            'This might be caused by an old .whl format version. '
+            'You may ask the upstream to upload fresh wheels created '
+            'with wheel >= 0.17.0 or to upload an sdist as well to '
+            'workaround this problem.')
 
     def wheel_description(self):
         """Get content of DESCRIPTION file in .whl archive"""
