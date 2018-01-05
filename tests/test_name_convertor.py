@@ -70,7 +70,7 @@ class TestDandifiedNameConvertor(object):
         ('Cython', '3', 'python3-Cython'),
         ('pytest', '2', 'python2-pytest'),
         ('pytest', '3', 'python3-pytest'),
-        ('vertica', '2', 'vertica-python'),
+        ('vertica', '2', 'python2-vertica'),
         ('oslosphinx', '2', 'python2-oslo-sphinx'),
         ('oslosphinx', '3', 'python3-oslo-sphinx'),
         ('mock', '2', 'python2-mock'),
