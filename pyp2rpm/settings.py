@@ -5,7 +5,7 @@ DEFAULT_PYTHON_VERSIONS = {
     'fedora': ['3', '2'],
     'epel7': ['2', '3'],
     'epel6': ['2'],
-    'mageia': ['2', '3'],
+    'mageia': ['3', '2'],
     'pld': ['2', '3']
 }
 DEFAULT_PYTHON_VERSION = DEFAULT_PYTHON_VERSIONS[DEFAULT_TEMPLATE][0]

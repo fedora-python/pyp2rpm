@@ -4,17 +4,12 @@
 {%- if data.srcname %}
 %global srcname {{ data.srcname }}
 {%- endif %}
-{%- for pv in data.python_versions %}
-%global with_python{{ pv }} 1
-{%- endfor %}
-%define version {{ data.version }}
 
-Name:           {{ data.pkg_name|name_for_python_version(data.base_python_version) }}
-Version:        %{version}
+Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
+Version:        {{ data.version }}
 Release:        %mkrel 1
-Group:          Development/Python
 Summary:        {{ data.summary }}
-
+Group:          Development/Python
 License:        {{ data.license }}
 URL:            {{ data.home_page }}
 Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
@@ -22,106 +17,110 @@ Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.
 {%- if not data.has_extension %}
 BuildArch:      noarch
 {%- endif %}
-{{ dependencies(data.build_deps, False, data.base_python_version, data.base_python_version) | replace("python2-devel", "python-devel") }}
-{%- for pv in data.python_versions %}
-{{ dependencies(data.build_deps, False, pv, data.base_python_version)  | replace("python2-devel", "python-devel") }}
+{%- for pv in data.sorted_python_versions %}
+{{ dependencies(data.build_deps, False, pv, data.base_python_version, False) }}
 {%- endfor %}
-{{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version)  | replace("python2-devel", "python-devel") }}
 
 %description
 {{ data.description|truncate(400)|wordwrap }}
-{% call(pv) for_python_versions(data.python_versions) -%}
-%package -n     {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
-Summary:        {{ data.summary }}
+{% for pv in data.sorted_python_versions %}
+%package -n     {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
+Summary:        %{summary}
+%{?python_provide:%python_provide {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True)}}}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
-
-%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
+%description -n {{data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
 {{ data.description|truncate(400)|wordwrap }}
-{%- endcall %}
+{% endfor -%}
+{%- if data.sphinx_dir %}
+%package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
+Summary:        {{ data.name }} documentation
+%description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
+Documentation for {{ data.name }}
+{%- endif %}
 
 %prep
-%setup -q -n %{pypi_name}-%{version}
+%autosetup -n {{ data.dirname|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}')|default('%{pypi_name}-%{version}', true) }}
 {%- if data.has_bundled_egg_info %}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 {%- endif %}
-{% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-{%- if pv != data.base_python_version -%}
-rm -rf %{py{{pv}}dir}
-cp -a . %{py{{pv}}dir}
-find %{py{{pv}}dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|'
-{%- endif %}
+
+%build
+{%- for pv in data.sorted_python_versions %}
+%py{{ pv }}_build
+{%- endfor %}
 {%- if data.sphinx_dir %}
-# generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...) #}
-{% if pv != data.base_python_version %}python{{ pv }}-{% endif %}sphinx-build {{ data.sphinx_dir }} html
+# generate html docs
+PYTHONPATH=${PWD} {{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, True) }} {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
-{% endcall %}
-
-%build
-{%- call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-{%- if pv != data.base_python_version -%}
-pushd %{py{{ pv }}dir}
-{%- endif %}
-{% if data.has_extension %}CFLAGS="$RPM_OPT_FLAGS" {% endif %}{{ '%{__python}'|python_bin_for_python_version(pv,'__python') }} setup.py build
-{% if pv != data.base_python_version -%}
-popd
-{%- endif %}
-{%- endcall %}
 
 %install
 {%- if data.python_versions|length > 0 %}
-# Must do the subpackages' install first because the scripts in /usr/bin are
-# overwritten with every setup.py install (and we want the python2 version
-# to be the default for now).
-{%- endif -%}
-{%- call(pv) for_python_versions(data.python_versions + [data.base_python_version], data.base_python_version) -%}
-{%- if pv != data.base_python_version -%}
-pushd %{py{{ pv }}dir}
+# Must do the default python version install last because
+# the scripts in /usr/bin are overwritten with every setup.py install.
 {%- endif %}
-{{ '%{__python}'|python_bin_for_python_version(pv,'__python') }} setup.py install --skip-build --root %{buildroot}
-{%- if pv != data.base_python_version %}
-{%- if data.scripts %}
-{%- for script in data.scripts %}
-mv %{buildroot}%{_bindir}/{{ script }} %{buildroot}/%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+{%- for pv in data.python_versions + [data.base_python_version] %}
+{%- if pv == data.base_python_version and data.python_versions and data.scripts %}
+rm -rf %{buildroot}%{_bindir}/*
+{%- endif %}
+%py{{ pv }}_install
+{%- endfor -%}
+{% if data.has_test_suite %}
+
+%check
+{%- for pv in data.sorted_python_versions %}
+%{__python{{ pv }}} setup.py test
 {%- endfor %}
 {%- endif %}
-popd
+{% for pv in data.sorted_python_versions %}
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}
+{%- if data.doc_license %}
+%license {{data.doc_license|join(' ')}}
 {%- endif %}
-{%- endcall %}
-
-
-{% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version) -%}
-%files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
-%doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
-{%- if data.scripts %}
+{%- if data.doc_files %}
+%doc {{data.doc_files|join(' ') }}
+{%- endif %}
+{%- if pv == data.base_python_version %}
 {%- for script in data.scripts %}
-%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+%{_bindir}/{{ script }}
 {%- endfor %}
 {%- endif %}
 {%- if data.py_modules %}
-{% for module in data.py_modules -%}
-{%- if pv == '3' -%}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv,'python') }}/__pycache__/*
+{%- for module in data.py_modules -%}
+{%- if pv == '3' %}
+%{python{{ pv }}_sitelib}/__pycache__/*
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv, 'python') }}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
+%{python{{ pv }}_sitelib}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}
 {%- endif %}
-
 {%- if data.has_extension %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv, 'python') }}/{{ data.name | module_to_path(data.underscored_name) }}
-{%- if data.has_pth %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv, 'python') }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+{%- if data.has_packages %}
+{%- for package in data.packages %}
+%{python{{ pv }}_sitearch}/{{ package | package_to_path(data.name) }}
+{%- endfor %}
 {%- endif %}
-{{ '%{python_sitearch}'|sitedir_for_python_version(pv, 'python') }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+{%- if data.has_pth %}
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+{%- endif %}
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- else %}
 {%- if data.has_packages %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv, 'python') }}/{{ data.name | module_to_path(data.underscored_name) }}
+{%- for package in data.packages %}
+%{python{{ pv }}_sitelib}/{{ package | package_to_path(data.name) }}
+{%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv, 'python') }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
 {%- endif %}
-{{ '%{python_sitelib}'|sitedir_for_python_version(pv, 'python') }}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
 {%- endif %}
-{%- endcall %}
+{% endfor %}
+{%- if data.sphinx_dir %}
+%files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
+%doc html
+{%- if data.doc_license %}
+%license {{data.doc_license|join(' ')}}
+{%- endif %}
+{% endif %}
