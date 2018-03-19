@@ -29,14 +29,16 @@ class TestSpec(object):
         shutil.rmtree(self.temp_dir)
 
     @pytest.mark.parametrize(('package', 'options', 'expected'), [
-        ('Jinja2', '-v2.8', 'python-Jinja2_autonc.spec'),
-        ('Jinja2', '-v2.8 -b3', 'python-Jinja2_base_autonc.spec'),
+        ('Jinja2', '-v2.8', 'python-Jinja2_py3_autonc.spec'),
+        ('Jinja2', '-v2.8 -p2', 'python-Jinja2_py23_autonc.spec'),
+        ('Jinja2', '-v2.8 -b2', 'python-Jinja2_py2_autonc.spec'),
+        ('Jinja2', '-v2.8 -b3', 'python-Jinja2_py3_autonc.spec'),
         ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7{0}.spec'),
         ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6{0}.spec'),
-        ('Jinja2', '-v2.8 --no-autonc', 'python-Jinja2{0}.spec'),
+        ('Jinja2', '-v2.8 -p2 --no-autonc', 'python-Jinja2{0}.spec'),
         ('buildkit', '-v0.2.2 -b2', 'python-buildkit_autonc.spec'),
         ('StructArray', '-v0.1 -b2 --no-venv', 'python-StructArray_autonc.spec'),
-        ('Sphinx', '-v1.5 -r python-sphinx', 'python-sphinx_autonc.spec'),
+        ('Sphinx', '-v1.5 -r python-sphinx -p2', 'python-sphinx_autonc.spec'),
     ])
     @pytest.mark.webtest
     def test_spec(self, package, options, expected):
