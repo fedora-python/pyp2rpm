@@ -93,9 +93,8 @@ class SclizeOption(click.Option):
 @click.option('-p',
               help='Additional Python versions to include in the specfile '
               '(e.g -p2 for python2 subpackage). Can be specified multiple '
-              'times (fedora default: "{0}"). Specify additional version '
-              'or use -b explicitly to disable default.'.format(
-                  settings.DEFAULT_PYTHON_VERSIONS[settings.DEFAULT_DISTRO][1]),
+              'times. Specify additional version or use -b explicitly to '
+              'disable default.',
               default=[],
               multiple=True, metavar='PYTHON_VERSIONS')
 @click.option('-s',

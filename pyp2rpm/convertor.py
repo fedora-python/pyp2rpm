@@ -99,23 +99,27 @@ class Convertor(object):
             data.python_versions = [
                 ver for ver in data.python_versions if not int(ver[0]) > 2]
 
-        # extracted versions are overwritten by python versions from
-        # command line options if present
-        if self.base_python_version or self.python_versions:
-            data.base_python_version = (self.base_python_version or
-                                        self.python_versions.pop())
-            data.python_versions = [v for v in self.python_versions
-                                    if not v == data.base_python_version]
-        elif data.python_versions:
-            if self.template_base_py_ver in data.python_versions:
-                data.base_python_version = self.template_base_py_ver
-                data.python_versions.remove(data.base_python_version)
-            else:
-                data.base_python_version, data.python_versions = (
-                    data.python_versions[0], data.python_versions[1:])
-        else:  # versions weren't extracted successfully, default will be used
-            data.base_python_version, data.python_versions = (
-                self.template_base_py_ver, self.template_py_vers)
+        # Set python versions from default values in settings.
+        base_version, additional_versions = (
+            self.template_base_py_ver, self.template_py_vers)
+
+        # Sync default values with extracted versions from PyPI classifiers.
+        if data.python_versions:
+            if base_version not in data.python_versions:
+                base_version = data.python_versions[0]
+
+            additional_versions = [
+                v for v in additional_versions if v in data.python_versions]
+
+        # Override default values with those set from command line if any.
+        if self.base_python_version:
+            base_version = self.base_python_version
+        if self.python_versions:
+            additional_versions = [
+                v for v in self.python_versions if v != base_version]
+
+        data.base_python_version = base_version
+        data.python_versions = additional_versions
 
     def convert(self):
         """Returns RPM SPECFILE.
