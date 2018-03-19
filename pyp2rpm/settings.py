@@ -2,7 +2,7 @@ from pyp2rpm import utils
 
 DEFAULT_TEMPLATE = 'fedora'
 DEFAULT_PYTHON_VERSIONS = {
-    'fedora': ['3', '2'],
+    'fedora': ['3'],
     'epel7': ['2', '3'],
     'epel6': ['2'],
     'mageia': ['3', '2'],
