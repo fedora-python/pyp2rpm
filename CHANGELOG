@@ -1,3 +1,7 @@
+3.3.1
+* Rebase Mageia template based on latest Python Packaging Policy (thanks @Conan-Kudo for the PR)
+* Bug fixes (issue #159)
+
 3.3.0
 * Use name convertor based on Automatic PyPI provides as default for Fedora
 * Use the warehouse installation URL for XMLRPC client for PyPI
