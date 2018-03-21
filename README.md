@@ -31,41 +31,47 @@ All of the options are (print this by running pyp2rpm -h):
     Convert PyPI package to RPM specfile or SRPM.
 
     Arguments:
-      PACKAGE             Provide PyPI name of the package or path to compressed source file.
+      PACKAGE             Provide PyPI name of the package or path to compressed
+                          source file.
 
     Options:
-      -t TEMPLATE             Template file (jinja2 format) to render (default:
-                              "fedora").Search order is 1) filesystem, 2) default
-                              templates.
-      -o [fedora|mageia|pld]  Default distro whose conversion rules to use
-                              (default:"fedora").Default templates have their
-                              rules associated and ignore this.
-      -b BASE_PYTHON          Base Python version to package for (fedora default: "3").
-      -p PYTHON_VERSIONS      Additional Python versions to include in the
-                              specfile (e.g -p2 for python2 subpackage). Can be
-                              specified multiple times (fedora default: "2"). Specify
-                              additional version or use -b explicitly to disable
-                              default.
-      -s                      Spec file ~/rpmbuild/SPECS/python-package_name.spec
-                              will be created (default: prints spec file to
-                              stdout).
-      --srpm                  When used pyp2rpm will produce srpm instead of
-                              printing specfile into stdout.
-      --proxy PROXY           Specify proxy in the form proxy.server:port.
-      -r RPM_NAME             Name of rpm package (overrides calculated name).
-      -d SAVE_PATH            Specify where to save package file, specfile and
-                              generated SRPM (default: "/home/mcyprian/rpmbuild").
-      -v VERSION              Version of the package to download (ignored for
-                              local files).
-      --venv / --no-venv      Enable / disable metadata extraction from virtualenv
-                              (default: enabled).
-      --autonc / --no-autonc  Enable / disable using automatic provides with a
-                              standardized name in dependencies declaration
-                              (default: disabled).
-      --sclize                Convert tags and macro definitions to SCL-style
-                              using `spec2scl` module. NOTE: SCL related options
-                              can be provided alongside this option.
-      -h, --help              Show this message and exit.
+      -t TEMPLATE                     Template file (jinja2 format) to render
+                                      (default: "fedora").Search order is 1)
+                                      filesystem, 2) default templates.
+      -o [fedora|epel7|epel6|mageia|pld]
+                                      Default distro whose conversion rules to use
+                                      (default:"fedora"). Default templates have
+                                      their rules associated and ignore this.
+      -b BASE_PYTHON                  Base Python version to package for (fedora
+                                      default: "3").
+      -p PYTHON_VERSIONS              Additional Python versions to include in the
+                                      specfile (e.g -p2 for python2 subpackage).
+                                      Can be specified multiple times. Specify
+                                      additional version or use -b explicitly to
+                                      disable default.
+      -s                              Spec file ~/rpmbuild/SPECS/python-package_name.spec
+                                      will be created (default:
+                                      prints spec file to stdout).
+      --srpm                          When used pyp2rpm will produce srpm instead
+                                      of printing specfile into stdout.
+      --proxy PROXY                   Specify proxy in the form proxy.server:port.
+      -r RPM_NAME                     Name of rpm package (overrides calculated
+                                      name).
+      -d SAVE_PATH                    Specify where to save package file, specfile
+                                      and generated SRPM (default:
+                                      "/home/mcyprian/rpmbuild").
+      -v VERSION                      Version of the package to download (ignored
+                                      for local files).
+      --venv / --no-venv              Enable / disable metadata extraction from
+                                      virtualenv (default: enabled).
+      --autonc / --no-autonc          Enable / disable using automatic provides
+                                      with a standardized name in dependencies
+                                      declaration (default: disabled).
+      --sclize                        Convert tags and macro definitions to SCL-style
+                                      using `spec2scl` module. NOTE: SCL
+                                      related options can be provided alongside
+                                      this option.
+      -h, --help                      Show this message and exit.
 
     SCL related options:
       --no-meta-runtime-dep       Don't add the runtime dependency on the scl
