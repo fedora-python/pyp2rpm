@@ -31,13 +31,13 @@ Default distro whose conversion rules to use (default: "fedora"). Default templa
 Base Python version to package for (fedora default: "3").
 .TP
 .B "\-p \-\-PYTHON_VERSIONS"
-Additional Python versions to include in the specfile (e.g. -p2 for python2 subpackage). Specify additional version or use -b explicitly to disable default.
+Additional Python versions to include in the specfile (e.g. -p2 for python2 subpackage). Can be specified multiple times. Specify additional version or use -b explicitly to disable default.
 .TP
 .B "\-s \"
 Spec file ~/rpmbuild/SPECS/python-package_name.spec will be created (default: prints spec file to stdout).
 .TP
 .B "\--srpm \ "
-When used pyp2rpm will produce srpm instead of printing specfile into sdout.
+When used pyp2rpm will produce srpm instead of printing specfile into stdout.
 .TP
 .B "\--proxy \-\-PROXY"
 Specify proxy in the form proxy.server:port.
@@ -46,7 +46,7 @@ Specify proxy in the form proxy.server:port.
 Name of rpm package (overrides calculated name).
 .TP
 .B "\-d \-\-SAVE_DIR"
-Where to save the package file (default: "~/rpmbuild").
+Specify where to save package file, specfile and generated SRPM (default: "~/rpmbuild").
 .TP
 .B "\-v \-\-VERSION"
 Version of the package to download (ignored for local files).
