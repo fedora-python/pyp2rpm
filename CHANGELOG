@@ -1,3 +1,6 @@
+3.3.2
+* Make Python 3 the only default Python version for Fedora and Mageia (issue #163)
+
 3.3.1
 * Rebase Mageia template based on latest Python Packaging Policy (thanks @Conan-Kudo for the PR)
 * Bug fixes (issue #159)
