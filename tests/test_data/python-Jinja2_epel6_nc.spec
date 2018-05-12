@@ -10,13 +10,13 @@ License:        BSD
 URL:            http://jinja.pocoo.org/
 Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
- 
+
 BuildRequires:  python2-devel
 BuildRequires:  python2-Babel >= 0.8
 BuildRequires:  python2-MarkupSafe
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-sphinx
- 
+
 Requires:       python2-Babel >= 0.8
 Requires:       python2-MarkupSafe
 
@@ -38,7 +38,7 @@ Documentation for Jinja2
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
-# generate html docs 
+# generate html docs
 PYTHONPATH=${PWD} sphinx-build docs html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
