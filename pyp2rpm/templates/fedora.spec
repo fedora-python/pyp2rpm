@@ -5,11 +5,7 @@
 %global srcname {{ data.srcname }}
 {%- endif %}
 {%- if data.sphinx_dir %}
-%if 0%{?_without_doc}
-%bcond_with doc
-%else
 %bcond_without doc
-%endif
 {%- endif %}
 
 Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
