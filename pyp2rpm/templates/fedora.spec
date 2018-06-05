@@ -5,7 +5,11 @@
 %global srcname {{ data.srcname }}
 {%- endif %}
 {%- if data.sphinx_dir %}
-%global with_doc %{!?_without_doc:1}%{?_without_doc:0}
+%if 0%{?_without_doc}
+%bcond_with doc
+%else
+%bcond_without doc
+%endif
 {%- endif %}
 
 Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
@@ -35,7 +39,7 @@ Summary:        %{summary}
 {{ data.description|truncate(400)|wordwrap }}
 {% endfor -%}
 {%- if data.sphinx_dir %}
-%if 0%{?with_doc}
+%if %{with doc}
 %package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
 Summary:        {{ data.name }} documentation
 %description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
@@ -55,7 +59,7 @@ rm -rf %{pypi_name}.egg-info
 %py{{ pv }}_build
 {%- endfor %}
 {%- if data.sphinx_dir %}
-%if 0%{?with_doc}
+%if %{with doc}
 # generate html docs 
 PYTHONPATH=${PWD} {{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, True) }} {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
@@ -125,7 +129,7 @@ rm -rf %{buildroot}%{_bindir}/*
 {%- endif %}
 {% endfor %}
 {%- if data.sphinx_dir %}
-%if 0%{?with_doc}
+%if %{with doc}
 %files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
 %doc html
 {%- if data.doc_license %}
