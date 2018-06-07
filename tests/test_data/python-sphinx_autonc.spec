@@ -11,7 +11,7 @@ License:        BSD
 URL:            http://sphinx-doc.org/
 Source0:        https://files.pythonhosted.org/packages/source/S/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
- 
+
 BuildRequires:  python2-devel
 BuildConflicts: python2dist(babel) = 2.0
 BuildRequires:  python2dist(alabaster) < 0.8
@@ -32,7 +32,7 @@ BuildRequires:  python2dist(six) >= 1.5
 BuildRequires:  python2dist(snowballstemmer) >= 1.1
 BuildRequires:  python2dist(sqlalchemy) >= 0.9
 BuildRequires:  python2dist(whoosh) >= 2.0
- 
+
 BuildRequires:  python3-devel
 BuildConflicts: python3dist(babel) = 2.0
 BuildRequires:  python3dist(alabaster) < 0.8
@@ -66,7 +66,7 @@ Sphinx uses...
 %package -n     python2-%{srcname}
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{srcname}}
- 
+
 Conflicts:      python2dist(babel) = 2.0
 Requires:       python2dist(alabaster) < 0.8
 Requires:       python2dist(alabaster) >= 0.7
@@ -97,7 +97,7 @@ Sphinx uses...
 %package -n     python3-%{srcname}
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{srcname}}
- 
+
 Conflicts:      python3dist(babel) = 2.0
 Requires:       python3dist(alabaster) < 0.8
 Requires:       python3dist(alabaster) >= 0.7
@@ -138,7 +138,7 @@ rm -rf %{pypi_name}.egg-info
 %build
 %py2_build
 %py3_build
-# generate html docs 
+# generate html docs
 PYTHONPATH=${PWD} sphinx-build-3 doc html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}

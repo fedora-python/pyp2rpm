@@ -10,7 +10,7 @@ License:        BSD
 URL:            http://jinja.pocoo.org/
 Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
- 
+
 BuildRequires:  python3-devel
 BuildRequires:  python3dist(babel) >= 0.8
 BuildRequires:  python3dist(markupsafe)
@@ -28,7 +28,7 @@ user.username }}</a></li>...
 %package -n     python3-%{pypi_name}
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
- 
+
 Requires:       python3dist(babel) >= 0.8
 Requires:       python3dist(markupsafe)
 %description -n python3-%{pypi_name}
@@ -51,7 +51,7 @@ rm -rf %{pypi_name}.egg-info
 
 %build
 %py3_build
-# generate html docs 
+# generate html docs
 PYTHONPATH=${PWD} sphinx-build-3 docs html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}

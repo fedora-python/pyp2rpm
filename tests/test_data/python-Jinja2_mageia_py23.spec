@@ -1,26 +1,26 @@
-# Created by pyp2rpm-3.2.3
+# Created by pyp2rpm-3.3.1
 %global pypi_name Jinja2
 
 Name:           python-%{pypi_name}
 Version:        2.8
-Release:        1%{?dist}
+Release:        %mkrel 1
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
-
+Group:          Development/Python
 License:        BSD
 URL:            http://jinja.pocoo.org/
 Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python2-devel
-BuildRequires:  python2-Babel >= 0.8
-BuildRequires:  python2-MarkupSafe
-BuildRequires:  python2-setuptools
-BuildRequires:  python2-sphinx
+BuildRequires:  python2dist(babel) >= 0.8
+BuildRequires:  python2dist(markupsafe)
+BuildRequires:  python2dist(setuptools)
 
-BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  python%{python3_pkgversion}-Babel >= 0.8
-BuildRequires:  python%{python3_pkgversion}-MarkupSafe
-BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3dist(babel) >= 0.8
+BuildRequires:  python3dist(markupsafe)
+BuildRequires:  python3dist(setuptools)
+BuildRequires:  python3dist(sphinx)
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
@@ -31,10 +31,11 @@ content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
 %package -n     python2-%{pypi_name}
-Summary:        A small but fast and easy to use stand-alone template engine written in pure python
+Summary:        %{summary}
+%{?python_provide:%python_provide python2-%{pypi_name}}
 
-Requires:       python2-Babel >= 0.8
-Requires:       python2-MarkupSafe
+Requires:       python2dist(babel) >= 0.8
+Requires:       python2dist(markupsafe)
 %description -n python2-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
@@ -43,12 +44,13 @@ extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
-%package -n     python%{python3_pkgversion}-%{pypi_name}
-Summary:        A small but fast and easy to use stand-alone template engine written in pure python
+%package -n     python3-%{pypi_name}
+Summary:        %{summary}
+%{?python_provide:%python_provide python3-%{pypi_name}}
 
-Requires:       python%{python3_pkgversion}-Babel >= 0.8
-Requires:       python%{python3_pkgversion}-MarkupSafe
-%description -n python%{python3_pkgversion}-%{pypi_name}
+Requires:       python3dist(babel) >= 0.8
+Requires:       python3dist(markupsafe)
+%description -n python3-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
 sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
@@ -67,29 +69,31 @@ Documentation for Jinja2
 rm -rf %{pypi_name}.egg-info
 
 %build
-%{__python2} setup.py build
-%{__python3} setup.py build
+%py2_build
+%py3_build
 # generate html docs
-PYTHONPATH=${PWD} sphinx-build docs html
+PYTHONPATH=${PWD} sphinx-build-3 docs html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %install
 # Must do the default python version install last because
 # the scripts in /usr/bin are overwritten with every setup.py install.
-%{__python3} setup.py install --skip-build --root %{buildroot}
-%{__python2} setup.py install --skip-build --root %{buildroot}
+%py2_install
+%py3_install
 
 %check
 %{__python2} setup.py test
 %{__python3} setup.py test
 
 %files -n python2-%{pypi_name}
+%license docs/_themes/LICENSE LICENSE
 %doc README.rst
 %{python2_sitelib}/jinja2
 %{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
-%files -n python%{python3_pkgversion}-%{pypi_name}
+%files -n python3-%{pypi_name}
+%license docs/_themes/LICENSE LICENSE
 %doc README.rst
 %{python3_sitelib}/jinja2
 %{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
@@ -98,6 +102,3 @@ rm -rf html/.{doctrees,buildinfo}
 %doc html
 %license docs/_themes/LICENSE LICENSE
 
-%changelog
-* Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 2.8-1
-- Initial package.

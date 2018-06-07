@@ -10,7 +10,7 @@ License:        GNU AGPLv3
 URL:            http://packages.python.org/buildkit
 Source0:        https://files.pythonhosted.org/packages/source/b/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
- 
+
 BuildRequires:  python2-devel
 BuildRequires:  python2dist(setuptools)
 
@@ -25,7 +25,7 @@ repo...
 %package -n     python2-%{pypi_name}
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{pypi_name}}
- 
+
 Requires:       python2dist(sphinx) = 0.6.7
 %description -n python2-%{pypi_name}
 ++++++++.. contents :: Summary Cloud infrastructure and .deb file management

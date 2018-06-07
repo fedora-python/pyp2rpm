@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import sys
 try:
     import urllib2 as urllib
@@ -124,7 +125,7 @@ class Convertor(object):
     def convert(self):
         """Returns RPM SPECFILE.
         Returns:
-            endered RPM SPECFILE.
+            rendered RPM SPECFILE.
         """
         # move file into position
         try:
@@ -164,7 +165,8 @@ class Convertor(object):
             jinja_template = jinja_env.get_template(self.template)
             logger.info('Using default template: {0}.'.format(self.template))
 
-        return jinja_template.render(data=data, name_convertor=name_convertor)
+        ret = jinja_template.render(data=data, name_convertor=name_convertor)
+        return re.sub(r'[ \t]+\n', "\n", ret)
 
     @property
     def getter(self):

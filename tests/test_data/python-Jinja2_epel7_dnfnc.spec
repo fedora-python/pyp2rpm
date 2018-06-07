@@ -10,13 +10,13 @@ License:        BSD
 URL:            http://jinja.pocoo.org/
 Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
- 
+
 BuildRequires:  python2-devel
 BuildRequires:  python2-babel >= 0.8
 BuildRequires:  python2-markupsafe
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-sphinx
- 
+
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-babel >= 0.8
 BuildRequires:  python%{python3_pkgversion}-markupsafe
@@ -32,7 +32,7 @@ user.username }}</a></li>...
 
 %package -n     python2-%{pypi_name}
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
- 
+
 Requires:       python2-babel >= 0.8
 Requires:       python2-markupsafe
 %description -n python2-%{pypi_name}
@@ -45,7 +45,7 @@ user.username }}</a></li>...
 
 %package -n     python%{python3_pkgversion}-%{pypi_name}
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
- 
+
 Requires:       python%{python3_pkgversion}-babel >= 0.8
 Requires:       python%{python3_pkgversion}-markupsafe
 %description -n python%{python3_pkgversion}-%{pypi_name}
@@ -69,7 +69,7 @@ rm -rf %{pypi_name}.egg-info
 %build
 %{__python2} setup.py build
 %{__python3} setup.py build
-# generate html docs 
+# generate html docs
 PYTHONPATH=${PWD} sphinx-build docs html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
