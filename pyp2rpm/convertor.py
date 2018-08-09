@@ -56,7 +56,37 @@ class Convertor(object):
         if not self.template.endswith('.spec'):
             self.template = '{0}.spec'.format(self.template)
         self.rpm_name = rpm_name
-        self.proxy = proxy
+        #check and set proxy settings
+
+        self.use_proxy = None
+        if (os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy')):
+            if(os.environ.get('HTTP_PROXY')):
+                 self.use_proxy = "true"
+                 self.http_proxy=os.environ.get('HTTP_PROXY')
+            elif(os.environ.get('http_proxy')):
+                 self.use_proxy = "true"
+                 self.http_proxy=os.environ.get('http_proxy')
+        else:
+            if proxy:
+                 self.use_proxy = "true"
+                 self.http_proxy=proxy
+                 os.environ["http_proxy"] = "http://"+proxy
+                 os.environ["HTTP_PROXY"] = "http://"+proxy
+
+        if (os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')):
+            if(os.environ.get('HTTPS_PROXY')):
+                 self.use_proxy = "true"
+                 self.https_proxy=os.environ.get('HTTPS_PROXY')
+            elif(os.environ.get('https_proxy')):
+                 self.use_proxy = "true"
+                 self.https_proxy=os.environ.get('https_proxy')
+        else:
+            if proxy:
+                 self.use_proxy = "true"
+                 self.https_proxy=proxy
+                 os.environ["https_proxy"] = "http://"+proxy
+                 os.environ["HTTPS_PROXY"] = "http://"+proxy
+
         self.venv = venv
         self.autonc = autonc
         self.pypi = True
@@ -287,17 +317,19 @@ class Convertor(object):
         Returns:
             XMLRPC client for PyPI or None.
         """
-        if self.proxy:
-            proxyhandler = urllib.ProxyHandler({"http": self.proxy})
+        if self.use_proxy:
+            proxyhandler = urllib.ProxyHandler({"https": self.https_proxy, "http": self.http_proxy})
             opener = urllib.build_opener(proxyhandler)
             urllib.install_opener(opener)
             transport = ProxyTransport()
         if not hasattr(self, '_client'):
-            transport = None
             if self.pypi:
-                if self.proxy:
-                    logger.info('Using provided proxy: {0}.'.format(
-                        self.proxy))
+                if self.use_proxy:
+                    logger.info('Using provided http_proxy: {0}.'.format(self.http_proxy))
+                    logger.info('Using provided https_proxy: {0}.'.format(self.https_proxy))
+                else:
+                    transport = None
+
                 self._client = xmlrpclib.ServerProxy(settings.PYPI_URL,
                                                      transport=transport)
                 self._client_set = True
@@ -316,6 +348,6 @@ class ProxyTransport(xmlrpclib.Transport):
         request = urllib.Request(url)
         request.add_data(request_body)
         request.add_header("User-Agent", self.user_agent)
-        request.add_header("Content-Type", "text/html")
+        request.add_header("Content-Type", "text/xml")
         f = urllib.urlopen(request)
         return self.parse_response(f)
