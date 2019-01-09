@@ -1,8 +1,10 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
 %global pypi_name {{ data.name }}
+%define pypi_url https://pypi.io/packages/source/%(n=%{pypi_name}; echo ${n::1})/%{pypi_name}
 {%- if data.srcname %}
 %global srcname {{ data.srcname }}
+%define pypi_url https://pypi.io/packages/source/%(n=%{srcname}; echo ${n::1})/%{srcname}
 {%- endif %}
 
 Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
@@ -12,7 +14,7 @@ Summary:        {{ data.summary }}
 Group:          Development/Python
 License:        {{ data.license }}
 URL:            {{ data.home_page }}
-Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:        %{pypi_url}/{{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch
