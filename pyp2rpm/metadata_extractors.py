@@ -347,7 +347,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             except (JSONDecodeError, exc.ExtractionError) as e:
                 logger.error("Could not extract metadata with: {0}".format(
                     path))
-                if isinstance(e, JSONDecodeError):
+                if all(hasattr(e, a) for a in ('msg', 'pos', 'doc')):
                     logger.error("Could not parse JSON: {0} at {1}".format(
                         e.msg, e.pos))
                     logger.error("The JSON was: {0}".format(e.doc))
