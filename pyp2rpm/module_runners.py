@@ -70,7 +70,7 @@ class SubprocessModuleRunner(ModuleRunner):
                     "Subprocess failed, stdout: {0[0]}, stderr: {0[1]}".format(
                         stream_data))
             self._result = json.loads(stream_data[0].split(
-                "extracted json data:\n")[-1])
+                "extracted json data:\n")[-1].split("\n")[0])
 
     @property
     def results(self):

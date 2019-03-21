@@ -67,7 +67,7 @@ class extract_dist(Command):
         """
         if self.stdout:
             sys.stdout.write("extracted json data:\n" + json.dumps(
-                self.metadata, default=to_str))
+                self.metadata, default=to_str) + "\n")
         else:
             extract_dist.class_metadata = self.metadata
 

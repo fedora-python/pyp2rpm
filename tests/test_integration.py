@@ -38,6 +38,7 @@ class TestSpec(object):
         ('Jinja2', '-v2.8 -p2 -t mageia', 'python-Jinja2_mageia_py23.spec'),
         ('Jinja2', '-v2.8 -p2 --no-autonc', 'python-Jinja2{0}.spec'),
         ('buildkit', '-v0.2.2 -b2', 'python-buildkit_autonc.spec'),
+        ('paperwork-backend', '-v1.2.4', 'python-paperwork-backend.spec'),
         ('StructArray', '-v0.1 -b2 --no-venv', 'python-StructArray_autonc.spec'),
         ('Sphinx', '-v1.5 -r python-sphinx -p2', 'python-sphinx_autonc.spec'),
     ])
