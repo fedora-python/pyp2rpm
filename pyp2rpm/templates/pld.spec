@@ -149,18 +149,18 @@ rm -rf $RPM_BUILD_ROOT
 {%- if data.has_extension %}
 %{py{{ v }}_sitedir/%{module}
 {%- if data.has_pth %}
-%{py{{ v }}_sitedir/%{egg_name}-%{version}-py*-*.pth
+%{py{{ v }}_sitedir/%{egg_name}-%{version}-py%{python3_version}-*.pth
 {%- endif %}
-%{py{{ v }}_sitedir/%{egg_name}-%{version}-py*.egg-info
+%{py{{ v }}_sitedir/%{egg_name}-%{version}-py%{python3_version}.egg-info
 {%- else %}
 {%- if data.has_packages %}
 %{py{{ v }}_sitescriptdir}/%{module}
 {%- endif %}
 
 {%- if data.has_pth %}
-%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py*-*.pth
+%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py%{python3_version}-*.pth
 {%- endif %}
-%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py*.egg-info
+%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py%{python3_version}.egg-info
 {%- endif %}
 
 {%- endcall %}
