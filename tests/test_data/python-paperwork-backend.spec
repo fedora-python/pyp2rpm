@@ -55,7 +55,7 @@ rm -rf %{pypi_name}.egg-info
 %doc README.markdown
 %{_bindir}/paperwork-shell
 %{python3_sitelib}/paperwork_backend
-%{python3_sitelib}/paperwork_backend-%{version}-py?.?.egg-info
+%{python3_sitelib}/paperwork_backend-%{version}-py%{python3_version}.egg-info
 
 %changelog
 * Thu Mar 21 2019 Miro Hrončok <mhroncok@redhat.com> - 1.2.4-1

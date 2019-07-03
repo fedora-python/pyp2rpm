@@ -66,7 +66,7 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 %doc README.rst
 %{python3_sitelib}/jinja2
-%{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
 
 %files -n python-%{pypi_name}-doc
 %doc html
