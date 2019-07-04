@@ -51,7 +51,7 @@ rm -rf %{pypi_name}.egg-info
 %license LICENSE.txt
 %doc example/README.txt README.txt
 %{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
+%{python2_sitelib}/%{pypi_name}-%{version}-py%{python2_version}.egg-info
 
 %changelog
 * Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1

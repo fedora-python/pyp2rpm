@@ -50,7 +50,7 @@ rm -rf %{pypi_name}.egg-info
 
 %files -n python2-%{pypi_name}
 %{python2_sitearch}/%{pypi_name}
-%{python2_sitearch}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
+%{python2_sitearch}/%{pypi_name}-%{version}-py%{python2_version}.egg-info
 
 %changelog
 * Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 0.1-1
