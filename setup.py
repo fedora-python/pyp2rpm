@@ -36,7 +36,7 @@ setup(
                     'click',
                     'Jinja2',
                     ],
-    tests_require=['pytest'],
+    tests_require=['pytest < 5'],
     extras_require={
         'venv metadata': ['virtualenv-api'],
         'sclize': ['spec2scl >= 1.2.0']
