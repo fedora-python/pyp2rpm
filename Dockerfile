@@ -1,8 +1,8 @@
 FROM fedora:rawhide
 
 ENV PIP_NO_CACHE_DIR=off \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8
 
 LABEL summary="Image for running automatic tests of pyp2rpm in Travis CI" \
       name="pyp2rpm-tests" \
