@@ -113,11 +113,11 @@ class PackageGetter(object):
                 except OSError:
                     self.save_dir = '/tmp'
                     # pyp2rpm can work without rpmdevtools
-                    logger.warn("Package rpmdevtools is missing , using "
-                                "default folder: {0} to store {1}.".format(
-                                    self.save_dir, self.name))
-                    logger.warn("Specify folder to store a file (SAVE_DIR) "
-                                "or install rpmdevtools.")
+                    logger.warning("Package rpmdevtools is missing , using "
+                                   "default folder: {0} to store {1}.".format(
+                                       self.save_dir, self.name))
+                    logger.warning("Specify folder to store a file (SAVE_DIR) "
+                                   "or install rpmdevtools.")
         logger.info("Using {0} as directory to save source.".format(
             self.save_dir))
 

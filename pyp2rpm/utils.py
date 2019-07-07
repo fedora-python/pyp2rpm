@@ -163,7 +163,7 @@ def get_default_save_path():
     else:
         save_path = rpm_eval(macro)
         if not save_path:
-            logger.warn("rpm tools are missing, using default save path "
-                        "~/rpmbuild/.")
+            logger.warning("rpm tools are missing, using default save path "
+                           "~/rpmbuild/.")
             save_path = os.path.expanduser('~/rpmbuild')
     return save_path
