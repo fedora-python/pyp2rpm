@@ -158,9 +158,9 @@ class Convertor(object):
                 os.path.abspath(self.template))
         except jinja2.exceptions.TemplateNotFound:
             # absolute path not found => search in default template dir
-            logger.warn('Template: {0} was not found in {1} using default '
-                        'template dir.'.format(
-                            self.template, os.path.abspath(self.template)))
+            logger.warning('Template: {0} was not found in {1} using default '
+                           'template dir.'.format(
+                               self.template, os.path.abspath(self.template)))
 
             jinja_template = jinja_env.get_template(self.template)
             logger.info('Using default template: {0}.'.format(self.template))
@@ -227,9 +227,9 @@ class Convertor(object):
                 self._name_convertor = name_convertor.AutoProvidesNameConvertor(
                     self.distro)
             elif dnf is None:
-                logger.warn("Dnf module not found, please dnf install "
-                            "python{0}-dnf to improve accuracy of name "
-                            "conversion.".format(sys.version[0]))
+                logger.warning("Dnf module not found, please dnf install "
+                               "python{0}-dnf to improve accuracy of name "
+                               "conversion.".format(sys.version[0]))
                 logger.debug(
                     "Using NameConvertor to convert names of the packages.")
                 self._name_convertor = name_convertor.NameConvertor(
