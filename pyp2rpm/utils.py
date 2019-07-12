@@ -136,17 +136,21 @@ else:
 @contextlib.contextmanager
 def c_time_locale():
     """Context manager with C LC_TIME locale"""
+    # https://bugs.python.org/issue30755
+    # Python may alias the configured locale to another name, which
+    # may not be installed.  In order to fall back to the C.UTF-8 locale,
+    # the alias must be removed so that we can determine whether or not
+    # we're running in that locale, and later so that it can be restored.
+    if 'c.utf8' in locale.locale_alias:
+        del(locale.locale_alias['c.utf8'])
     old_time_locale = locale.getlocale(locale.LC_TIME)
     locale.setlocale(locale.LC_TIME, 'C')
     yield
     try:
         locale.setlocale(locale.LC_TIME, old_time_locale)
     except locale.Error:
-        # https://bugs.python.org/issue30755
-        # Python may alias the configured locale to another name, and
-        # that locale may not be installed.  Attempt to use the built-in
-        # locale with UTF-8 support, and if that fails then use
-        # the built-in locale without UTF-8.
+        # Attempt to use the built-in locale with UTF-8 support,
+        # and if that fails then use the built-in locale without UTF-8.
         try:
             locale.setlocale(locale.LC_TIME, 'C.UTF-8')
         except locale.Error:
