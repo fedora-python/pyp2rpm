@@ -144,9 +144,13 @@ def c_time_locale():
     except locale.Error:
         # https://bugs.python.org/issue30755
         # Python may alias the configured locale to another name, and
-        # that locale may not be installed.  In this case, the locale
-        # should simply be left in the 'C' locale.
-        pass
+        # that locale may not be installed.  Attempt to use the built-in
+        # locale with UTF-8 support, and if that fails then use
+        # the built-in locale without UTF-8.
+        try:
+            locale.setlocale(locale.LC_TIME, 'C.UTF-8')
+        except locale.Error:
+            locale.setlocale(locale.LC_TIME, 'C')
 
 
 def rpm_eval(macro):
