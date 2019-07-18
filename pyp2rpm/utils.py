@@ -139,7 +139,14 @@ def c_time_locale():
     old_time_locale = locale.getlocale(locale.LC_TIME)
     locale.setlocale(locale.LC_TIME, 'C')
     yield
-    locale.setlocale(locale.LC_TIME, old_time_locale)
+    try:
+        locale.setlocale(locale.LC_TIME, old_time_locale)
+    except locale.Error:
+        # https://bugs.python.org/issue30755
+        # Python may alias the configured locale to another name, and
+        # that locale may not be installed.  In this case, the locale
+        # should simply be left in the 'C' locale.
+        pass
 
 
 def rpm_eval(macro):
