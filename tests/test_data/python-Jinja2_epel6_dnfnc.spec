@@ -56,7 +56,7 @@ rm -rf html/.{doctrees,buildinfo}
 %files
 %doc README.rst
 %{python2_sitelib}/jinja2
-%{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%{python2_sitelib}/%{pypi_name}-%{version}-py%{python2_version}.egg-info
 
 %files -n python-%{pypi_name}-doc
 %doc html

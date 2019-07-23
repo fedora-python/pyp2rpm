@@ -102,9 +102,9 @@ rm -rf %{buildroot}%{_bindir}/*
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}-*.pth
 {%- endif %}
-%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}.egg-info
 {%- else %}
 {%- if data.has_packages %}
 {%- for package in data.packages %}
@@ -112,9 +112,9 @@ rm -rf %{buildroot}%{_bindir}/*
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?-*.pth
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}-*.pth
 {%- endif %}
-%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py?.?.egg-info
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}.egg-info
 {%- endif %}
 {% endfor %}
 {%- if data.sphinx_dir %}

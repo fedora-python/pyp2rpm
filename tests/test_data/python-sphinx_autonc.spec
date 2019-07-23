@@ -158,7 +158,7 @@ rm -rf %{buildroot}%{_bindir}/*
 %license LICENSE
 %doc README.rst
 %{python2_sitelib}/sphinx
-%{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%{python2_sitelib}/%{pypi_name}-%{version}-py%{python2_version}.egg-info
 
 %files -n python3-%{srcname}
 %license LICENSE
@@ -168,7 +168,7 @@ rm -rf %{buildroot}%{_bindir}/*
 %{_bindir}/sphinx-build
 %{_bindir}/sphinx-quickstart
 %{python3_sitelib}/sphinx
-%{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
 
 %files -n python-%{srcname}-doc
 %doc html
