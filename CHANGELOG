@@ -1,3 +1,7 @@
+3.3.3
+* Work around an error that occurred when setup.py contained print() calls
+* Use the pythonX_version macro instead of "?.?" in pth and egg-info paths
+
 3.3.2
 * Make Python 3 the only default Python version for Fedora and Mageia (issue #163)
 
