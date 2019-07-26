@@ -116,8 +116,10 @@ class Convertor(object):
         if self.base_python_version:
             base_version = self.base_python_version
         if self.python_versions:
-            additional_versions = [
-                v for v in self.python_versions if v != base_version]
+            additional_versions = self.python_versions
+        # Ensure there are no duplicate versions
+        additional_versions = [
+            v for v in additional_versions if v != base_version]
 
         data.base_python_version = base_version
         data.python_versions = additional_versions
