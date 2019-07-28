@@ -33,7 +33,8 @@ class NameConvertor(object):
                 settings.DEFAULT_TEMPLATE][0]
 
     @classmethod
-    def rpm_versioned_name(cls, name, version, default_number=False):
+    def rpm_versioned_name(cls, name, version, default_number=False,
+                           use_macros=False):
         """Properly versions the name.
         For example:
         rpm_versioned_name('python-foo', '26') will return python26-foo
@@ -74,10 +75,10 @@ class NameConvertor(object):
 
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
-            if ('epel' in cls.distro and version !=
+            if (use_macros and 'epel' in cls.distro and version !=
                     cls.get_default_py_version()):
-                versioned_name = versioned_name.replace('{0}'.format(
-                    version), '%{{python{0}_pkgversion}}'.format(version))
+                versioned_name = versioned_name.replace('python{0}-'.format(
+                    version), 'python%{{python{0}_pkgversion}}-'.format(version))
         return versioned_name
 
     def rpm_name(self, name, python_version=None, pkg_name=False):
