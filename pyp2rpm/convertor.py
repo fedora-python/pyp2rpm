@@ -23,6 +23,7 @@ except ImportError:
 
 import jinja2
 import pprint
+import rpm
 
 from pyp2rpm import exceptions
 from pyp2rpm import filters
@@ -145,6 +146,11 @@ class Convertor(object):
         logger.debug("Extracted metadata:")
         logger.debug(pprint.pformat(data.data))
         self.merge_versions(data)
+
+        # Set the name and version macros so that rpmlib can expand
+        # pypi_source
+        rpm.addMacro('name', self.package)
+        rpm.addMacro('version', self.version)
 
         jinja_env = jinja2.Environment(loader=jinja2.ChoiceLoader([
             jinja2.FileSystemLoader(['/']),

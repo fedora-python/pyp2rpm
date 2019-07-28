@@ -1,3 +1,4 @@
+from rpm import expandMacro
 from pyp2rpm import settings
 from pyp2rpm import name_convertor
 
@@ -61,6 +62,13 @@ def package_to_path(package, module):
     else:
         return package
 
+def macroed_url(url):
+    val = expandMacro('%{pypi_source}')
+    if val == url:
+        return "%{pypi_source}"
+    else:
+        return url
+
 
 __all__ = [name_for_python_version,
            script_name_for_python_version,
@@ -68,4 +76,5 @@ __all__ = [name_for_python_version,
            python_bin_for_python_version,
            macroed_pkg_name,
            module_to_path,
-           package_to_path]
+           package_to_path,
+           macroed_url]

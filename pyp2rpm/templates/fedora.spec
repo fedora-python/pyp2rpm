@@ -1,5 +1,5 @@
 {{ data.credit_line }}
-{% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
+{% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi, macroed_url -%}
 %global pypi_name {{ data.name }}
 {%- if data.srcname %}
 %global srcname {{ data.srcname }}
@@ -12,7 +12,7 @@ Summary:        {{ data.summary }}
 
 License:        {{ data.license }}
 URL:            {{ data.home_page }}
-Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:        {{ data.source0|macroed_url|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch
@@ -50,7 +50,7 @@ rm -rf %{pypi_name}.egg-info
 %py{{ pv }}_build
 {%- endfor %}
 {%- if data.sphinx_dir %}
-# generate html docs 
+# generate html docs
 PYTHONPATH=${PWD} {{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, True) }} {{ data.sphinx_dir }} html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
