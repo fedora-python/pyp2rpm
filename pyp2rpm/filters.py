@@ -1,4 +1,7 @@
-from rpm import expandMacro
+try:
+    import rpm
+except:
+    rpm = None
 from pyp2rpm import settings
 from pyp2rpm import name_convertor
 
@@ -63,6 +66,8 @@ def package_to_path(package, module):
         return package
 
 def macroed_url(url):
+    if not rpm:
+        return url
     val = expandMacro('%{pypi_source}')
     if val == url:
         return "%{pypi_source}"

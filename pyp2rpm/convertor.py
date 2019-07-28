@@ -20,10 +20,13 @@ try:
     import dnf
 except ImportError:
     dnf = None
+try:
+    import rpm
+except ImportError:
+    rpm = None
 
 import jinja2
 import pprint
-import rpm
 
 from pyp2rpm import exceptions
 from pyp2rpm import filters
@@ -149,8 +152,9 @@ class Convertor(object):
 
         # Set the name and version macros so that rpmlib can expand
         # pypi_source
-        rpm.addMacro('name', self.package)
-        rpm.addMacro('version', self.version)
+        if rpm:
+            rpm.addMacro('name', self.package)
+            rpm.addMacro('version', self.version)
 
         jinja_env = jinja2.Environment(loader=jinja2.ChoiceLoader([
             jinja2.FileSystemLoader(['/']),
