@@ -9,6 +9,10 @@ try:
     import dnf
 except ImportError:
     dnf = None
+try:
+    import rpm
+except ImportError:
+    rpm = None
 
 from pyp2rpm.bin import Convertor, SclConvertor, main, convert_to_scl
 
@@ -49,6 +53,9 @@ class TestSpec(object):
         else:
             nc = '_dnfnc' if dnf is not None else '_nc'
             variant = expected.format(nc)
+        if (rpm and rpm.expandMacro('%{pypi_source}') != '%{pypi_source}' and
+            os.path.isfile(self.td_dir + 'pypi_source/' + variant)):
+            variant = 'pypi_source/' + variant
         with open(self.td_dir + variant) as fi:
             self.spec_content = fi.read()
         res = self.env.run('{0} {1} {2}'.format(self.exe, package, options),

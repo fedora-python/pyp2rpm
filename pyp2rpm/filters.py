@@ -68,7 +68,7 @@ def package_to_path(package, module):
 def macroed_url(url):
     if not rpm:
         return url
-    val = expandMacro('%{pypi_source}')
+    val = rpm.expandMacro('%{pypi_source}')
     if val == url:
         return "%{pypi_source}"
     else:
