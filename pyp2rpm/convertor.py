@@ -69,14 +69,12 @@ class Convertor(object):
     @property
     def template_base_py_ver(self):
         """Return default base python version for chosen template. """
-        return settings.DEFAULT_PYTHON_VERSIONS[os.path.splitext(
-            self.template)[0]][0]
+        return settings.DEFAULT_PYTHON_VERSIONS[self.distro][0]
 
     @property
     def template_py_vers(self):
         """Return default python versions for chosen template. """
-        return settings.DEFAULT_PYTHON_VERSIONS[os.path.splitext(
-            self.template)[0]][1:]
+        return settings.DEFAULT_PYTHON_VERSIONS[self.distro][1:]
 
     def merge_versions(self, data):
         """Merges python versions specified in command lines options with
@@ -85,7 +83,7 @@ class Convertor(object):
         python_versions contain values specified by command line options or
         default values, data.python_versions contains extracted data.
         """
-        if self.template == "epel6.spec":
+        if self.distro == "epel6":
             # if user requested version greater than 2, writes error message
             # and exits
             requested_versions = self.python_versions
@@ -217,11 +215,10 @@ class Convertor(object):
     @property
     def name_convertor(self):
         if not hasattr(self, '_name_convertor'):
-            name_convertor.NameConvertor.template = os.path.splitext(
-                self.template)[0]
+            name_convertor.NameConvertor.distro = self.distro
             if self.autonc or (self.autonc is None and
-                (self.template == 'fedora.spec' or
-                 self.template == 'mageia.spec')):
+                (self.distro == 'fedora' or
+                 self.distro == 'mageia')):
                 logger.debug("Using AutoProvidesNameConvertor to convert "
                              "names of the packages.")
                 self._name_convertor = name_convertor.AutoProvidesNameConvertor(

@@ -184,7 +184,7 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize,
     distro = o
     if t and os.path.splitext(t)[0] in settings.KNOWN_DISTROS:
         distro = t
-    elif t and not (b or p):
+    if not distro and not (b or p):
         raise click.UsageError("Default python versions for template {0} are "
                                "missing in settings, add them or use flags "
                                "-b/-p to set python versions.".format(t))

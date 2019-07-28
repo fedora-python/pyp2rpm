@@ -78,7 +78,8 @@ class TestConvertor(object):
     def test_merge_versions_epel6(self, self_bv, self_pv, data_bv, data_pv,
                                   expected_bv, expected_pv):
         c = Convertor(package='pkg', base_python_version=self_bv,
-                      python_versions=self_pv, template='epel6.spec')
+                      python_versions=self_pv, template='epel6.spec',
+                      distro='epel6')
         data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
         data.base_python_version = data_bv
         data.python_versions = data_pv
@@ -93,7 +94,8 @@ class TestConvertor(object):
     ])
     def test_bad_versions(self, self_bv, self_pv):
         c = Convertor(package='pkg', base_python_version=self_bv,
-                      python_versions=self_pv, template='epel6.spec')
+                      python_versions=self_pv, template='epel6.spec',
+                      distro='epel6')
         data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
         with pytest.raises(SystemExit):
             c.merge_versions(data)
