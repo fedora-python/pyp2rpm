@@ -8,7 +8,7 @@ Summary:        Cloud infrastructure and .deb file management software
 
 License:        GNU AGPLv3
 URL:            http://packages.python.org/buildkit
-Source0:        https://files.pythonhosted.org/packages/source/b/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        %{pypi_source}
 BuildArch:      noarch
 
 BuildRequires:  python2-devel

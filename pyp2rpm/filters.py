@@ -62,10 +62,19 @@ def package_to_path(package, module):
         return package
 
 
+def macroed_url(url):
+    if (url.startswith('https://files.pythonhosted.org/packages/source/') and
+        (url.endswith('/%{pypi_name}/%{pypi_name}-%{version}.tar.gz') or
+         url.endswith('/%{pypi_name}/%{pypi_name}-%{version}.zip'))):
+        return '%{pypi_source}'
+    return url
+
+
 __all__ = [name_for_python_version,
            script_name_for_python_version,
            sitedir_for_python_version,
            python_bin_for_python_version,
            macroed_pkg_name,
            module_to_path,
-           package_to_path]
+           package_to_path,
+           macroed_url]

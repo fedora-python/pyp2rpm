@@ -8,7 +8,7 @@ Summary:        Fast operations on arrays of structured data
 
 License:        MIT
 URL:            http://matthewmarshall.org/projects/structarray/
-Source0:        https://files.pythonhosted.org/packages/source/S/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        %{pypi_source}
 
 BuildRequires:  python2-devel
 BuildRequires:  python2dist(setuptools)
