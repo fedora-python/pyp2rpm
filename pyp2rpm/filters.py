@@ -63,10 +63,11 @@ def package_to_path(package, module):
 
 
 def macroed_url(url):
-    if (url.startswith('https://files.pythonhosted.org/packages/source/') and
-        (url.endswith('/%{pypi_name}/%{pypi_name}-%{version}.tar.gz') or
-         url.endswith('/%{pypi_name}/%{pypi_name}-%{version}.zip'))):
-        return '%{pypi_source}'
+    if url.startswith('https://files.pythonhosted.org/packages/source/'):
+        if url.endswith('/%{pypi_name}/%{pypi_name}-%{version}.tar.gz'):
+            return '%{pypi_source}'
+        elif url.endswith('/%{pypi_name}/%{pypi_name}-%{version}.zip'):
+            return '%{pypi_source %{pypi_name} %{version} zip}'
     return url
 
 
