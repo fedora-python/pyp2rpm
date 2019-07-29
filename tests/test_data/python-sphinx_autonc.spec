@@ -9,7 +9,7 @@ Summary:        Python documentation generator
 
 License:        BSD
 URL:            http://sphinx-doc.org/
-Source0:        https://files.pythonhosted.org/packages/source/S/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        %{pypi_source}
 BuildArch:      noarch
 
 BuildRequires:  python2-devel
