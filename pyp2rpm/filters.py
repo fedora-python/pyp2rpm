@@ -11,7 +11,7 @@ def script_name_for_python_version(name, version, minor=False,
                                    default_number=True):
     if not default_number:
         if version == settings.DEFAULT_PYTHON_VERSIONS[
-                name_convertor.NameConvertor.template][0]:
+                name_convertor.NameConvertor.distro][0]:
             return name
     if minor:
         if len(version) > 1:

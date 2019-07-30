@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class NameConvertor(object):
-    template = settings.DEFAULT_TEMPLATE
+    distro = settings.DEFAULT_TEMPLATE
 
     def __init__(self, distro):
         self.distro = distro
@@ -23,11 +23,11 @@ class NameConvertor(object):
     @classmethod
     def get_default_py_version(cls):
         try:
-            return settings.DEFAULT_PYTHON_VERSIONS[cls.template][0]
+            return settings.DEFAULT_PYTHON_VERSIONS[cls.distro][0]
         except KeyError:
             logger.error('Default python versions for template {0} are '
                          'missing in settings, using versions of template '
-                         '{1}.'.format(cls.template,
+                         '{1}.'.format(cls.distro,
                                        settings.DEFAULT_TEMPLATE))
             return settings.DEFAULT_PYTHON_VERSIONS[
                 settings.DEFAULT_TEMPLATE][0]
@@ -57,7 +57,7 @@ class NameConvertor(object):
             # second check is to avoid renaming of python2-devel to
             # python-devel
             if found and found.group(2) != 'devel':
-                if 'epel' not in cls.template:
+                if 'epel' not in cls.distro:
                     return 'python-{0}'.format(regexp.search(name).group(2))
             return name
 
@@ -74,7 +74,7 @@ class NameConvertor(object):
 
             else:
                 versioned_name = 'python{0}-{1}'.format(version, name)
-            if ('epel' in cls.template and version !=
+            if ('epel' in cls.distro and version !=
                     cls.get_default_py_version()):
                 versioned_name = versioned_name.replace('{0}'.format(
                     version), '%{{python{0}_pkgversion}}'.format(version))
