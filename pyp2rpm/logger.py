@@ -10,6 +10,8 @@ file_formatter = logging.Formatter(
     u'%(asctime)s::%(name)s::%(levelname)s::%(message)s')
 console_formatter = logging.Formatter(u'%(levelname)s  %(message)s')
 
+destinations = []
+
 
 class LoggerWriter(object):
     """Allows to redirect stream to logger"""
@@ -38,6 +40,7 @@ class LevelFilter(logging.Filter):
 
 def register_file_log_handler(log_file, level=logging.DEBUG,
                               fmt=file_formatter):
+    destinations.append(log_file)
     dirname = os.path.dirname(log_file)
     try:
         if not os.path.exists(dirname):
@@ -55,6 +58,7 @@ def register_file_log_handler(log_file, level=logging.DEBUG,
 
 
 def register_console_log_handler(level=logging.INFO, fmt=console_formatter):
+    destinations.append('stdout')
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level)
     console_handler.setFormatter(fmt)

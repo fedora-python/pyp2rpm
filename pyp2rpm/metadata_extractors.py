@@ -353,7 +353,10 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
                     logger.error("The JSON was: {0}".format(e.doc))
                 self.unsupported_version = current_version
         else:
-            sys.stdout.write("Failed to extract data from setup.py script.\n")
+            import pyp2rpm.logger
+            sys.stderr.write("Failed to extract data from setup.py script.\n")
+            sys.stderr.write("Check the log for details: {0}\n".format(
+                ', '.join(pyp2rpm.logger.destinations)))
             raise SystemExit(3)
 
     def get_setup_py(self, directory):
