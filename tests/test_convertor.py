@@ -5,8 +5,7 @@ from flexmock import flexmock
 
 from pyp2rpm.convertor import Convertor
 from pyp2rpm.exceptions import NoSuchPackageException
-from pyp2rpm.metadata_extractors import (SetupPyMetadataExtractor,
-                                         WheelMetadataExtractor)
+from pyp2rpm.metadata_extractors import SetupPyMetadataExtractor
 from pyp2rpm.package_getters import PypiDownloader, LocalFileGetter
 from pyp2rpm.package_data import PackageData
 
@@ -37,8 +36,6 @@ class TestConvertor(object):
 
     @pytest.mark.parametrize(('sf', 'expected'), [
         ('{0}plumbum-0.9.0.tar.gz'.format(td_dir), SetupPyMetadataExtractor),
-        ('{0}setuptools-19.6-py2.py3-none-any.whl'.format(td_dir),
-         WheelMetadataExtractor)
     ])
     def test_get_metadata_extractor(self, sf, expected):
         c = Convertor(package=sf)

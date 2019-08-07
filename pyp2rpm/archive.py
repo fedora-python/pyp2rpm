@@ -96,10 +96,6 @@ class Archive(object):
     def is_egg(self):
         return self.suffix == '.egg'
 
-    @property
-    def is_wheel(self):
-        return self.suffix == '.whl'
-
     def open(self):
         try:
             if self.extractor_cls == ZipFile:
@@ -283,30 +279,6 @@ class Archive(object):
         """Return the name of the archive topmost directory."""
         if self.handle:
             return os.path.commonprefix(self.handle.getnames()).rstrip('/')
-
-    @property
-    def json_wheel_metadata(self):
-        """Simple getter that get content of metadata.json file in .whl archive
-        Returns:
-            metadata from metadata.json or pydist.json in json format
-        """
-        for meta_file in ("metadata.json", "pydist.json"):
-            try:
-                return json.loads(self.get_content_of_file(meta_file))
-            except TypeError as err:
-                logger.warning(
-                    'Could not extract metadata from {}.'
-                    ' Error: {}'.format(meta_file, err))
-        sys.exit(
-            'Unable to extract package metadata from .whl archive. '
-            'This might be caused by an old .whl format version. '
-            'You may ask the upstream to upload fresh wheels created '
-            'with wheel >= 0.17.0 or to upload an sdist as well to '
-            'workaround this problem.')
-
-    def wheel_description(self):
-        """Get content of DESCRIPTION file in .whl archive"""
-        return self.get_content_of_file('DESCRIPTION.rst')
 
     @property
     def record(self):

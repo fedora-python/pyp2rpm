@@ -257,14 +257,9 @@ class Convertor(object):
             raise AttributeError("local_file attribute must be set before "
                                  "calling metadata_extractor")
         if not hasattr(self, '_metadata_extractor'):
-            if self.local_file.endswith('.whl'):
-                logger.info("Getting metadata from wheel using "
-                            "WheelMetadataExtractor.")
-                extractor_cls = metadata_extractors.WheelMetadataExtractor
-            else:
-                logger.info("Getting metadata from setup.py using "
-                            "SetupPyMetadataExtractor.")
-                extractor_cls = metadata_extractors.SetupPyMetadataExtractor
+            logger.info("Getting metadata from setup.py using "
+                        "SetupPyMetadataExtractor.")
+            extractor_cls = metadata_extractors.SetupPyMetadataExtractor
 
             base_python_version = (
                 self.base_python_version or self.template_base_py_ver)
