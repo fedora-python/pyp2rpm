@@ -123,6 +123,10 @@ class SclizeOption(click.Option):
               help='Version of the package to download (ignored for '
               'local files).',
               metavar='VERSION')
+@click.option('--pre',
+              help='Use the latest release, even if it is a pre-release '
+              '(default: disabled).',
+              is_flag=True)
 @click.option('--venv / --no-venv',
               help='Enable / disable metadata extraction from virtualenv '
               '(default: enabled).',
@@ -167,8 +171,8 @@ class SclizeOption(click.Option):
               default=None,
               metavar='FILE_NAME')
 @click.argument('package', nargs=1)
-def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize,
-         **scl_kwargs):
+def main(package, v, pre, d, s, r, proxy, srpm, p, b, o, t, venv, autonc,
+         sclize, **scl_kwargs):
     """Convert PyPI package to RPM specfile or SRPM.
 
     \b
@@ -195,6 +199,7 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize,
 
     convertor = Convertor(package=package,
                           version=v,
+                          prerelease=pre,
                           save_dir=d,
                           template=t or settings.DEFAULT_TEMPLATE,
                           distro=distro,

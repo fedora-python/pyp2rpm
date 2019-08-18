@@ -13,6 +13,7 @@ try:
     import xmlrpclib
 except ImportError:
     import xmlrpc.client as xmlrpclib
+from pip._vendor.packaging.version import parse as parse_version
 
 
 from pyp2rpm import settings
@@ -126,21 +127,27 @@ class PypiDownloader(PackageGetter):
 
     """Class for downloading the package from PyPI."""
 
-    def __init__(self, client, name, version=None, save_dir=None):
+    def __init__(self, client, name, version=None, prerelease=False,
+                 save_dir=None):
         self.client = client
         self.name = name
         try:
-            self.versions = self.client.package_releases(self.name)
+            self.versions = self.client.package_releases(self.name, True)
         except xmlrpclib.ProtocolError as e:
             sys.stderr.write("Failed to connect to server: {0} \n".format(e))
             raise SystemExit(3)
+
+        # Use only stable versions, unless --pre was specified
+        if not prerelease:
+            self.versions = [candidate for candidate in self.versions
+                             if not parse_version(candidate).is_prerelease]
 
         # If versions is empty list then there is no such package on PyPI
         if not self.versions:
             raise exceptions.NoSuchPackageException(
                 'Package "{0}" could not be found on PyPI.'.format(name))
 
-        self.version = version or self.versions[-1]
+        self.version = version or self.versions[0]
 
         # if version is specified, will check if such version exists
         if version and self.client.release_urls(name, version) == []:

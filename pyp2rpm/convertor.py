@@ -39,7 +39,7 @@ class Convertor(object):
     the package.
     """
 
-    def __init__(self, package=None, version=None,
+    def __init__(self, package=None, version=None, prerelease=False,
                  save_dir=None,
                  template=settings.DEFAULT_TEMPLATE,
                  distro=settings.DEFAULT_DISTRO,
@@ -48,6 +48,7 @@ class Convertor(object):
                  rpm_name=None, proxy=None, venv=True, autonc=False):
         self.package = package
         self.version = version
+        self.prerelease = prerelease
         self.save_dir = save_dir
         self.base_python_version = base_python_version
         self.python_versions = list(python_versions)
@@ -193,6 +194,7 @@ class Convertor(object):
                     self.client,
                     self.package,
                     self.version,
+                    self.prerelease,
                     self.save_dir)
 
         return self._getter

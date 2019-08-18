@@ -58,9 +58,9 @@ class TestPackageGetters(object):
 
 class TestPypiFileGetter(object):
     client = flexmock(
-        package_releases=lambda n: n == 'spam' and ['1', '2'] or [],
+        package_releases=lambda n, hidden: n == 'spam' and ['3.rc1', '2', '1'] or [],
         release_urls=lambda n, v: n == 'spam' and v in [
-            '2', '1'] and [{'url': 'spam'}] or []
+            '3.rc1', '2', '1'] and [{'url': 'spam'}] or []
     )
 
     @pytest.mark.parametrize(('name', 'version'), [
@@ -77,6 +77,14 @@ class TestPypiFileGetter(object):
     ])
     def test_init_good_data(self, name, version, expected_ver):
         d = PypiDownloader(self.client, name, version)
+        assert d.version == expected_ver
+
+    @pytest.mark.parametrize(('name', 'version', 'expected_ver'), [
+        ('spam', '1', '1'),
+        ('spam', None, '3.rc1'),
+    ])
+    def test_init_good_data_pre(self, name, version, expected_ver):
+        d = PypiDownloader(self.client, name, version, prerelease=True)
         assert d.version == expected_ver
 
 
