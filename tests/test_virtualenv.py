@@ -69,7 +69,7 @@ class TestVirtualEnv(object):
 
     def setup_method(self, method):
         self.temp_dir = tempfile.mkdtemp()
-        self.venv = VirtualEnv(None, self.temp_dir,
+        self.venv = VirtualEnv(None, None, self.temp_dir,
                                NameConvertor(DEFAULT_DISTRO),
                                DEFAULT_PYTHON_VERSION)
 
