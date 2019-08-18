@@ -42,7 +42,7 @@ class DirsContent(object):
         '''
         self.bindir = set(os.listdir(path + 'bin/'))
         self.lib_sitepackages = set(os.listdir(glob.glob(
-            path + 'lib/python?.?/site-packages/')[0]))
+            path + 'lib/python*.*/site-packages/')[0]))
 
     def __sub__(self, other):
         '''
