@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
     return set([x for x in site_packages_list if not x.endswith(
-        ('dist-info', '.pth'))])
+        ('.egg-info', '.dist-info', '.pth'))])
 
 
 def scripts_filter(scripts):
