@@ -58,6 +58,25 @@ def deps_from_pyp_format(requires, runtime=True):
 
     for req in requires:
         try:
+            parsed_req = Requirement.parse(req)
+            specs = parsed_req.specs[:]
+            for op, ver in parsed_req.specs:
+                # PEP-440 states that 'foo~=2.5' is equivalent to
+                # 'foo>=2.5,==2.*'. However, BuildRequires does not support
+                # the '~=' operator nor does it support wildcards, so we
+                # convert to the also equivalent 'foo>=2.5,<3.0'
+                if op == '~=':
+                    specs.append(('>=', ver))
+                    parts = []
+                    for part in ver.split('.'):
+                        if not part[0].isdigit() or '+' in part:
+                            break
+                        parts.append(part)
+                    parts[-1] = '0'
+                    parts[-2] = str(int(parts[-2]) + 1)
+                    specs.append(('<', '.'.join(parts)))
+                    del specs[specs.index((op, ver))]
+            req = parsed_req.name + ','.join(''.join(x) for x in specs)
             parsed.append(Requirement.parse(req))
         except ValueError:
             logger.warn("Unparsable dependency {0}.".format(req),
