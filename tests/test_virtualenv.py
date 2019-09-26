@@ -22,9 +22,9 @@ class TestUtils(object):
         (['foo', 'foo-1.0.0.dist-info'], set(['foo'])),
         (['foo', 'foo-1.0.0.dist-info', 'foo2'], set(['foo', 'foo2'])),
         (['foo', 'foo-1.0.0.dist-info', 'foo2-1.0.0-py2.7.egg-info'],
-         set(['foo', 'foo2-1.0.0-py2.7.egg-info'])),
+         set(['foo'])),
         (['foo', 'foo2-1.0.0-py2.7.egg-info'],
-         set(['foo', 'foo2-1.0.0-py2.7.egg-info'])),
+         set(['foo'])),
         ([], set()),
     ])
     def test_site_packages_filter(self, input, expected):
