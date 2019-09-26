@@ -102,7 +102,8 @@ class TestConvertor(object):
     def test_merge_versions_epel7(self, self_bv, self_pv, data_pv,
                                   expected_bv, expected_pv):
         c = Convertor(package='pkg', base_python_version=self_bv,
-                      python_versions=self_pv, template='epel7.spec')
+                      python_versions=self_pv, template='epel7.spec',
+                      distro='epel7')
         data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
         data.python_versions = data_pv
         c.merge_versions(data)
