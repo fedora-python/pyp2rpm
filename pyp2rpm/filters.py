@@ -4,7 +4,7 @@ from pyp2rpm import name_convertor
 
 def name_for_python_version(name, version, default_number=False):
     return name_convertor.NameConvertor.rpm_versioned_name(
-        name, version, default_number)
+        name, version, default_number, True)
 
 
 def script_name_for_python_version(name, version, minor=False,
