@@ -87,6 +87,28 @@ class TestConvertor(object):
         assert data.base_python_version == expected_bv
         assert data.python_versions == expected_pv
 
+    @pytest.mark.parametrize(('self_bv', 'self_pv', 'data_pv',
+                              'expected_bv', 'expected_pv'), [
+        (None, [], ['2', '3'], '2', ['3']),
+        (None, [], ['3', '2'], '2', ['3']),
+        (None, [], [], '2', ['3']),
+        (None, ['2'], [], '2', []),
+        (None, ['2'], ['2'], '2', []),
+        (None, ['2'], ['3'], '3', ['2']),
+        ('2', [], ['2', '3'], '2', ['3']),
+        ('3', [], ['3', '2'], '3', []),
+        ('3', ['2'], ['2', '3'], '3', ['2']),
+    ])
+    def test_merge_versions_epel7(self, self_bv, self_pv, data_pv,
+                                  expected_bv, expected_pv):
+        c = Convertor(package='pkg', base_python_version=self_bv,
+                      python_versions=self_pv, template='epel7.spec')
+        data = PackageData('pkg.tar.gz', 'pkg', 'pkg', '0.1')
+        data.python_versions = data_pv
+        c.merge_versions(data)
+        assert data.base_python_version == expected_bv
+        assert data.python_versions == expected_pv
+
     @pytest.mark.parametrize(('self_bv', 'self_pv'), [
         ('3', []),
         (None, ['3']),
