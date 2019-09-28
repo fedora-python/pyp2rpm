@@ -69,9 +69,10 @@ class TestVirtualEnv(object):
 
     def setup_method(self, method):
         self.temp_dir = tempfile.mkdtemp()
-        self.venv = VirtualEnv(None, None, self.temp_dir,
-                               NameConvertor(DEFAULT_DISTRO),
-                               DEFAULT_PYTHON_VERSION)
+        self.venv = VirtualEnv(name=None, version=None,
+                               temp_dir=self.temp_dir,
+                               name_convertor=NameConvertor(DEFAULT_DISTRO),
+                               base_python_version=DEFAULT_PYTHON_VERSION)
 
     def teardown_method(self, method):
         shutil.rmtree(self.temp_dir)
