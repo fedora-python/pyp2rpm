@@ -14,6 +14,7 @@ except AttributeError:
     JSONDecodeError = ValueError
 
 import pyp2rpm.exceptions as exc
+import pyp2rpm.logger
 from pyp2rpm import archive
 from pyp2rpm.dependency_parser import (deps_from_pyp_format,
                                        deps_from_pydit_json)
@@ -353,7 +354,9 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
                     logger.error("The JSON was: {0}".format(e.doc))
                 self.unsupported_version = current_version
         else:
-            sys.stdout.write("Failed to extract data from setup.py script.\n")
+            sys.stderr.write("Failed to extract data from setup.py script.\n")
+            sys.stderr.write("Check the log for details: {0}\n".format(
+                ', '.join(pyp2rpm.logger.destinations)))
             raise SystemExit(3)
 
     def get_setup_py(self, directory):
