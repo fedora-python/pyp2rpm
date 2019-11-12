@@ -362,9 +362,17 @@ class TestSetupPyMetadataExtractor(object):
         ('obal-0.5.1.tar.gz', False,
          [['BuildRequires', 'python2-devel'], ['BuildRequires', 'python-setuptools']],
          [['Requires', 'python-ansible', '>=', '2.5'], ['Requires', 'python-setuptools']]),
+        ('djangorestframework-queryfields-1.0.0.tar.gz', True,
+         [['BuildRequires', 'python2-devel'], ['BuildRequires', 'python-django'], ['BuildRequires', 'python-djangorestframework'],
+          ['BuildRequires', 'python-mock-django'], ['BuildRequires', 'python-pytest-django'], ['BuildRequires', 'python-setuptools'],
+          ['BuildRequires', 'python-setuptools'], ['BuildRequires', 'python-wheel']],
+         []),
+        ('djangorestframework-queryfields-1.0.0.tar.gz', False,
+         [['BuildRequires', 'python2-devel'], ['BuildRequires', 'python-setuptools']],
+         []),
     ])
     def test_extras_require(self, archive, include_extras, expected_build, expected_runtime):
-        name, version = archive.split('-')
+        name, version = archive.rsplit('-', 1)
         extractor = me.SetupPyMetadataExtractor('{0}{1}'.format(
             self.td_dir, archive), name, self.nc, version[:5],
             include_extras_require=include_extras)
