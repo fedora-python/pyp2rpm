@@ -355,6 +355,23 @@ class TestSetupPyMetadataExtractor(object):
         assert data.data['doc_license'] == license
         assert data.data['doc_files'] == other
 
+    @pytest.mark.parametrize(('archive', 'include_extras', 'expected_build', 'expected_runtime'), [
+        ('obal-0.5.1.tar.gz', True,
+         [['BuildRequires', 'python2-devel'], ['BuildRequires', 'python-setuptools']],
+         [['Requires', 'python-ansible', '>=', '2.5'], ['Requires', 'python-argcomplete'], ['Requires', 'python-setuptools']]),
+        ('obal-0.5.1.tar.gz', False,
+         [['BuildRequires', 'python2-devel'], ['BuildRequires', 'python-setuptools']],
+         [['Requires', 'python-ansible', '>=', '2.5'], ['Requires', 'python-setuptools']]),
+    ])
+    def test_extras_require(self, archive, include_extras, expected_build, expected_runtime):
+        name, version = archive.split('-')
+        extractor = me.SetupPyMetadataExtractor('{0}{1}'.format(
+            self.td_dir, archive), name, self.nc, version[:5],
+            include_extras_require=include_extras)
+        data = extractor.extract_data()
+        assert data.build_deps == expected_build
+        assert data.runtime_deps == expected_runtime
+
 
 class TestWheelMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
