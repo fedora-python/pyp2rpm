@@ -13,7 +13,7 @@ try:
     import xmlrpclib
 except ImportError:
     import xmlrpc.client as xmlrpclib
-from pip._vendor.packaging.version import parse as parse_version
+from pkg_resources import parse_version
 
 
 from pyp2rpm import settings
