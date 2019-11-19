@@ -87,7 +87,7 @@ rm -rf %{buildroot}%{_bindir}/*
 {%- for module in data.py_modules -%}
 {%- if pv == '3' %}
 %dir %{python{{ pv }}_sitelib}/__pycache__/
-%{python{{ pv }}_sitelib}/__pycache__/*
+%{python{{ pv }}_sitelib}/__pycache__/{{ data.name | module_to_path(module) }}.*
 {%- endif %}
 %{python{{ pv }}_sitelib}/{{ data.name | module_to_path(module) }}.py{% if pv != '3'%}*{% endif %}
 {%- endfor %}

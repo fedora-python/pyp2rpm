@@ -141,7 +141,7 @@ rm -rf $RPM_BUILD_ROOT
 {%- endif %}
 {%- if pv == '3' -%}
 %{py{{ v }}_sitescriptdir}/{{ data.name | module_to_path(module) }}.py
-%{py{{ v }}_sitescriptdir}/__pycache__/*
+%{py{{ v }}_sitescriptdir}/__pycache__/{{ data.name | module_to_path(module) }}.*
 {%- endif %}
 {%- endfor %}
 {%- endif %}
