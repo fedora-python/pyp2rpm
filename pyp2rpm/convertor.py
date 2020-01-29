@@ -220,7 +220,8 @@ class Convertor(object):
             name_convertor.NameConvertor.distro = self.distro
             if self.autonc or (self.autonc is None and
                 (self.distro == 'fedora' or
-                 self.distro == 'mageia')):
+                 self.distro == 'mageia' or
+                 self.distro == 'blackpantheros')):
                 logger.debug("Using AutoProvidesNameConvertor to convert "
                              "names of the packages.")
                 self._name_convertor = name_convertor.AutoProvidesNameConvertor(

@@ -15,6 +15,7 @@ class TestUtils(object):
     def setup_method(self, method):
         self.ncf = NameConvertor('fedora')
         self.ncm = NameConvertor('mageia')
+        self.ncm = NameConvertor('blackpantheros')
 
     @pytest.mark.parametrize(('input', 'expected_f', 'expected_m'), [
         ('python-spam', 'python-spam', 'python-spam'),
