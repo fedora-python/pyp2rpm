@@ -1,5 +1,6 @@
 import os
 
+import setuptools
 import pytest
 
 from flexmock import flexmock
@@ -274,6 +275,12 @@ class TestPyPIMetadataExtension(object):
 
 class TestSetupPyMetadataExtractor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
+    # py34 will get setuptools 43, and packages will not have 'pytest'
+    setuptools_major = int(setuptools.__version__.split('.')[0])
+    if setuptools_major >= 44:
+        pytest_packages = ['_pytest', 'pytest']
+    else:
+        pytest_packages = ['_pytest']
 
     def setup_method(self, method):
         self.nc = NameConvertor('fedora')
@@ -311,7 +318,7 @@ class TestSetupPyMetadataExtractor(object):
                            ['BuildRequires', 'python-setuptools'],
                            ['BuildRequires', 'python-sphinx']]),
         (1, 'py_modules', ['pytest']),
-        (1, 'packages', ['_pytest']),
+        (1, 'packages', pytest_packages),
         (1, 'home_page', 'http://pytest.org'),
         (1, 'summary', 'py.test: simple powerful testing with Python'),
         (1, 'license', 'MIT license'),
