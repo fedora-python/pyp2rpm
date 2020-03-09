@@ -177,7 +177,7 @@ class LocalMetadataExtractor(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, local_file, name, name_convertor, version,
-                 rpm_name=None, venv=True,
+                 rpm_name=None, venv=True, skip_check=False,
                  base_python_version=None,
                  metadata_extension=False):
         self.local_file = local_file
@@ -187,6 +187,7 @@ class LocalMetadataExtractor(object):
         self.version = version
         self.rpm_name = rpm_name
         self.venv = venv
+        self.skip_check = skip_check
         self.base_python_version = base_python_version
         self.metadata_extension = metadata_extension
         self.unsupported_version = None
@@ -481,8 +482,9 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             True if the package contains setup.py test suite, False otherwise
         """
-        return (self.has_test_files or self.metadata['test_suite'] or
-                self.metadata['tests_require'] != [])
+        return (self.skip_check is False and
+                (self.has_test_files or self.metadata['test_suite'] or
+                 self.metadata['tests_require'] != []))
 
     @property
     def doc_files(self):
@@ -612,8 +614,9 @@ class WheelMetadataExtractor(LocalMetadataExtractor):
 
     @property
     def has_test_suite(self):
-        return self.has_test_files or self.json_metadata.get(
-            'test_requires', False) is not False
+        return self.skip_check is False and (
+            self.has_test_files or self.json_metadata.get(
+                'test_requires', False) is not False)
 
     @property
     def doc_files(self):

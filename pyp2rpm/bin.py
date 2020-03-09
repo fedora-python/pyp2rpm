@@ -105,6 +105,10 @@ class SclizeOption(click.Option):
               help='When used pyp2rpm will produce srpm instead of printing '
               'specfile into stdout.',
               is_flag=True)
+@click.option('--skip-check',
+              help='When used pyp2rpm will not include test dependencies or '
+              'the %check section.',
+              is_flag=True)
 @click.option('--proxy',
               help='Specify proxy in the form proxy.server:port.',
               default=None,
@@ -167,8 +171,8 @@ class SclizeOption(click.Option):
               default=None,
               metavar='FILE_NAME')
 @click.argument('package', nargs=1)
-def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize,
-         **scl_kwargs):
+def main(package, v, d, s, r, proxy, srpm, skip_check, p, b, o, t, venv, autonc,
+         sclize, **scl_kwargs):
     """Convert PyPI package to RPM specfile or SRPM.
 
     \b
@@ -203,7 +207,8 @@ def main(package, v, d, s, r, proxy, srpm, p, b, o, t, venv, autonc, sclize,
                           rpm_name=r,
                           proxy=proxy,
                           venv=venv,
-                          autonc=autonc)
+                          autonc=autonc,
+                          skip_check=skip_check)
 
     logger.debug(
         'Convertor: {0} created. Trying to convert.'.format(convertor))
