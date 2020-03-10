@@ -177,7 +177,7 @@ class LocalMetadataExtractor(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, local_file, name, name_convertor, version,
-                 rpm_name=None, venv=True,
+                 rpm_name=None, skip_doc_build=False, venv=True,
                  base_python_version=None,
                  metadata_extension=False):
         self.local_file = local_file
@@ -186,6 +186,7 @@ class LocalMetadataExtractor(object):
         self.name_convertor = name_convertor
         self.version = version
         self.rpm_name = rpm_name
+        self.skip_doc_build = skip_doc_build
         self.venv = venv
         self.base_python_version = base_python_version
         self.metadata_extension = metadata_extension
@@ -527,6 +528,8 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         archive_data['packages'] = self.packages
         archive_data['has_bundled_egg_info'] = self.has_bundled_egg_info
         sphinx_dir = self.sphinx_dir
+        if self.skip_doc_build:
+            sphinx_dir = None
         if sphinx_dir:
             archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])
             archive_data['build_deps'].append(

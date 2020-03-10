@@ -55,6 +55,7 @@ All of the options are (print this by running pyp2rpm -h):
       --srpm                          When used pyp2rpm will produce srpm instead
                                       of printing specfile into stdout.
       --proxy PROXY                   Specify proxy in the form proxy.server:port.
+      --skip-doc-build                 Specify to skip doc build (disabled by default)
       -r RPM_NAME                     Name of rpm package (overrides calculated
                                       name).
       -d SAVE_PATH                    Specify where to save package file, specfile
