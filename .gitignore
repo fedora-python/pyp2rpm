@@ -12,3 +12,4 @@ MANIFEST
 .cache/
 .eggs/
 tests/test_output/
+tests/test_data/utest-*.tar.gz
