@@ -3,6 +3,8 @@ import re
 
 from pkg_resources import Requirement
 
+from pyp2rpm.dependency_convert import convert_requirement
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,21 +23,7 @@ def dependency_to_rpm(dep, runtime):
     """
     logger.debug('Dependencies provided: {0} runtime: {1}.'.format(
         dep, runtime))
-    converted = []
-    if not len(dep.specs):
-        converted.append(['Requires', dep.project_name])
-    else:
-        for ver_spec in dep.specs:
-            if ver_spec[0] == '!=':
-                converted.append(
-                    ['Conflicts', dep.project_name, '{{name}} = {}'.format(ver_spec[1])])
-            elif ver_spec[0] == '==':
-                converted.append(
-                    ['Requires', dep.project_name, '{{name}} = {}'.format(ver_spec[1])])
-            else:
-                converted.append(
-                    ['Requires', dep.project_name, '{{name}} {} {}'.format(
-                        ver_spec[0], ver_spec[1])])
+    converted = convert_requirement(dep)
 
     if not runtime:
         for conv in converted:
