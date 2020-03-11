@@ -9,15 +9,15 @@ class TestDependencyParser():
 
     @pytest.mark.parametrize(('d', 'r', 'expected'), [
         ('docutils>=0.3,<1,!=0.5', True,
-         [['Requires', 'docutils', '>=', '0.3'],
-          ['Requires', 'docutils', '<', '1'],
-          ['Conflicts', 'docutils', '=', '0.5']
+         [['Requires', 'docutils', '{name} >= 0.3'],
+          ['Requires', 'docutils', '{name} < 1'],
+          ['Conflicts', 'docutils', '{name} = 0.5']
           ]
          ),
         ('pytest>=0.3a5,<1.1.1.1,!=1', False,
-         [['BuildRequires', 'pytest', '>=', '0.3a5'],
-          ['BuildRequires', 'pytest', '<', '1.1.1.1'],
-          ['BuildConflicts', 'pytest', '=', '1']
+         [['BuildRequires', 'pytest', '{name} >= 0.3a5'],
+          ['BuildRequires', 'pytest', '{name} < 1.1.1.1'],
+          ['BuildConflicts', 'pytest', '{name} = 1']
           ]
          ),
 

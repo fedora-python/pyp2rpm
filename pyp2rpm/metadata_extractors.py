@@ -287,7 +287,7 @@ class LocalMetadataExtractor(object):
 
         archive_data['runtime_deps'] = self.runtime_deps
         archive_data['build_deps'] = [
-            ['BuildRequires', 'python2-devel']] + self.build_deps
+            ['BuildRequires', 'python2-devel', '{name}']] + self.build_deps
 
         archive_data['py_modules'] = self.py_modules
         archive_data['scripts'] = self.scripts
@@ -531,7 +531,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
             archive_data['sphinx_dir'] = "/".join(sphinx_dir.split("/")[1:])
             archive_data['build_deps'].append(
                 ['BuildRequires', self.name_convertor.rpm_name(
-                    "sphinx", self.base_python_version)])
+                    "sphinx", self.base_python_version), '{name}'])
 
         return archive_data
 

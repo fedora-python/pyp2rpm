@@ -16,8 +16,8 @@ def dependency_to_rpm(dep, runtime):
     Returns:
         List of semi-SPECFILE dependencies (package names are not properly
         converted yet).
-        For example: [['Requires', 'jinja2'],
-                      ['Conflicts', 'jinja2', '=', '2.0.1']]
+        For example: [['Requires', 'jinja2', '{name}'],
+                      ['Conflicts', 'jinja2', '{name} = 2.0.1']]
     """
     logger.debug('Dependencies provided: {0} runtime: {1}.'.format(
         dep, runtime))
@@ -28,13 +28,14 @@ def dependency_to_rpm(dep, runtime):
         for ver_spec in dep.specs:
             if ver_spec[0] == '!=':
                 converted.append(
-                    ['Conflicts', dep.project_name, '=', ver_spec[1]])
+                    ['Conflicts', dep.project_name, '{{name}} = {}'.format(ver_spec[1])])
             elif ver_spec[0] == '==':
                 converted.append(
-                    ['Requires', dep.project_name, '=', ver_spec[1]])
+                    ['Requires', dep.project_name, '{{name}} = {}'.format(ver_spec[1])])
             else:
                 converted.append(
-                    ['Requires', dep.project_name, ver_spec[0], ver_spec[1]])
+                    ['Requires', dep.project_name, '{{name}} {} {}'.format(
+                        ver_spec[0], ver_spec[1])])
 
     if not runtime:
         for conv in converted:
@@ -108,13 +109,14 @@ def deps_from_pydit_json(requires, runtime=True):
         if specs:
             for spec in specs:
                 if '!' in spec[0]:
-                    parsed.append(['Conflicts', name, '=', spec[1]])
+                    parsed.append(['Conflicts', name, '{{name}} = {}'.format(spec[1])])
                 elif specs[0] == '==':
-                    parsed.append(['Requires', name, '=', spec[1]])
+                    parsed.append(['Requires', name, '{{name}} = {}'.format(spec[1])])
                 else:
-                    parsed.append(['Requires', name, spec[0], spec[1]])
+                    parsed.append(['Requires', name, '{{name}} {} {}'.format(
+                        spec[0], spec[1])])
         else:
-            parsed.append(['Requires', name])
+            parsed.append(['Requires', name, '{name}'])
 
     if not runtime:
         for pars in parsed:

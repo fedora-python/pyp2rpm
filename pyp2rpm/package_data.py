@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def get_deps_names(runtime_deps_list):
     '''
     data['runtime_deps'] has format:
-    [['Requires', 'name', '>=', 'version'], ...]
+    [['Requires', 'name', '{name} >= version'], ...]
     this function creates list of lowercase deps names
     '''
     return [x[1].lower() for x in runtime_deps_list]
