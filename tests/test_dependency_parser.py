@@ -7,14 +7,14 @@ from pyp2rpm.dependency_parser import dependency_to_rpm
 
 class TestDependencyParser():
 
-    @pytest.mark.parametrize(('d', 'r', 'expected'), [
-        ('docutils>=0.3,<1,!=0.5', True,
+    @pytest.mark.parametrize(('d', 'r', 'rich', 'expected'), [
+        ('docutils>=0.3,<1,!=0.5', True, False,
          [['Requires', 'docutils', '{name} >= 0.3'],
           ['Requires', 'docutils', '{name} < 1'],
           ['Conflicts', 'docutils', '{name} = 0.5']
           ]
          ),
-        ('pytest>=0.3a5,<1.1.1.1,!=1', False,
+        ('pytest>=0.3a5,<1.1.1.1,!=1', False, False,
          [['BuildRequires', 'pytest', '{name} >= 0.3~a5'],
           ['BuildRequires', 'pytest', '{name} < 1.1.1.1'],
           ['BuildConflicts', 'pytest', '{name} = 1']
@@ -56,9 +56,9 @@ class TestDependencyParser():
          ),
 
     ])
-    def test_dependency_to_rpm(self, d, r, expected):
+    def test_dependency_to_rpm(self, d, r, rich, expected):
         # we can't convert lists of lists into sets => compare len and contents
-        rpm_deps = dependency_to_rpm(R.parse(d), r)
+        rpm_deps = dependency_to_rpm(R.parse(d), r, rich)
         for dep in expected:
             assert dep in rpm_deps
         assert len(expected) == len(rpm_deps)

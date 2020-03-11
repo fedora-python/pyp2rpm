@@ -177,7 +177,7 @@ class LocalMetadataExtractor(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, local_file, name, name_convertor, version,
-                 rpm_name=None, venv=True,
+                 rpm_name=None, venv=True, distro=None,
                  base_python_version=None,
                  metadata_extension=False):
         self.local_file = local_file
@@ -187,6 +187,7 @@ class LocalMetadataExtractor(object):
         self.version = version
         self.rpm_name = rpm_name
         self.venv = venv
+        self.distro = distro
         self.base_python_version = base_python_version
         self.metadata_extension = metadata_extension
         self.unsupported_version = None
@@ -381,13 +382,14 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             list of runtime dependencies of the package
         """
+        use_rich_deps = self.distro not in settings.RPM_RICH_DEP_BLACKLIST
         install_requires = self.metadata['install_requires']
         if self.metadata[
                 'entry_points'] and 'setuptools' not in install_requires:
             install_requires.append('setuptools')  # entrypoints
 
         return sorted(self.name_convert_deps_list(deps_from_pyp_format(
-            install_requires, runtime=True)))
+            install_requires, runtime=True, use_rich_deps=use_rich_deps)))
 
     @property
     def build_deps(self):  # setup_requires [tests_require, install_requires]
@@ -398,6 +400,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         Returns:
             list of build dependencies of the package
         """
+        use_rich_deps = self.distro not in settings.RPM_RICH_DEP_BLACKLIST
         build_requires = self.metadata['setup_requires']
 
         if self.has_test_suite:
@@ -407,7 +410,7 @@ class SetupPyMetadataExtractor(LocalMetadataExtractor):
         if 'setuptools' not in build_requires:
             build_requires.append('setuptools')
         return sorted(self.name_convert_deps_list(deps_from_pyp_format(
-            build_requires, runtime=False)))
+            build_requires, runtime=False, use_rich_deps=use_rich_deps)))
 
     @property
     def has_packages(self):

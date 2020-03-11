@@ -272,6 +272,7 @@ class Convertor(object):
                 self.version,
                 self.rpm_name,
                 self.venv,
+                self.distro,
                 base_python_version)
 
         return self._metadata_extractor

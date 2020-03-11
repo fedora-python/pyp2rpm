@@ -27,6 +27,7 @@ PYPI_USABLE_DATA = ['description', 'summary', 'license',
 PYTHON_INTERPRETER = '/usr/bin/python'
 EXTRACT_DIST_COMMAND_ARGS = ['--quiet', '--command-packages',
                              'pyp2rpm.command', 'extract_dist']
+RPM_RICH_DEP_BLACKLIST = ['epel6', 'epel7']
 
 TROVE_LICENSES = {
     'License :: OSI Approved :: Academic Free License (AFL)': 'AFL',

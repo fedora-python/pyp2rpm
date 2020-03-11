@@ -8,7 +8,7 @@ from pyp2rpm.dependency_convert import convert_requirement
 logger = logging.getLogger(__name__)
 
 
-def dependency_to_rpm(dep, runtime):
+def dependency_to_rpm(dep, runtime, use_rich_deps=True):
     """Converts a dependency got by pkg_resources.Requirement.parse()
     to RPM format.
     Args:
@@ -23,7 +23,7 @@ def dependency_to_rpm(dep, runtime):
     """
     logger.debug('Dependencies provided: {0} runtime: {1}.'.format(
         dep, runtime))
-    converted = convert_requirement(dep)
+    converted = convert_requirement(dep, use_rich_deps)
 
     if not runtime:
         for conv in converted:
@@ -33,7 +33,7 @@ def dependency_to_rpm(dep, runtime):
     return converted
 
 
-def deps_from_pyp_format(requires, runtime=True):
+def deps_from_pyp_format(requires, runtime=True, use_rich_deps=True):
     """Parses dependencies extracted from setup.py.
     Args:
         requires: list of dependencies as written in setup.py of the package.
@@ -54,7 +54,7 @@ def deps_from_pyp_format(requires, runtime=True):
 
     in_rpm_format = []
     for dep in parsed:
-        in_rpm_format.extend(dependency_to_rpm(dep, runtime))
+        in_rpm_format.extend(dependency_to_rpm(dep, runtime, use_rich_deps))
     logger.debug("Dependencies from setup.py in rpm format: {0}.".format(
         in_rpm_format))
 
