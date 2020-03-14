@@ -21,38 +21,35 @@ tests_dir = os.path.split(os.path.abspath(__file__))[0]
 class TestPackageGetters(object):
     client = xmlrpclib.ServerProxy(settings.PYPI_URL)
 
-    @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf', 'expected_url', 'expected_md5'), [
-        ('setuptools', '18.3.1', False, False,
+    @pytest.mark.parametrize(('name', 'version', 'hf', 'expected_url', 'expected_md5'), [
+        ('setuptools', '18.3.1', False,
          'https://files.pythonhosted.org/packages/source/s/setuptools/setuptools-18.3.1.tar.gz',
          '748187b93152fa60287dfb896837fd7c'),
-        ('setuptools', '18.3.1', True, False,
-         'https://files.pythonhosted.org/packages/source/s/setuptools/setuptools-18.3.1-py2.py3-none-any.whl',
-         'a21a4d02d0bab2eac499cca72faeb076'),
-        ('setuptools', '18.3.1', False, True,
+        ('setuptools', '18.3.1', True,
          'https://files.pythonhosted.org/packages/86/8a/c4666b05c74e840eb9b09d28f4e7ae76fc9075e8c653d0eb4d265a5b49d9/setuptools-18.3.1.tar.gz',
          '748187b93152fa60287dfb896837fd7c'),
-        ('pypandoc', '1.1.3', False, False,
+        ('pypandoc', '1.1.3', False,
          'https://files.pythonhosted.org/packages/source/p/pypandoc/pypandoc-1.1.3.zip',
          '771f376bf9c936a90159cd94235998c2'),
     ])
     @pytest.mark.webtest
-    def test_get_url(self, name, version, wheel, hf,
+    def test_get_url(self, name, version, hf,
                      expected_url, expected_md5):
         assert (expected_url, expected_md5) == get_url(
-            self.client, name, version, wheel, hf)
+            self.client, name, version, hf)
 
-    @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf',
+    @pytest.mark.parametrize(('name', 'version', 'hf',
                               'exception', 'error_msg'), [
-        ('nonexistent_pkg', '0.0.0', False, False, MissingUrlException,
+        ('nonexistent_pkg', '0.0.0', False, MissingUrlException,
          'Url of source archive not found.'),
-        ('Pymacs', '0.25', False, False, MissingUrlException,
+        ('Pymacs', '0.25', False, MissingUrlException,
          'Pymacs package has no sources on PyPI, Please ask the maintainer to upload sources.'),
     ])
     @pytest.mark.webtest
-    def test_get_url_raises(self, name, version, wheel, hf,
+    def test_get_url_raises(self, name, version, hf,
                             exception, error_msg):
         with pytest.raises(exception) as exc_info:
-            get_url(self.client, name, version, wheel, hf)
+            get_url(self.client, name, version, hf)
         assert error_msg == str(exc_info.value)
 
 
@@ -90,12 +87,6 @@ class TestLocalFileGetter(object):
                       self.td_dir)),
                   LocalFileGetter('{0}unextractable-1.tar'.format(
                       self.td_dir)),
-                  LocalFileGetter(
-                      '{0}setuptools-19.6-py2.py3-none-any.whl'.format(
-                          self.td_dir)),
-                  LocalFileGetter(
-                      '{0}py2exe-0.9.2.2-py33.py34-none-any.whl'.format(
-                          self.td_dir)),
                   LocalFileGetter('python-foo-1.tar'),
                   LocalFileGetter('python-many-dashes-foo-1.tar'),
                   ]
@@ -109,8 +100,6 @@ class TestLocalFileGetter(object):
         (0, 'plumbum-0.9.0'),
         (1, 'Sphinx-1.1.3-py2.6'),
         (2, 'unextractable-1'),
-        (3, 'setuptools-19.6-py2.py3-none-any'),
-        (4, 'py2exe-0.9.2.2-py33.py34-none-any'),
     ])
     def test_stripped_name_version(self, i, expected):
         assert self.l[i]._stripped_name_version == expected
@@ -118,10 +107,8 @@ class TestLocalFileGetter(object):
     @pytest.mark.parametrize(('i', 'expected'), [
         (0, ('plumbum', '0.9.0')),
         (1, ('Sphinx', '1.1.3')),
-        (3, ('setuptools', '19.6')),
-        (4, ('py2exe', '0.9.2.2')),
-        (5, ('python-foo', '1')),
-        (6, ('python-many-dashes-foo', '1')),
+        (3, ('python-foo', '1')),
+        (4, ('python-many-dashes-foo', '1')),
     ])
     def test_get_name_version(self, i, expected):
         assert self.l[i].get_name_version() == expected
