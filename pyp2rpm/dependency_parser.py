@@ -3,10 +3,12 @@ import re
 
 from pkg_resources import Requirement
 
+from pyp2rpm.dependency_convert import convert_requirement
+
 logger = logging.getLogger(__name__)
 
 
-def dependency_to_rpm(dep, runtime):
+def dependency_to_rpm(dep, runtime, use_rich_deps=True):
     """Converts a dependency got by pkg_resources.Requirement.parse()
     to RPM format.
     Args:
@@ -16,25 +18,12 @@ def dependency_to_rpm(dep, runtime):
     Returns:
         List of semi-SPECFILE dependencies (package names are not properly
         converted yet).
-        For example: [['Requires', 'jinja2'],
-                      ['Conflicts', 'jinja2', '=', '2.0.1']]
+        For example: [['Requires', 'jinja2', '{name}'],
+                      ['Conflicts', 'jinja2', '{name} = 2.0.1']]
     """
     logger.debug('Dependencies provided: {0} runtime: {1}.'.format(
         dep, runtime))
-    converted = []
-    if not len(dep.specs):
-        converted.append(['Requires', dep.project_name])
-    else:
-        for ver_spec in dep.specs:
-            if ver_spec[0] == '!=':
-                converted.append(
-                    ['Conflicts', dep.project_name, '=', ver_spec[1]])
-            elif ver_spec[0] == '==':
-                converted.append(
-                    ['Requires', dep.project_name, '=', ver_spec[1]])
-            else:
-                converted.append(
-                    ['Requires', dep.project_name, ver_spec[0], ver_spec[1]])
+    converted = convert_requirement(dep, use_rich_deps)
 
     if not runtime:
         for conv in converted:
@@ -44,7 +33,7 @@ def dependency_to_rpm(dep, runtime):
     return converted
 
 
-def deps_from_pyp_format(requires, runtime=True):
+def deps_from_pyp_format(requires, runtime=True, use_rich_deps=True):
     """Parses dependencies extracted from setup.py.
     Args:
         requires: list of dependencies as written in setup.py of the package.
@@ -65,7 +54,7 @@ def deps_from_pyp_format(requires, runtime=True):
 
     in_rpm_format = []
     for dep in parsed:
-        in_rpm_format.extend(dependency_to_rpm(dep, runtime))
+        in_rpm_format.extend(dependency_to_rpm(dep, runtime, use_rich_deps))
     logger.debug("Dependencies from setup.py in rpm format: {0}.".format(
         in_rpm_format))
 
@@ -108,13 +97,14 @@ def deps_from_pydit_json(requires, runtime=True):
         if specs:
             for spec in specs:
                 if '!' in spec[0]:
-                    parsed.append(['Conflicts', name, '=', spec[1]])
+                    parsed.append(['Conflicts', name, '{{name}} = {}'.format(spec[1])])
                 elif specs[0] == '==':
-                    parsed.append(['Requires', name, '=', spec[1]])
+                    parsed.append(['Requires', name, '{{name}} = {}'.format(spec[1])])
                 else:
-                    parsed.append(['Requires', name, spec[0], spec[1]])
+                    parsed.append(['Requires', name, '{{name}} {} {}'.format(
+                        spec[0], spec[1])])
         else:
-            parsed.append(['Requires', name])
+            parsed.append(['Requires', name, '{name}'])
 
     if not runtime:
         for pars in parsed:

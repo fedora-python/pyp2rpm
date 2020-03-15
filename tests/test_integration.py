@@ -41,6 +41,10 @@ class TestSpec(object):
         ('paperwork-backend', '-v1.2.4', 'python-paperwork-backend.spec'),
         ('StructArray', '-v0.1 -b2 --no-venv', 'python-StructArray_autonc.spec'),
         ('Sphinx', '-v1.5 -r python-sphinx -p2', 'python-sphinx_autonc.spec'),
+        ('{0}/test_data/utest-0.1.0.tar.gz'.format(tests_dir), '',
+         'python-utest.spec'),
+        ('{0}/test_data/utest-0.1.0.tar.gz'.format(tests_dir), '-t epel7',
+         'python-utest_epel7.spec'),
     ])
     @pytest.mark.webtest
     def test_spec(self, package, options, expected):
