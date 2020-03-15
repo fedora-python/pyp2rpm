@@ -15,7 +15,7 @@ tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
 class TestConvertor(object):
     td_dir = '{0}/test_data/'.format(tests_dir)
-    client = flexmock(package_releases=lambda n: n == 'spam' and ['0.1'] or [])
+    client = flexmock(package_releases=lambda n, hidden: n == 'spam' and ['0.1'] or [])
     Convertor._client = client  # flexmock can't mock properties yet
 
     @pytest.mark.parametrize(('sf', 'g'), [

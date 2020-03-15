@@ -134,7 +134,8 @@ def venv_metadata_extension(extraction_fce):
 
         temp_dir = tempfile.mkdtemp()
         try:
-            extractor = virtualenv.VirtualEnv(self.local_file, temp_dir,
+            extractor = virtualenv.VirtualEnv(self.local_file, self.version,
+                                              temp_dir,
                                               self.name_convertor,
                                               self.base_python_version)
             data.set_from(extractor.get_venv_data, update=True)
