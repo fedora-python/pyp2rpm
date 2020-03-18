@@ -109,6 +109,10 @@ class SclizeOption(click.Option):
               help='Specify proxy in the form proxy.server:port.',
               default=None,
               metavar='PROXY')
+@click.option('--skip-doc-build',
+              help='When used pyp2rpm will not produce doc build ',
+              default=False,
+              is_flag=True)
 @click.option('-r',
               help='Name of rpm package (overrides calculated name).',
               default=None,
@@ -171,7 +175,7 @@ class SclizeOption(click.Option):
               default=None,
               metavar='FILE_NAME')
 @click.argument('package', nargs=1)
-def main(package, v, prerelease, d, s, r, proxy, srpm, p, b, o, t, venv, autonc,
+def main(package, v, prerelease, d, s, r, proxy, skip_doc_build, srpm, p, b, o, t, venv, autonc,
          sclize, **scl_kwargs):
     """Convert PyPI package to RPM specfile or SRPM.
 
@@ -207,6 +211,7 @@ def main(package, v, prerelease, d, s, r, proxy, srpm, p, b, o, t, venv, autonc,
                           python_versions=p,
                           rpm_name=r,
                           proxy=proxy,
+                          skip_doc_build=skip_doc_build,
                           venv=venv,
                           autonc=autonc)
 

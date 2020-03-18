@@ -45,7 +45,7 @@ class Convertor(object):
                  distro=settings.DEFAULT_DISTRO,
                  base_python_version=settings.DEFAULT_PYTHON_VERSION,
                  python_versions=[],
-                 rpm_name=None, proxy=None, venv=True, autonc=False):
+                 rpm_name=None, proxy=None, skip_doc_build=False, venv=True, autonc=False):
         self.package = package
         self.version = version
         self.prerelease = prerelease
@@ -58,6 +58,7 @@ class Convertor(object):
             self.template = '{0}.spec'.format(self.template)
         self.rpm_name = rpm_name
         self.proxy = proxy
+        self.skip_doc_build = skip_doc_build
         self.venv = venv
         self.autonc = autonc
         self.pypi = True
@@ -273,6 +274,7 @@ class Convertor(object):
                 self.name_convertor,
                 self.version,
                 self.rpm_name,
+                self.skip_doc_build,
                 self.venv,
                 self.distro,
                 base_python_version)
