@@ -101,7 +101,3 @@ rm -rf html/.{doctrees,buildinfo}
 %files -n python-%{pypi_name}-doc
 %doc html
 %license docs/_themes/LICENSE LICENSE
-
-%changelog
-* Sat Apr 18 2020 Charles K Barcza/Miklos Horvath <info@blackpanther.hu> 2.8-1bP
-- Initial pyp2rpm package.
