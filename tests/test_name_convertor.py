@@ -19,7 +19,7 @@ class TestUtils(object):
 
     @pytest.mark.parametrize(('input', 'expected_f', 'expected_m', 'expected_b'), [
         ('python-spam', 'python-spam', 'python-spam', 'python-spam'),
-        ('python-PySpam', 'python-PySpam', 'python-PySpam', 'python-pyspam'),
+        ('python-PySpam', 'python-PySpam', 'python-pyspam', 'python-pyspam'),
         ('python-spampy', 'python-spampy', 'python-spampy', 'python-spampy'),
         ('spam-python', 'python-spam', 'python-spam', 'python-spam'),
         ('python26-foo', 'python-foo', 'python-foo', 'python-foo'),
