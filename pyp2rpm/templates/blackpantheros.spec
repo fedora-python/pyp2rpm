@@ -125,6 +125,6 @@ rm -rf %{buildroot}%{_bindir}/*
 {%- endif %}
 {% endif %}
 %changelog
-* {{ data.changelog_date_packager }} - {{ data.version }}-1bP
+* {{ data.changelog_date_packager }} - {{ data.version }}-1
 - Initial for blackPanther OS generated with Pyp2Rpm
---------------------------------------------------------------------
+
