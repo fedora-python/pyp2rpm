@@ -1,3 +1,4 @@
+# Created by pyp2rpm-3.3.4
 %global pypi_name Jinja2
 
 Name:           %{pypi_name}
@@ -72,6 +73,6 @@ rm -rf html/.{doctrees,buildinfo}
 %license docs/_themes/LICENSE LICENSE
 
 %changelog
-* Sun Dec 30 2018 Charles K. Barcza <info@blackpanther.hu> 0.0.23b-1
+* Sun Dec 30 2018 Charles K. Barcza <info@blackpanther.hu> 3.3.3-1
 - build package for blackPanther OS via pyp2rpm
 
