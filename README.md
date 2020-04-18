@@ -6,7 +6,7 @@ pyp2rpm
 
 A tool to convert a PyPI package to an RPM SPECFILE or to generate an SRPM.
 Under heavy development, see the TODO file for a list of planned features.
-pyp2rpm currently ships with Fedora Mageia and blackPanther OS specific templates.
+pyp2rpm currently ships with Fedora, Mageia and blackPanther OS specific templates.
 
 ## Usage
 
