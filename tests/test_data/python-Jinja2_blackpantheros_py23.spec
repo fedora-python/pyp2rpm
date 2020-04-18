@@ -1,3 +1,4 @@
+
 %global pypi_name Jinja2
 
 Name:           python-%{pypi_name}
