@@ -1,3 +1,11 @@
+3.3.4
+* Exclude prereleases unless specifically selected (issue #141)
+* Improve handling of PEP 440 requirements (issue #182)
+* Avoid unnecessary PyPI downloads
+* Avoid duplicate packages (issue #178)
+* Exclude *.egg_info from the list of packages
+* Use the new %pypi_source macro for Source URL (issue #172)
+
 3.3.3
 * Work around an error that occurred when setup.py contained print() calls
 * Use the pythonX_version macro instead of "?.?" in pth and egg-info paths

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def site_packages_filter(site_packages_list):
     '''Removes wheel .dist-info files'''
     return set([x for x in site_packages_list if not x.endswith(
-        ('.egg-info', '.dist-info', '.pth'))])
+        ('.egg-info', '.dist-info', '.pth', '__pycache__', '.pyc'))])
 
 
 def scripts_filter(scripts):
@@ -42,7 +42,7 @@ class DirsContent(object):
         '''
         self.bindir = set(os.listdir(path + 'bin/'))
         self.lib_sitepackages = set(os.listdir(glob.glob(
-            path + 'lib/python?.?/site-packages/')[0]))
+            path + 'lib/python*.*/site-packages/')[0]))
 
     def __sub__(self, other):
         '''
@@ -59,8 +59,10 @@ class DirsContent(object):
 
 class VirtualEnv(object):
 
-    def __init__(self, name, temp_dir, name_convertor, base_python_version):
+    def __init__(self, name, version, temp_dir, name_convertor,
+                 base_python_version):
         self.name = name
+        self.version = version
         self.temp_dir = temp_dir
         self.name_convertor = name_convertor
         if not base_python_version:
@@ -84,7 +86,8 @@ class VirtualEnv(object):
         dependencies
         '''
         try:
-            self.env.install(self.name, force=True, options=["--no-deps"])
+            self.env.install((self.name, self.version), force=True,
+                             options=["--no-deps"])
         except (ve.PackageInstallationException,
                 ve.VirtualenvReadonlyException):
             raise VirtualenvFailException(

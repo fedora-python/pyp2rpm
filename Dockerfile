@@ -1,4 +1,4 @@
-FROM fedora:rawhide
+FROM fedora:30
 
 ENV PIP_NO_CACHE_DIR=off \
     LC_ALL=C.UTF-8 \

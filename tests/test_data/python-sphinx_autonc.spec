@@ -13,10 +13,8 @@ Source0:        %{pypi_source}
 BuildArch:      noarch
 
 BuildRequires:  python2-devel
-BuildConflicts: python2dist(babel) = 2.0
-BuildRequires:  python2dist(alabaster) < 0.8
-BuildRequires:  python2dist(alabaster) >= 0.7
-BuildRequires:  python2dist(babel) >= 1.3
+BuildRequires:  (python2dist(alabaster) >= 0.7 with python2dist(alabaster) < 0.8)
+BuildRequires:  (python2dist(babel) >= 1.3 with (python2dist(babel) < 2 or python2dist(babel) > 2))
 BuildRequires:  python2dist(colorama) >= 0.3.5
 BuildRequires:  python2dist(docutils) >= 0.11
 BuildRequires:  python2dist(html5lib)
@@ -24,20 +22,18 @@ BuildRequires:  python2dist(imagesize)
 BuildRequires:  python2dist(jinja2) >= 2.3
 BuildRequires:  python2dist(mock)
 BuildRequires:  python2dist(nose)
-BuildRequires:  python2dist(pygments) >= 2.0
+BuildRequires:  python2dist(pygments) >= 2
 BuildRequires:  python2dist(requests)
 BuildRequires:  python2dist(setuptools)
 BuildRequires:  python2dist(simplejson)
 BuildRequires:  python2dist(six) >= 1.5
 BuildRequires:  python2dist(snowballstemmer) >= 1.1
 BuildRequires:  python2dist(sqlalchemy) >= 0.9
-BuildRequires:  python2dist(whoosh) >= 2.0
+BuildRequires:  python2dist(whoosh) >= 2
 
 BuildRequires:  python3-devel
-BuildConflicts: python3dist(babel) = 2.0
-BuildRequires:  python3dist(alabaster) < 0.8
-BuildRequires:  python3dist(alabaster) >= 0.7
-BuildRequires:  python3dist(babel) >= 1.3
+BuildRequires:  (python3dist(alabaster) >= 0.7 with python3dist(alabaster) < 0.8)
+BuildRequires:  (python3dist(babel) >= 1.3 with (python3dist(babel) < 2 or python3dist(babel) > 2))
 BuildRequires:  python3dist(colorama) >= 0.3.5
 BuildRequires:  python3dist(docutils) >= 0.11
 BuildRequires:  python3dist(html5lib)
@@ -45,14 +41,14 @@ BuildRequires:  python3dist(imagesize)
 BuildRequires:  python3dist(jinja2) >= 2.3
 BuildRequires:  python3dist(mock)
 BuildRequires:  python3dist(nose)
-BuildRequires:  python3dist(pygments) >= 2.0
+BuildRequires:  python3dist(pygments) >= 2
 BuildRequires:  python3dist(requests)
 BuildRequires:  python3dist(setuptools)
 BuildRequires:  python3dist(simplejson)
 BuildRequires:  python3dist(six) >= 1.5
 BuildRequires:  python3dist(snowballstemmer) >= 1.1
 BuildRequires:  python3dist(sqlalchemy) >= 0.9
-BuildRequires:  python3dist(whoosh) >= 2.0
+BuildRequires:  python3dist(whoosh) >= 2
 BuildRequires:  python3dist(sphinx)
 
 %description
@@ -67,10 +63,8 @@ Sphinx uses...
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{srcname}}
 
-Conflicts:      python2dist(babel) = 2.0
-Requires:       python2dist(alabaster) < 0.8
-Requires:       python2dist(alabaster) >= 0.7
-Requires:       python2dist(babel) >= 1.3
+Requires:       (python2dist(alabaster) >= 0.7 with python2dist(alabaster) < 0.8)
+Requires:       (python2dist(babel) >= 1.3 with (python2dist(babel) < 2 or python2dist(babel) > 2))
 Requires:       python2dist(colorama) >= 0.3.5
 Requires:       python2dist(docutils) >= 0.11
 Requires:       python2dist(html5lib)
@@ -78,14 +72,14 @@ Requires:       python2dist(imagesize)
 Requires:       python2dist(jinja2) >= 2.3
 Requires:       python2dist(mock)
 Requires:       python2dist(nose)
-Requires:       python2dist(pygments) >= 2.0
+Requires:       python2dist(pygments) >= 2
 Requires:       python2dist(requests)
 Requires:       python2dist(setuptools)
 Requires:       python2dist(simplejson)
 Requires:       python2dist(six) >= 1.5
 Requires:       python2dist(snowballstemmer) >= 1.1
 Requires:       python2dist(sqlalchemy) >= 0.9
-Requires:       python2dist(whoosh) >= 2.0
+Requires:       python2dist(whoosh) >= 2
 %description -n python2-%{srcname}
 Sphinx is a tool that makes it easy to create intelligent and beautiful
 documentation for Python projects (or other documents consisting of multiple
@@ -98,10 +92,8 @@ Sphinx uses...
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{srcname}}
 
-Conflicts:      python3dist(babel) = 2.0
-Requires:       python3dist(alabaster) < 0.8
-Requires:       python3dist(alabaster) >= 0.7
-Requires:       python3dist(babel) >= 1.3
+Requires:       (python3dist(alabaster) >= 0.7 with python3dist(alabaster) < 0.8)
+Requires:       (python3dist(babel) >= 1.3 with (python3dist(babel) < 2 or python3dist(babel) > 2))
 Requires:       python3dist(colorama) >= 0.3.5
 Requires:       python3dist(docutils) >= 0.11
 Requires:       python3dist(html5lib)
@@ -109,14 +101,14 @@ Requires:       python3dist(imagesize)
 Requires:       python3dist(jinja2) >= 2.3
 Requires:       python3dist(mock)
 Requires:       python3dist(nose)
-Requires:       python3dist(pygments) >= 2.0
+Requires:       python3dist(pygments) >= 2
 Requires:       python3dist(requests)
 Requires:       python3dist(setuptools)
 Requires:       python3dist(simplejson)
 Requires:       python3dist(six) >= 1.5
 Requires:       python3dist(snowballstemmer) >= 1.1
 Requires:       python3dist(sqlalchemy) >= 0.9
-Requires:       python3dist(whoosh) >= 2.0
+Requires:       python3dist(whoosh) >= 2
 %description -n python3-%{srcname}
 Sphinx is a tool that makes it easy to create intelligent and beautiful
 documentation for Python projects (or other documents consisting of multiple
