@@ -71,3 +71,5 @@ rm -rf html/.{doctrees,buildinfo}
 %files -n %{pypi_name}-doc
 %doc html
 %license docs/_themes/LICENSE LICENSE
+
+%changelog
