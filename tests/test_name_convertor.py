@@ -17,7 +17,7 @@ class TestUtils(object):
         self.ncm = NameConvertor('mageia')
         self.ncb = NameConvertor('blackpantheros')
 
-    @pytest.mark.parametrize(('input', 'expected_f', 'expected_m'), [
+    @pytest.mark.parametrize(('input', 'expected_f', 'expected_m', 'expected_b'), [
         ('python-spam', 'python-spam', 'python-spam'),
         ('python-PySpam', 'python-PySpam', 'python-pyspam'),
         ('python-spampy', 'python-spampy', 'python-spampy'),
@@ -27,10 +27,10 @@ class TestUtils(object):
         ('python3-foo', 'python-foo', 'python-foo'),
         ('foo-python3', 'python-foo', 'python-foo'),
     ])
-    def test_rpm_name(self, input, expected_f, expected_m):
+    def test_rpm_name(self, input, expected_f, expected_m, expected_b):
         assert self.ncf.rpm_name(input) == expected_f
         assert self.ncm.rpm_name(input) == expected_m
-        assert self.ncb.rpm_name(input) == expected_m
+        assert self.ncb.rpm_name(input) == expected_b
 
     @pytest.mark.parametrize(('name', 'version', 'expected'), [
         ('python-spam', None, 'python-spam'),
