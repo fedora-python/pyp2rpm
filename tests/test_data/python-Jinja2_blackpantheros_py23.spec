@@ -1,13 +1,13 @@
-%global pypi_name jinja2
+%global pypi_name Jinja2
 
-Name:           python-%{pypi_name}
+Name:           %{pypi_name}
 Version:        2.8
 Release:        %mkrel 1
 Summary:        A small but fast and easy to use stand-alone template engine written in pure python
 Group:          Development/Python
 License:        BSD
 URL:            http://jinja.pocoo.org/
-Source0:        https://files.pythonhosted.org/packages/source/j/%{pypi_name}/Jinja2-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python2-devel
@@ -38,13 +38,13 @@ extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
 content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
-%package -n python-%{pypi_name}-doc
-Summary:        jinja2 documentation
-%description -n python-%{pypi_name}-doc
-Documentation for jinja2
+%package -n %{pypi_name}-doc
+Summary:        Jinja2 documentation
+%description -n %{pypi_name}-doc
+Documentation for Jinja2
 
 %prep
-%autosetup -n Jinja2-%{version}
+%autosetup -n %{pypi_name}-%{version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
@@ -64,13 +64,12 @@ rm -rf html/.{doctrees,buildinfo}
 %files -n python2-%{pypi_name}
 %license docs/_themes/LICENSE LICENSE
 %doc README.rst
-%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/jinja2
 %{python2_sitelib}/%{pypi_name}-%{version}-py%{python2_version}.egg-info
 
-%files -n python-%{pypi_name}-doc
+%files -n %{pypi_name}-doc
 %doc html
 %license docs/_themes/LICENSE LICENSE
-
 %changelog
 * Sat Apr 18 2020 Charles K Barcza/Miklos Horvath <info@blackpanther.hu> 2.8-1bP
 - Initial pyp2rpm package.
