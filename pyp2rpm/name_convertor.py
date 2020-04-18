@@ -111,11 +111,6 @@ class NameConvertor(object):
         logger.debug('Rpmized name of {0}: {1}.'.format(name, rpmized_name))
         return NameConvertor.rpm_versioned_name(rpmized_name, python_version)
 
-        if self.distro == 'blackpantheros':
-            rpmized_name = rpmized_name.lower()
-        logger.debug('Rpmized name of {0}: {1}.'.format(name, rpmized_name))
-        return NameConvertor.rpm_versioned_name(rpmized_name, python_version)
-
     def base_name(self, name):
         """Removes any python prefixes of suffixes from name if present."""
         base_name = name.replace('.', "-")
