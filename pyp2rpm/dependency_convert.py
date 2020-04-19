@@ -11,6 +11,9 @@ class RpmVersion():
             self.pre = version._version.pre
             self.dev = version._version.dev
             self.post = version._version.post
+            # version.local is ignored as it is not expected to appear
+            # in public releases
+            # https://www.python.org/dev/peps/pep-0440/#local-version-identifiers
 
     def increment(self):
         self.version[-1] += 1
@@ -26,7 +29,7 @@ class RpmVersion():
             rpm_epoch = str(self.epoch) + ':'
         else:
             rpm_epoch = ''
-        while self.version[-1] == 0:
+        while len(self.version) > 1 and self.version[-1] == 0:
             self.version.pop()
         rpm_version = '.'.join(str(x) for x in self.version)
         if self.pre:
