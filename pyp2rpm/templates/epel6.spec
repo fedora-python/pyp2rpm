@@ -44,10 +44,6 @@ Documentation for {{ data.name }}
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
-{%- if data.has_bundled_egg_info %}
-# Remove bundled egg-info
-rm -rf %{pypi_name}.egg-info
-{%- endif %}
 {% call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 {%- if pv != data.base_python_version -%}
 rm -rf python{{pv}}

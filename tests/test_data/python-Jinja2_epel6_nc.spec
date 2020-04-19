@@ -35,8 +35,6 @@ Documentation for Jinja2
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
-# Remove bundled egg-info
-rm -rf %{pypi_name}.egg-info
 
 # generate html docs
 PYTHONPATH=${PWD} sphinx-build docs html
