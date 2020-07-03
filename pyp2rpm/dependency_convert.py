@@ -35,7 +35,7 @@ class RpmVersion():
         if self.pre:
             rpm_suffix = '~{}'.format(''.join(str(x) for x in self.pre))
         elif self.dev:
-            rpm_suffix = '~{}'.format(''.join(str(x) for x in self.dev))
+            rpm_suffix = '~~{}'.format(''.join(str(x) for x in self.dev))
         elif self.post:
             rpm_suffix = '^post{}'.format(self.post[1])
         else:
@@ -84,12 +84,12 @@ def convert_ordered(name, operator, version_id):
         # with ordered comparisons
         version_id = version_id[:-2]
         version = RpmVersion(version_id)
-        if '>' == operator:
-            # distutils does not behave this way, but this is
-            # their recommendation
-            # https://mail.python.org/archives/list/distutils-sig@python.org/thread/NWEQVTCX5CR2RKW2LT4H77PJTEINSX7P/
+        if operator == '>':
+            # distutils will allow a prefix match with '>'
             operator = '>='
-            version.increment()
+        if operator == '<=':
+            # distutils will not allow a prefix match with '<='
+            operator = '<'
     else:
         version = RpmVersion(version_id)
     return '{{name}} {} {}'.format(operator, version)
