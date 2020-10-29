@@ -1,7 +1,10 @@
+__metaclass__ = type
+
 import logging
 import os
 import re
 import sys
+import time
 try:
     import urllib2 as urllib
 except ImportError:
@@ -300,7 +303,7 @@ class Convertor(object):
                 if self.proxy:
                     logger.info('Using provided proxy: {0}.'.format(
                         self.proxy))
-                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL,
+                self._client = RateLimitedServerProxy(settings.PYPI_URL,
                                                      transport=transport)
                 self._client_set = True
             else:
@@ -308,6 +311,11 @@ class Convertor(object):
 
         return self._client
 
+class RateLimitedServerProxy(xmlrpclib.ServerProxy):
+
+    def __getattr__(self, name):
+        time.sleep(1)
+        return super(RateLimitedServerProxy, self).__getattr__(name)
 
 class ProxyTransport(xmlrpclib.Transport):
     """This class serves as Proxy Transport for XMLRPC server."""
