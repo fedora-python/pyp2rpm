@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import sys
+import time
 try:
     import urllib2 as urllib
 except ImportError:
@@ -300,13 +301,24 @@ class Convertor(object):
                 if self.proxy:
                     logger.info('Using provided proxy: {0}.'.format(
                         self.proxy))
-                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL,
-                                                     transport=transport)
+                self._client = RateLimitedServerProxy(settings.PYPI_URL,
+                                                      transport=transport)
                 self._client_set = True
             else:
                 self._client = None
 
         return self._client
+
+
+class RateLimitedServerProxy(xmlrpclib.ServerProxy):
+    """Handle rate limit at PyPI."""
+
+    def __getattr__(self, name):
+        def slow_call(*args):
+            time.sleep(1)
+            return f(*args)
+        f = xmlrpclib.ServerProxy.__getattr__(self, name)
+        return slow_call
 
 
 class ProxyTransport(xmlrpclib.Transport):
