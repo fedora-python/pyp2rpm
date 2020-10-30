@@ -35,7 +35,7 @@ def get_url(client, name, version, wheel=False, hashed_format=False):
             client, name, version))
         raise exceptions.MissingUrlException(
             "Some kind of error while communicating with client: {0}.".format(
-                client), exc_info=True)
+                client))
 
     url = ''
     md5_digest = None
