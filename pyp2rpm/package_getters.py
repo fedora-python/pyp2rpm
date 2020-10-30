@@ -127,25 +127,28 @@ class PypiDownloader(PackageGetter):
                  save_dir=None):
         self.client = client
         self.name = name
-        self.versions = self.client.package_releases(self.name, True)
+        if version:
+            # if version is specified, will check if such version exists
+            if self.client.release_urls(name, version) == []:
+                raise exceptions.NoSuchPackageException(
+                    'Package with name "{0}" and version "{1}" could not be '
+                    'found on PyPI.'.format(name, version))
 
-        # Use only stable versions, unless --pre was specified
-        if not prerelease:
-            self.versions = [candidate for candidate in self.versions
-                             if not parse_version(candidate).is_prerelease]
+            self.version = version
+        else:
+            self.versions = self.client.package_releases(self.name, True)
 
-        # If versions is empty list then there is no such package on PyPI
-        if not self.versions:
-            raise exceptions.NoSuchPackageException(
-                'Package "{0}" could not be found on PyPI.'.format(name))
+            # Use only stable versions, unless --pre was specified
+            if not prerelease:
+                self.versions = [candidate for candidate in self.versions
+                                 if not parse_version(candidate).is_prerelease]
 
-        self.version = version or self.versions[0]
+            # If versions is empty list then there is no such package on PyPI
+            if not self.versions:
+                raise exceptions.NoSuchPackageException(
+                    'Package "{0}" could not be found on PyPI.'.format(name))
 
-        # if version is specified, will check if such version exists
-        if version and self.client.release_urls(name, version) == []:
-            raise exceptions.NoSuchPackageException(
-                'Package with name "{0}" and version "{1}" could not be '
-                'found on PyPI.'.format(name, version))
+            self.version = self.versions[0]
         self.save_dir_init(save_dir)
 
     def get(self, wheel=False):
