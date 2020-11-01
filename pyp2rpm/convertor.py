@@ -314,11 +314,15 @@ class RateLimitedServerProxy(xmlrpclib.ServerProxy):
     """Handle rate limit at PyPI."""
 
     def __getattr__(self, name):
-        def slow_call(*args):
-            time.sleep(1)
-            return f(*args)
-        f = xmlrpclib.ServerProxy.__getattr__(self, name)
-        return slow_call
+        _method = xmlrpclib.ServerProxy.__getattr__(self, name)
+        def slow_retry(*args):
+            for x in range(10):
+                try:
+                    return _method(*args)
+                except xmlrpclib.Fault:
+                    logger.info('sleeping due to xmlrpc fault for {}'.format(name), exc_info=True)
+                    time.sleep(2)
+        return slow_retry
 
 
 class ProxyTransport(xmlrpclib.Transport):
