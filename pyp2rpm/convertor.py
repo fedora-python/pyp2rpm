@@ -4,17 +4,16 @@ import re
 import sys
 try:
     import urllib2 as urllib
+    from urllib2 import urlopen, HTTPError, URLError
 except ImportError:
     import urllib
     from urllib import request
+    from urllib.request import urlopen, HTTPError, URLError
     urllib.Request = request.Request
     urllib.ProxyHandler = request.ProxyHandler
     urllib.build_opener = request.build_opener
     urllib.install_opener = request.install_opener
-try:
-    import xmlrpclib
-except ImportError:
-    import xmlrpc.client as xmlrpclib
+import json
 
 try:
     import dnf
@@ -38,6 +37,9 @@ class Convertor(object):
     """Object that takes care of the actual process of converting
     the package.
     """
+
+    # PyPI client interface; tests may override this attribute
+    _client = None
 
     def __init__(self, package=None, version=None, prerelease=False,
                  save_dir=None,
@@ -281,43 +283,57 @@ class Convertor(object):
 
     @property
     def client(self):
-        """XMLRPC client for PyPI. Always returns the same instance.
+        """JSON client for PyPI. Always returns the same instance.
 
         If the package is provided as a path to compressed source file,
         PyPI will not be used and the client will not be instantiated.
 
         Returns:
-            XMLRPC client for PyPI or None.
+            JSON client for PyPI or None.
         """
-        if self.proxy:
-            proxyhandler = urllib.ProxyHandler({"http": self.proxy})
-            opener = urllib.build_opener(proxyhandler)
-            urllib.install_opener(opener)
-            transport = ProxyTransport()
-        if not hasattr(self, '_client'):
-            transport = None
-            if self.pypi:
-                if self.proxy:
-                    logger.info('Using provided proxy: {0}.'.format(
-                        self.proxy))
-                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL,
-                                                     transport=transport)
-                self._client_set = True
-            else:
-                self._client = None
+        if self._client is None and self.pypi:
+            self._client = PyPIClient(proxy=self.proxy)
+            self._client_set = True
 
         return self._client
 
 
-class ProxyTransport(xmlrpclib.Transport):
-    """This class serves as Proxy Transport for XMLRPC server."""
+class PyPIClient():
+    """This class interfaces with the PyPI JSON API."""
 
-    def request(self, host, handler, request_body, verbose):
-        self.verbose = verbose
-        url = 'http://{0}{1}'.format(host, handler)
-        request = urllib.Request(url)
-        request.add_data(request_body)
-        request.add_header("User-Agent", self.user_agent)
-        request.add_header("Content-Type", "text/html")
-        f = urllib.urlopen(request)
-        return self.parse_response(f)
+    no_such_package = {'info': {}, 'urls': [], 'releases': {}}
+
+    def __init__(self, proxy=None):
+        self.cache = {}
+        if proxy:
+            proxyhandler = urllib.ProxyHandler({"http": proxy})
+            opener = urllib.build_opener(proxyhandler)
+            urllib.install_opener(opener)
+            logger.info('Using provided proxy: {0}.'.format(proxy))
+
+    def get_json(self, name, version):
+        if (name, version) in self.cache:
+            return self.cache[(name, version)]
+        if version:
+            url = "{0}/{1}/{2}/json".format(settings.PYPI_URL, name, version)
+        else:
+            url = "{0}/{1}/json".format(settings.PYPI_URL, name)
+        try:
+            json_info = urlopen(url)
+        except HTTPError as e:
+            self.cache[(name, version)] = self.no_such_package
+            return self.cache[(name, version)]
+        except URLError as e:
+            sys.stderr.write("Failed to connect to server: {0} \n".format(e))
+            raise SystemExit(3)
+        self.cache[(name, version)] = json.loads(json_info.read().decode("utf-8"))
+        return self.cache[(name, version)]
+
+    def release_data(self, name, version):
+        return self.get_json(name, version)['info']
+
+    def release_urls(self, name, version):
+        return self.get_json(name, version)['urls']
+
+    def package_releases(self, name, show_hidden):
+        return self.get_json(name, None)['releases'].keys()

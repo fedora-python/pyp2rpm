@@ -6,20 +6,15 @@ import pytest
 
 from flexmock import flexmock
 
-try:
-    import xmlrpclib
-except ImportError:
-    import xmlrpc.client as xmlrpclib
-
+from pyp2rpm.convertor import PyPIClient
 from pyp2rpm.package_getters import LocalFileGetter, PypiDownloader, get_url
 from pyp2rpm.exceptions import MissingUrlException, NoSuchPackageException
-from pyp2rpm import settings
 
 tests_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
 class TestPackageGetters(object):
-    client = xmlrpclib.ServerProxy(settings.PYPI_URL)
+    client = PyPIClient()
 
     @pytest.mark.parametrize(('name', 'version', 'wheel', 'hf', 'expected_url', 'expected_md5'), [
         ('setuptools', '18.3.1', False, False,
