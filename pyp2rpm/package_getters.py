@@ -9,10 +9,6 @@ try:
     import urllib.request as request
 except ImportError:
     import urllib as request
-try:
-    import xmlrpclib
-except ImportError:
-    import xmlrpc.client as xmlrpclib
 from pkg_resources import parse_version
 
 
@@ -131,11 +127,7 @@ class PypiDownloader(PackageGetter):
                  save_dir=None):
         self.client = client
         self.name = name
-        try:
-            self.versions = self.client.package_releases(self.name, True)
-        except xmlrpclib.ProtocolError as e:
-            sys.stderr.write("Failed to connect to server: {0} \n".format(e))
-            raise SystemExit(3)
+        self.versions = self.client.package_releases(self.name, True)
 
         # Use only stable versions, unless --pre was specified
         if not prerelease:
