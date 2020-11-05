@@ -36,6 +36,7 @@ class TestSpec(object):
         ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7{0}.spec'),
         ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6{0}.spec'),
         ('Jinja2', '-v2.8 -p2 -t mageia', 'python-Jinja2_mageia_py23.spec'),
+        ('Jinja2', '-v2.8 -p2 -t blackpantheros', 'python-Jinja2_blackpantheros_py23.spec'),
         ('Jinja2', '-v2.8 -p2 --no-autonc', 'python-Jinja2{0}.spec'),
         ('buildkit', '-v0.2.2 -b2', 'python-buildkit_autonc.spec'),
         ('paperwork-backend', '-v1.2.4', 'python-paperwork-backend.spec'),

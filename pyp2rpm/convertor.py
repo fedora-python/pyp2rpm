@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import sys
+import time
 try:
     import urllib2 as urllib
 except ImportError:
@@ -222,7 +223,8 @@ class Convertor(object):
             name_convertor.NameConvertor.distro = self.distro
             if self.autonc or (self.autonc is None and
                 (self.distro == 'fedora' or
-                 self.distro == 'mageia')):
+                 self.distro == 'mageia' or
+                 self.distro == 'blackpantheros')):
                 logger.debug("Using AutoProvidesNameConvertor to convert "
                              "names of the packages.")
                 self._name_convertor = name_convertor.AutoProvidesNameConvertor(
@@ -300,7 +302,7 @@ class Convertor(object):
                 if self.proxy:
                     logger.info('Using provided proxy: {0}.'.format(
                         self.proxy))
-                self._client = xmlrpclib.ServerProxy(settings.PYPI_URL,
+                self._client = RateLimitedServerProxy(settings.PYPI_URL,
                                                      transport=transport)
                 self._client_set = True
             else:
@@ -308,6 +310,11 @@ class Convertor(object):
 
         return self._client
 
+class RateLimitedServerProxy(xmlrpclib.ServerProxy):
+
+    def __getattr__(self, name):
+        time.sleep(1)
+        return super(RateLimitedServerProxy, self).__getattr__(name)
 
 class ProxyTransport(xmlrpclib.Transport):
     """This class serves as Proxy Transport for XMLRPC server."""

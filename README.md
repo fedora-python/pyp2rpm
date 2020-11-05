@@ -6,7 +6,7 @@ pyp2rpm
 
 A tool to convert a PyPI package to an RPM SPECFILE or to generate an SRPM.
 Under heavy development, see the TODO file for a list of planned features.
-pyp2rpm currently ships with Fedora and Mageia specific templates.
+pyp2rpm currently ships with Fedora, Mageia and blackPanther OS specific templates.
 
 ## Usage
 
@@ -38,7 +38,7 @@ All of the options are (print this by running pyp2rpm -h):
       -t TEMPLATE                     Template file (jinja2 format) to render
                                       (default: "fedora").Search order is 1)
                                       filesystem, 2) default templates.
-      -o [fedora|epel7|epel6|mageia|pld]
+      -o [fedora|epel7|epel6|mageia|pld|blackpantheros]
                                       Default distro whose conversion rules to use
                                       (default:"fedora"). Default templates have
                                       their rules associated and ignore this.

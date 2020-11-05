@@ -103,6 +103,9 @@ class NameConvertor(object):
 
         if self.distro == 'mageia':
             rpmized_name = rpmized_name.lower()
+        elif self.distro == 'blackpantheros':
+            rpmized_name = rpmized_name.lower()
+
         logger.debug('Rpmized name of {0}: {1}.'.format(name, rpmized_name))
         return NameConvertor.rpm_versioned_name(rpmized_name, python_version)
 
