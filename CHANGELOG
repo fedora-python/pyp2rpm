@@ -1,3 +1,6 @@
+3.3.5
+* Replace PyPI XML-RPC client with JSON client.
+
 3.3.4
 * Exclude prereleases unless specifically selected (issue #141)
 * Improve handling of PEP 440 requirements (issue #182)
