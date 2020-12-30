@@ -56,7 +56,7 @@ class TestPypiDownloader(object):
     class StaticPyPIClient(PyPIClient):
         def get_json(self, name, version):
             with open('{0}/test_data/django.json'.format(tests_dir)) as json_info:
-                return json.loads(json_info.read().decode("utf-8"))
+                return json.loads(json_info.read())
     client = StaticPyPIClient()
 
     @pytest.mark.parametrize(('name', 'expected_ver'), [
