@@ -13,3 +13,4 @@ MANIFEST
 .eggs/
 tests/test_output/
 tests/test_data/utest-*.tar.gz
+tests/test_data/*/*.egg-info
