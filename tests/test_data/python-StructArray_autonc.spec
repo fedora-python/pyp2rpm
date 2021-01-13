@@ -1,8 +1,9 @@
 # Created by pyp2rpm-3.2.3
 %global pypi_name StructArray
+%global pypi_version 0.1
 
 Name:           python-%{pypi_name}
-Version:        0.1
+Version:        %{pypi_version}
 Release:        1%{?dist}
 Summary:        Fast operations on arrays of structured data
 
@@ -35,7 +36,7 @@ equation. It's...
 
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n %{pypi_name}-%{pypi_version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
@@ -50,7 +51,7 @@ rm -rf %{pypi_name}.egg-info
 
 %files -n python2-%{pypi_name}
 %{python2_sitearch}/%{pypi_name}
-%{python2_sitearch}/%{pypi_name}-%{version}-py%{python2_version}.egg-info
+%{python2_sitearch}/%{pypi_name}-%{pypi_version}-py%{python2_version}.egg-info
 
 %changelog
 * Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 0.1-1

@@ -1,14 +1,15 @@
 # Created by pyp2rpm-3.3.3
 %global pypi_name utest
+%global pypi_version 0.1.0
 
 Name:           python-%{pypi_name}
-Version:        0.1.0
+Version:        %{pypi_version}
 Release:        1%{?dist}
 Summary:        Micro test module
 
 License:        GPLv2+
 URL:            https://github.com/fedora-python/pyp2rpm
-Source0:        %{pypi_name}-%{version}.tar.gz
+Source0:        %{pypi_name}-%{pypi_version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python%{python3_pkgversion}-devel
@@ -37,7 +38,7 @@ Requires:       python%{python3_pkgversion}-pyp2rpm >= 3.3.1
 
 %files -n python%{python3_pkgversion}-%{pypi_name}
 %{python3_sitelib}/%{pypi_name}
-%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/%{pypi_name}-%{pypi_version}-py%{python3_version}.egg-info
 
 %changelog
 *  - 0.1.0-1
