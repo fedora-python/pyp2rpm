@@ -9,7 +9,7 @@ Summary:        A small but fast and easy to use stand-alone template engine wri
 Group:          Development/Python
 License:        BSD
 URL:            http://jinja.pocoo.org/
-Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/J/%{pypi_name}/%{pypi_name}-%{pypi_version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python2-devel
