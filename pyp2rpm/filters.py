@@ -80,7 +80,7 @@ def rpm_version_410(version, use_macro=True):
     else:
         default = version
     re_match = re.compile(
-        r"(\d+\.?\d*\.?\d*\.?\d*)\.((?:a|b|rc|dev)\d*)").search(
+        r"(\d+\.?\d*\.?\d*\.?\d*)\.?((?:a|b|rc|dev)\d*)").search(
             version)
     if not re_match:
         return default
@@ -97,7 +97,7 @@ def rpm_version(version, use_macro=True):
     else:
         default = version
     re_match = re.compile(
-        r"(\d+\.?\d*\.?\d*\.?\d*)\.((?:a|b|rc|post|dev)\d*)").search(
+        r"(\d+\.?\d*\.?\d*\.?\d*)\.?((?:a|b|rc|post|dev)\d*)").search(
             version)
     if not re_match:
         return default
