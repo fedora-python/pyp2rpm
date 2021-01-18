@@ -1,4 +1,5 @@
 import getpass
+import locale
 import logging
 import os
 
@@ -246,7 +247,14 @@ def main(package, v, prerelease, d, s, r, proxy, srpm, p, b, o, t, venv, autonc,
 
         if srpm:
             msg = utils.build_srpm(spec_path, d)
-            logger.info(msg)
+            if isinstance(msg, bytes):
+                for line in msg.decode(locale.getpreferredencoding(),
+                                       errors='replace').split('\n'):
+                    logger.info('rpmbuild -bs: {}'.format(line))
+            else:
+                # As in python 3.4 and 3.5:
+                for line in msg.split('\n'):
+                    logger.info('rpmbuild -bs: {}'.format(line))
 
     else:
         logger.debug('Printing specfile to stdout.')
