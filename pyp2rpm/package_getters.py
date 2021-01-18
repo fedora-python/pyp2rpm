@@ -127,7 +127,8 @@ class PypiDownloader(PackageGetter):
                  save_dir=None):
         self.client = client
         self.name = name
-        self.versions = self.client.package_releases(self.name, True)
+        self.versions = sorted(self.client.package_releases(self.name, True),
+                               reverse=True, key=parse_version)
 
         # Use only stable versions, unless --pre was specified
         if not prerelease:

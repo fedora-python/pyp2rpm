@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 import shutil
@@ -49,6 +50,28 @@ class TestPackageGetters(object):
         with pytest.raises(exception) as exc_info:
             get_url(self.client, name, version, wheel, hf)
         assert error_msg == str(exc_info.value)
+
+
+class TestPypiDownloader(object):
+    class StaticPyPIClient(PyPIClient):
+        def get_json(self, name, version):
+            with open('{0}/test_data/django.json'.format(tests_dir)) as json_info:
+                return json.loads(json_info.read())
+    client = StaticPyPIClient()
+
+    @pytest.mark.parametrize(('name', 'expected_ver'), [
+        ('django', '3.0.11'),
+    ])
+    def test_init_good_data(self, name, expected_ver):
+        d = PypiDownloader(self.client, name)
+        assert d.version == expected_ver
+
+    @pytest.mark.parametrize(('name', 'expected_ver'), [
+        ('django', '3.1rc1'),
+    ])
+    def test_init_good_data_pre(self, name, expected_ver):
+        d = PypiDownloader(self.client, name, prerelease=True)
+        assert d.version == expected_ver
 
 
 class TestPypiFileGetter(object):
