@@ -59,10 +59,9 @@ class DirsContent(object):
 
 class VirtualEnv(object):
 
-    def __init__(self, name, version, temp_dir, name_convertor,
+    def __init__(self, name, temp_dir, name_convertor,
                  base_python_version):
         self.name = name
-        self.version = version
         self.temp_dir = temp_dir
         self.name_convertor = name_convertor
         if not base_python_version:
@@ -86,7 +85,7 @@ class VirtualEnv(object):
         dependencies
         '''
         try:
-            self.env.install((self.name, self.version), force=True,
+            self.env.install((self.name,), force=True,
                              options=["--no-deps"])
         except (ve.PackageInstallationException,
                 ve.VirtualenvReadonlyException):

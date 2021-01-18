@@ -27,7 +27,9 @@ Requires:       python%{python3_pkgversion}-pyp2rpm >= 3.3.1
 
 
 %prep
-%autosetup -n tests/test_data/%{pypi_name}
+%autosetup -n %{pypi_name}-%{version}
+# Remove bundled egg-info
+rm -rf %{pypi_name}.egg-info
 
 %build
 %{__python3} setup.py build

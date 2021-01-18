@@ -27,7 +27,9 @@ Requires:       (python3dist(pyp2rpm) >= 3.3.1 with python3dist(pyp2rpm) < 3.4)
 
 
 %prep
-%autosetup -n tests/test_data/%{pypi_name}
+%autosetup -n %{pypi_name}-%{version}
+# Remove bundled egg-info
+rm -rf %{pypi_name}.egg-info
 
 %build
 %py3_build
