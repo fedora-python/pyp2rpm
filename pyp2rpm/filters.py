@@ -1,3 +1,6 @@
+import re
+
+
 from pyp2rpm import settings
 from pyp2rpm import name_convertor
 
@@ -71,6 +74,42 @@ def macroed_url(url):
     return url
 
 
+def rpm_version_410(version, use_macro=True):
+    if use_macro:
+        default = '%{pypi_version}'
+    else:
+        default = version
+    re_match = re.compile(
+        r"(\d+\.?\d*\.?\d*\.?\d*)\.?((?:a|b|rc|dev)\d*)").search(
+            version)
+    if not re_match:
+        return default
+    rpm_version, rpm_suffix = re_match.groups()
+    if rpm_suffix.startswith("dev"):
+        return '{}~~{}'.format(rpm_version, rpm_suffix)
+    else:
+        return '{}~{}'.format(rpm_version, rpm_suffix)
+
+
+def rpm_version(version, use_macro=True):
+    if use_macro:
+        default = '%{pypi_version}'
+    else:
+        default = version
+    re_match = re.compile(
+        r"(\d+\.?\d*\.?\d*\.?\d*)\.?((?:a|b|rc|post|dev)\d*)").search(
+            version)
+    if not re_match:
+        return default
+    rpm_version, rpm_suffix = re_match.groups()
+    if rpm_suffix.startswith("post"):
+        return '{}^{}'.format(rpm_version, rpm_suffix)
+    if rpm_suffix.startswith("dev"):
+        return '{}~~{}'.format(rpm_version, rpm_suffix)
+    else:
+        return '{}~{}'.format(rpm_version, rpm_suffix)
+
+
 __all__ = [name_for_python_version,
            script_name_for_python_version,
            sitedir_for_python_version,
@@ -78,4 +117,6 @@ __all__ = [name_for_python_version,
            macroed_pkg_name,
            module_to_path,
            package_to_path,
-           macroed_url]
+           macroed_url,
+           rpm_version_410,
+           rpm_version]
