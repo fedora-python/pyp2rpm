@@ -1,8 +1,9 @@
 # Created by pyp2rpm-3.3.2
 %global pypi_name paperwork-backend
+%global pypi_version 1.2.4
 
 Name:           python-%{pypi_name}
-Version:        1.2.4
+Version:        %{pypi_version}
 Release:        1%{?dist}
 Summary:        Paperwork's backend
 
@@ -40,7 +41,7 @@ Indexing - Searching - Suggestions- ExportThere is no GUI here. The GUI is .
 
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n %{pypi_name}-%{pypi_version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
@@ -55,7 +56,7 @@ rm -rf %{pypi_name}.egg-info
 %doc README.markdown
 %{_bindir}/paperwork-shell
 %{python3_sitelib}/paperwork_backend
-%{python3_sitelib}/paperwork_backend-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/paperwork_backend-%{pypi_version}-py%{python3_version}.egg-info
 
 %changelog
 * Thu Mar 21 2019 Miro Hrončok <mhroncok@redhat.com> - 1.2.4-1

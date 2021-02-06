@@ -1,14 +1,15 @@
 # Created by pyp2rpm-3.3.3
 %global pypi_name utest
+%global pypi_version 0.1.0
 
 Name:           python-%{pypi_name}
-Version:        0.1.0
+Version:        %{pypi_version}
 Release:        1%{?dist}
 Summary:        Micro test module
 
 License:        GPLv2+
 URL:            https://github.com/fedora-python/pyp2rpm
-Source0:        %{pypi_name}-%{version}.tar.gz
+Source0:        %{pypi_name}-%{pypi_version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
@@ -27,7 +28,7 @@ Requires:       (python3dist(pyp2rpm) >= 3.3.1 with python3dist(pyp2rpm) < 3.4)
 
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n %{pypi_name}-%{pypi_version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
@@ -39,7 +40,7 @@ rm -rf %{pypi_name}.egg-info
 
 %files -n python3-%{pypi_name}
 %{python3_sitelib}/%{pypi_name}
-%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/%{pypi_name}-%{pypi_version}-py%{python3_version}.egg-info
 
 %changelog
 *  - 0.1.0-1

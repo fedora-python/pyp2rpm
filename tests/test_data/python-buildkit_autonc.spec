@@ -1,8 +1,9 @@
 # Created by pyp2rpm-3.2.3
 %global pypi_name buildkit
+%global pypi_version 0.2.2
 
 Name:           python-%{pypi_name}
-Version:        0.2.2
+Version:        %{pypi_version}
 Release:        1%{?dist}
 Summary:        Cloud infrastructure and .deb file management software
 
@@ -37,7 +38,7 @@ repo...
 
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n %{pypi_name}-%{pypi_version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
@@ -51,7 +52,7 @@ rm -rf %{pypi_name}.egg-info
 %license LICENSE.txt
 %doc example/README.txt README.txt
 %{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-%{version}-py%{python2_version}.egg-info
+%{python2_sitelib}/%{pypi_name}-%{pypi_version}-py%{python2_version}.egg-info
 
 %changelog
 * Wed Dec 06 2017 Michal Cyprian <mcyprian@redhat.com> - 0.2.2-1

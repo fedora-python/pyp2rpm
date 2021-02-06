@@ -1,6 +1,7 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
 %global pypi_name {{ data.name }}
+%global pypi_version {{ data.version }}
 {%- if data.srcname %}
 %global srcname {{ data.srcname }}
 {%- endif %}
@@ -9,13 +10,13 @@
 {%- endfor %}
 
 Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
-Version:        {{ data.version }}
+Version:        {{ data.version|rpm_version_410 }}
 Release:        1%{?dist}
 Summary:        {{ data.summary }}
 
 License:        {{ data.license }}
 URL:            {{ data.home_page }}
-Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{pypi_version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch
@@ -43,7 +44,7 @@ Documentation for {{ data.name }}
 {%- endif %}
 
 %prep
-%setup -q -n %{pypi_name}-%{version}
+%setup -q -n %{pypi_name}-%{pypi_version}
 {%- if data.has_bundled_egg_info %}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
@@ -131,9 +132,9 @@ popd
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}-*.pth
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{pypi_version}-py%{python{{ pv }}_version}-*.pth
 {%- endif %}
-%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}.egg-info
+%{python{{ pv }}_sitearch}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{pypi_version}-py%{python{{ pv }}_version}.egg-info
 {%- else %}
 {%- if data.has_packages %}
 {%- for package in data.packages %}
@@ -141,9 +142,9 @@ popd
 {%- endfor %}
 {%- endif %}
 {%- if data.has_pth %}
-%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}-*.pth
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{pypi_version}-py%{python{{ pv }}_version}-*.pth
 {%- endif %}
-%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{version}-py%{python{{ pv }}_version}.egg-info
+%{python{{ pv }}_sitelib}/{{ underscored_or_pypi(data.name, data.underscored_name) }}-%{pypi_version}-py%{python{{ pv }}_version}.egg-info
 {%- endif %}
 {% endcall %}
 {%- if data.sphinx_dir %}
@@ -154,5 +155,5 @@ popd
 {%- endif %}
 {% endif %}
 %changelog
-* {{ data.changelog_date_packager }} - {{ data.version }}-1
+* {{ data.changelog_date_packager }} - {{ data.version|rpm_version_410(False) }}-1
 - Initial package.
