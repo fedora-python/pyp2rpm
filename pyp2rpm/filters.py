@@ -75,6 +75,12 @@ def macroed_url(url):
 
 
 def rpm_version_410(version, use_macro=True):
+    """Converts a Python version into rpm equivalent or the named variable.
+
+    rpm versions 4.10 - 4.14 supported only the tilde pre-release separator.
+    This variant of the rpm_version filter is provided for compatibility
+    with older releases.
+    """
     if use_macro:
         default = '%{pypi_version}'
     else:
@@ -92,6 +98,16 @@ def rpm_version_410(version, use_macro=True):
 
 
 def rpm_version(version, use_macro=True):
+    """Converts a Python version into rpm equivalent or the named variable.
+
+    Python versions may contain a suffix indicating that it is a pre-
+    release or post-release version.  RPM implements pre-relase
+    versions with a tilde separator, and post-release versions with a
+    caret separator.
+
+    If use_macro is True, then the string "%{pypi_version}" will be
+    returned when there is no pre or post-release suffix.
+    """
     if use_macro:
         default = '%{pypi_version}'
     else:
