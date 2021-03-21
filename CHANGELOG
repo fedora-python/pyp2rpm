@@ -1,3 +1,7 @@
+3.3.6
+* Improve logging of rpmbuild output (issue #252)
+* Sort releases so that the API ordering no longer affects local behavior (issue #251)
+
 3.3.5
 * Replace PyPI XML-RPC client with JSON client.
 
