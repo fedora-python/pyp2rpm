@@ -4,6 +4,7 @@
 from pyp2rpm.version import version
 
 from setuptools import setup
+from setuptools.command.build_py import build_py as _build_py
 
 
 description = """Convert Python packages to RPM SPECFILES. The packages can be downloaded from
@@ -13,7 +14,22 @@ Users can provide their own templates for rendering the package metadata. Both t
 source and metadata can be extracted from PyPI or from local filesystem (local file doesn't
 provide that much information though)."""
 
+class build_py(_build_py):
+    def run(self):
+        # Run the normal build process
+        _build_py.run(self)
+        # Build test data
+        from subprocess import call
+        from shutil import copy
+        call(['python3', 'setup.py', 'sdist'],
+             cwd='tests/test_data/utest')
+        copy('tests/test_data/utest/dist/utest-0.1.0.tar.gz',
+             'tests/test_data/')
+
 setup(
+    cmdclass={
+        'build_py': build_py,
+    },
     name='pyp2rpm',
     version=version,
     description="Convert Python packages to RPM SPECFILES",
