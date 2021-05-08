@@ -104,7 +104,7 @@ class PackageGetter(object):
             else:
                 try:
                     subprocess.Popen(
-                        'rpmdev-setuptree', stdout=subprocess.PIPE)
+                        'rpmdev-setuptree', stdout=subprocess.PIPE).wait()
                     logger.info("Using rpmdevtools package to make rpmbuild "
                                 "folders tree.")
                 except OSError:
@@ -206,7 +206,7 @@ class LocalFileGetter(PackageGetter):
         if not os.path.exists(save_file) or not os.path.samefile(
                 self.local_file, save_file):
             shutil.copy2(self.local_file, save_file)
-        logger.info('Local file: {0} copyed to {1}.'.format(
+        logger.info('Local file: {0} copied to {1}.'.format(
             self.local_file, save_file))
 
         return save_file
