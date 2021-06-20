@@ -76,7 +76,7 @@ class TestSrpm(object):
 
     @pytest.mark.webtest
     def test_srpm(self):
-        res = self.env.run('{0} Jinja2 --srpm'.format(self.exe),
+        res = self.env.run('{0} Jinja2 -v2.8 --srpm'.format(self.exe),
                            expect_stderr=True)
         assert res.returncode == 0
 

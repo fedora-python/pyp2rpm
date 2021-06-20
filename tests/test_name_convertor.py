@@ -71,7 +71,6 @@ class TestDandifiedNameConvertor(object):
         ('pytest', '3', 'python3-pytest'),
         ('vertica', '2', 'python2-vertica'),
         ('oslosphinx', '3', 'python3-oslo-sphinx'),
-        ('mock', '2', 'python2-mock'),
         ('mock', '3', 'python3-mock'),
     ])
     @pytest.mark.skipif(dnf is None, reason="Optional dependency DNF required")

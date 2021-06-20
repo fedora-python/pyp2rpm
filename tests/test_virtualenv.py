@@ -1,6 +1,7 @@
 import os
 import pytest
 import shutil
+import sys
 import tempfile
 from flexmock import flexmock
 try:
@@ -79,6 +80,8 @@ class TestVirtualEnvGetData(object):
         ('{}/test_data/utest-0.1.0.tar.gz'.format(tests_dir),
          {'py_modules': [], 'scripts': [], 'packages': ['utest'], 'has_pth': False}),
     ])
+    @pytest.mark.skipif(sys.version_info[0] is 2 and
+                        DEFAULT_PYTHON_VERSION is '3', reason="Can't extract virtualenv data")
     def test_get_data(self, file, expected):
         self.venv = VirtualEnv(name=file,
                                temp_dir=self.temp_dir,

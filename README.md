@@ -108,4 +108,8 @@ or run:
 We will gladly accept any pull request or feature request.
 With complex pull requests, please include unit tests in *pytest* and use *flexmock* if you need mocking.
 
+Tests can be run locally using docker:
+ docker build -t pyp2rpm-test .
+ docker run -v $(pwd):$(pwd):z -w $(pwd) -it pyp2rpm-test
+
 pyp2rpm is licensed under the MIT/Expat license.

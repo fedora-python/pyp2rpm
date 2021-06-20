@@ -1,0 +1,26 @@
+name: Run tests in a legacy environment
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  fedora_test:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:${{ matrix.release }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          dnf install -y --setopt=install_weak_deps=false --setopt=tsflags=nodocs --setopt=deltarpm=false --disablerepo=\*modular gcc tox python27 python34 python2-setuptools python3-setuptools
+
+      - name: Test older python releases
+        run: |
+          PIP_NO_CACHE_DIR=off LC_ALL=C.UTF-8 LANG=C.UTF-8 tox -e py27,py34
+
+    strategy:
+      matrix:
+        release: [30]
