@@ -79,11 +79,6 @@ Group:		Libraries/Python
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
-{%- if data.has_bundled_egg_info %}
-
-# Remove bundled egg-info
-%{__rm} -r %{egg_name}.egg-info
-{%- endif %}
 
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version, use_with=False) -%}
 {%- if data.sphinx_dir %}

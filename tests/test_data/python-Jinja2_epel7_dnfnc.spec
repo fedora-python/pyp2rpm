@@ -63,8 +63,6 @@ Documentation for Jinja2
 
 %prep
 %autosetup -n %{pypi_name}-%{version}
-# Remove bundled egg-info
-rm -rf %{pypi_name}.egg-info
 
 %build
 %{__python2} setup.py build

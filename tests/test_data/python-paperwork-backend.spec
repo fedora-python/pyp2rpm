@@ -41,8 +41,6 @@ Indexing - Searching - Suggestions- ExportThere is no GUI here. The GUI is .
 
 %prep
 %autosetup -n %{pypi_name}-%{version}
-# Remove bundled egg-info
-rm -rf %{pypi_name}.egg-info
 
 %build
 %py3_build

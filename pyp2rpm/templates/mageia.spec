@@ -40,10 +40,6 @@ Documentation for {{ data.name }}
 
 %prep
 %autosetup -n {{ data.dirname|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}')|default('%{pypi_name}-%{version}', true) }}
-{%- if data.has_bundled_egg_info %}
-# Remove bundled egg-info
-rm -rf %{pypi_name}.egg-info
-{%- endif %}
 
 %build
 {%- for pv in data.sorted_python_versions %}
