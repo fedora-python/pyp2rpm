@@ -43,13 +43,14 @@
 %define 	module		{{ data.name }}
 %define 	egg_name	{{ data.underscored_name }}
 %define		pypi_name	{{ data.name }}
+%define         pypi_version    {{ data.version }}
 Summary:	{{ data.summary }}
 Name:		python-%{pypi_name}
-Version:	{{ data.version }}
+Version:	{{ data.version|rpm_version }}
 Release:	0.1
 License:	{{ data.license }}
 Group:		Libraries/Python
-Source0:	{{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{version}') }}
+Source0:	{{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{pypi_version}') }}
 # Source0-md5:	-
 URL:		{{ data.home_page }}
 BuildRequires:	rpm-pythonprov
@@ -63,7 +64,7 @@ BuildRequires:	rpmbuild(macros) >= 1.714
 {%- if not data.has_extension %}
 BuildArch:	noarch
 {%- endif %}
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+BuildRoot:	%{tmpdir}/%{name}-%{pypi_version}-root-%(id -u -n)
 
 %description
 {{ data.description|truncate(400)|wordwrap }}
@@ -78,7 +79,7 @@ Group:		Libraries/Python
 {%- endcall %}
 
 %prep
-%setup -q -n %{pypi_name}-%{version}
+%setup -q -n %{pypi_name}-%{pypi_version}
 {%- if data.has_bundled_egg_info %}
 
 # Remove bundled egg-info
@@ -149,18 +150,18 @@ rm -rf $RPM_BUILD_ROOT
 {%- if data.has_extension %}
 %{py{{ v }}_sitedir/%{module}
 {%- if data.has_pth %}
-%{py{{ v }}_sitedir/%{egg_name}-%{version}-py%{python{{ pv }}_version}-*.pth
+%{py{{ v }}_sitedir/%{egg_name}-%{pypi_version}-py%{python{{ pv }}_version}-*.pth
 {%- endif %}
-%{py{{ v }}_sitedir/%{egg_name}-%{version}-py%{python{{ pv }}_version}.egg-info
+%{py{{ v }}_sitedir/%{egg_name}-%{pypi_version}-py%{python{{ pv }}_version}.egg-info
 {%- else %}
 {%- if data.has_packages %}
 %{py{{ v }}_sitescriptdir}/%{module}
 {%- endif %}
 
 {%- if data.has_pth %}
-%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py%{python{{ pv }}_version}-*.pth
+%{py{{ v }}_sitescriptdir}/%{egg_name}-%{pypi_version}-py%{python{{ pv }}_version}-*.pth
 {%- endif %}
-%{py{{ v }}_sitescriptdir}/%{egg_name}-%{version}-py%{python{{ pv }}_version}.egg-info
+%{py{{ v }}_sitescriptdir}/%{egg_name}-%{pypi_version}-py%{python{{ pv }}_version}.egg-info
 {%- endif %}
 
 {%- endcall %}

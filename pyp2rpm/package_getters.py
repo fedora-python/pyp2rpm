@@ -187,7 +187,7 @@ class LocalFileGetter(PackageGetter):
     def __init__(self, local_file, save_dir=None):
         self.local_file = local_file
         self.name_version_pattern = re.compile(
-            r"(^.*?)-(\d+\.?\d*\.?\d*\.?\d*).*$")
+            r"(^.*?)-(\d+\.?\d*\.?\d*\.?\d*\.?(?:a|b|rc|post|dev)?\d*).*$")
         self.save_dir_init(save_dir)
 
     def get(self):
