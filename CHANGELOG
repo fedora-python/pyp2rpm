@@ -1,3 +1,11 @@
+3.3.7
+* Ensure that all tests pass under Python 3.10
+* Include rc/post/dev in version (issue #259)
+* Handle all-zero versions without crashing
+* Don't process PyPI version list if user specifies a version (issue #243)
+* Ensure that sdist is complete, and utest and JSON test data are included
+* Wait for rpmdev-setuptree to exit (issue #266)
+
 3.3.6
 * Improve logging of rpmbuild output (issue #252)
 * Sort releases so that the API ordering no longer affects local behavior (issue #251)

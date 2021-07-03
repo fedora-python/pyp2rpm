@@ -1,3 +1,5 @@
+exclude .git*
+exclude .git*/**
 include CHANGELOG
 include LICENSE
 include README.md
