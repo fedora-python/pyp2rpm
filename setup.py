@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 from pyp2rpm.version import version
 
 from setuptools import setup
@@ -21,7 +22,7 @@ class build_py(_build_py):
         # Build test data
         from subprocess import call
         from shutil import copy
-        call(['python3', 'setup.py', 'sdist'],
+        call([sys.executable, 'setup.py', 'sdist'],
              cwd='tests/test_data/utest')
         copy('tests/test_data/utest/dist/utest-0.1.0.tar.gz',
              'tests/test_data/')
@@ -52,7 +53,8 @@ setup(
                     'click',
                     'Jinja2',
                     ],
-    tests_require=['pytest < 5;python_version<"3.5"', 'pytest < 6.2;python_version=="3.5"', 'pytest;python_version>="3.6"'],
+    tests_require=['packaging < 21;python_version<"3.5"', 'pytest < 5;python_version<"3.5"',
+                   'pytest < 6.2;python_version=="3.5"', 'pytest;python_version>="3.6"'],
     extras_require={
         'venv metadata': ['virtualenv-api'],
         'sclize': ['spec2scl >= 1.2.0']
