@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 from pyp2rpm.version import version
 
 from setuptools import setup
@@ -21,7 +22,7 @@ class build_py(_build_py):
         # Build test data
         from subprocess import call
         from shutil import copy
-        call(['python3', 'setup.py', 'sdist'],
+        call([sys.executable, 'setup.py', 'sdist'],
              cwd='tests/test_data/utest')
         copy('tests/test_data/utest/dist/utest-0.1.0.tar.gz',
              'tests/test_data/')
