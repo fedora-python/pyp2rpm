@@ -10,13 +10,13 @@ class TestDependencyParser():
     @pytest.mark.parametrize(('d', 'r', 'rich', 'expected'), [
         ('docutils>=0.3,<1,!=0.5', True, False,
          [['Requires', 'docutils', '{name} >= 0.3'],
-          ['Requires', 'docutils', '{name} < 1'],
+          ['Requires', 'docutils', '{name} < 1~~'],
           ['Conflicts', 'docutils', '{name} = 0.5']
           ]
          ),
         ('pytest>=0.3a5,<1.1.1.1,!=1', False, False,
          [['BuildRequires', 'pytest', '{name} >= 0.3~a5'],
-          ['BuildRequires', 'pytest', '{name} < 1.1.1.1'],
+          ['BuildRequires', 'pytest', '{name} < 1.1.1.1~~'],
           ['BuildConflicts', 'pytest', '{name} = 1']
           ]
          ),
@@ -37,12 +37,12 @@ class TestDependencyParser():
          ),
         ('docutils>=0.3,<1,!=0.5', True, True,
          [['Requires', 'docutils',
-           '({name} >= 0.3 with {name} < 1 with ({name} < 0.5 or {name} > 0.5))']
+           '({name} >= 0.3 with {name} < 1~~ with ({name} < 0.5 or {name} > 0.5))']
           ]
          ),
         ('pytest>=0.3a5,<1.1.1.1,!=1', False, True,
          [['BuildRequires', 'pytest',
-           '({name} >= 0.3~a5 with {name} < 1.1.1.1 with ({name} < 1 or {name} > 1))']
+           '({name} >= 0.3~a5 with {name} < 1.1.1.1~~ with ({name} < 1 or {name} > 1))']
           ]
          ),
         ('pyp2rpm~=3.3.0rc2', True, True,
@@ -55,7 +55,7 @@ class TestDependencyParser():
          [['Requires', 'pyp2rpm', '({name} >= 0.9.3.1 with {name} < 0.9.4)']]
          ),
         ('nb2plots>0+unknown', True, True,
-         [['Requires', 'nb2plots', '{name} > 0']]
+         [['Requires', 'nb2plots', '{name} > 0.0']]
          ),
 
     ])

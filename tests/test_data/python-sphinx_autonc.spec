@@ -14,7 +14,7 @@ Source0:        %{pypi_source}
 BuildArch:      noarch
 
 BuildRequires:  python2-devel
-BuildRequires:  (python2dist(alabaster) >= 0.7 with python2dist(alabaster) < 0.8)
+BuildRequires:  (python2dist(alabaster) >= 0.7 with python2dist(alabaster) < 0.8~~)
 BuildRequires:  (python2dist(babel) >= 1.3 with (python2dist(babel) < 2 or python2dist(babel) > 2))
 BuildRequires:  python2dist(colorama) >= 0.3.5
 BuildRequires:  python2dist(docutils) >= 0.11
@@ -33,7 +33,7 @@ BuildRequires:  python2dist(sqlalchemy) >= 0.9
 BuildRequires:  python2dist(whoosh) >= 2
 
 BuildRequires:  python3-devel
-BuildRequires:  (python3dist(alabaster) >= 0.7 with python3dist(alabaster) < 0.8)
+BuildRequires:  (python3dist(alabaster) >= 0.7 with python3dist(alabaster) < 0.8~~)
 BuildRequires:  (python3dist(babel) >= 1.3 with (python3dist(babel) < 2 or python3dist(babel) > 2))
 BuildRequires:  python3dist(colorama) >= 0.3.5
 BuildRequires:  python3dist(docutils) >= 0.11
@@ -64,7 +64,7 @@ Sphinx uses...
 Summary:        %{summary}
 %{?python_provide:%python_provide python2-%{srcname}}
 
-Requires:       (python2dist(alabaster) >= 0.7 with python2dist(alabaster) < 0.8)
+Requires:       (python2dist(alabaster) >= 0.7 with python2dist(alabaster) < 0.8~~)
 Requires:       (python2dist(babel) >= 1.3 with (python2dist(babel) < 2 or python2dist(babel) > 2))
 Requires:       python2dist(colorama) >= 0.3.5
 Requires:       python2dist(docutils) >= 0.11
@@ -93,7 +93,7 @@ Sphinx uses...
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{srcname}}
 
-Requires:       (python3dist(alabaster) >= 0.7 with python3dist(alabaster) < 0.8)
+Requires:       (python3dist(alabaster) >= 0.7 with python3dist(alabaster) < 0.8~~)
 Requires:       (python3dist(babel) >= 1.3 with (python3dist(babel) < 2 or python3dist(babel) > 2))
 Requires:       python3dist(colorama) >= 0.3.5
 Requires:       python3dist(docutils) >= 0.11

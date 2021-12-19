@@ -15,6 +15,9 @@ class RpmVersion():
             # in public releases
             # https://www.python.org/dev/peps/pep-0440/#local-version-identifiers
 
+    def is_legacy(self):
+        return isinstance(self.version, str)
+
     def increment(self):
         self.version[-1] += 1
         self.pre = None
@@ -23,7 +26,7 @@ class RpmVersion():
         return self
 
     def __str__(self):
-        if isinstance(self.version, str):
+        if self.is_legacy():
             return self.version
         if self.epoch:
             rpm_epoch = str(self.epoch) + ':'
@@ -46,6 +49,9 @@ def convert_compatible(name, operator, version_id):
     if version_id.endswith('.*'):
         return 'Invalid version'
     version = RpmVersion(version_id)
+    if version.is_legacy():
+        # LegacyVersions are not supported in this context
+        return 'Invalid version'
     if len(version.version) == 1:
         return 'Invalid version'
     upper_version = RpmVersion(version_id)
@@ -71,17 +77,29 @@ def convert_not_equal(name, operator, version_id):
     if version_id.endswith('.*'):
         version_id = version_id[:-2]
         version = RpmVersion(version_id)
-        lower_version = RpmVersion(version_id).increment()
+        if version.is_legacy():
+            # LegacyVersions are not supported in this context
+            return 'Invalid version'
+        version_gt = RpmVersion(version_id).increment()
+        version_gt_operator = '>='
+        # Prevent dev and pre-releases from satisfying a < requirement
+        version = '{}~~'.format(version)
     else:
         version = RpmVersion(version_id)
-        lower_version = version
-    return '({{name}} < {} or {{name}} > {})'.format(
-        version, lower_version)
+        version_gt = version
+        version_gt_operator = '>'
+    return '({{name}} < {} or {{name}} {} {})'.format(
+        version, version_gt_operator, version_gt)
 
 def convert_ordered(name, operator, version_id):
     if version_id.endswith('.*'):
         # PEP 440 does not define semantics for prefix matching
         # with ordered comparisons
+        # see: https://github.com/pypa/packaging/issues/320
+        # and: https://github.com/pypa/packaging/issues/321
+        # This style of specifier is officially "unsupported",
+        # even though it is processed.  Support may be removed
+        # in version 21.0.
         version_id = version_id[:-2]
         version = RpmVersion(version_id)
         if operator == '>':
@@ -92,12 +110,23 @@ def convert_ordered(name, operator, version_id):
             operator = '<'
     else:
         version = RpmVersion(version_id)
+    # For backwards compatibility, fallback to previous behavior with LegacyVersions
+    if not version.is_legacy():
+        # Prevent dev and pre-releases from satisfying a < requirement
+        if operator == '<' and not version.pre and not version.dev and not version.post:
+            version = '{}~~'.format(version)
+        # Prevent post-releases from satisfying a > requirement
+        if operator == '>' and not version.pre and not version.dev and not version.post:
+            version = '{}.0'.format(version)
     return '{{name}} {} {}'.format(operator, version)
 
 def legacy_convert_compatible(name, operator, version_id):
     if version_id.endswith('.*'):
         return 'Invalid version'
     version = RpmVersion(version_id)
+    if version.is_legacy():
+        # LegacyVersions are not supported in this context
+        return 'Invalid version'
     if len(version.version) == 1:
         return 'Invalid version'
     upper_version = RpmVersion(version_id)
