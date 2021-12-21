@@ -23,6 +23,10 @@ class build_py(_build_py):
         from subprocess import call
         from shutil import copy
         call([sys.executable, 'setup.py', 'sdist'],
+             cwd='tests/test_data/isholiday-0.1')
+        copy('tests/test_data/isholiday-0.1/dist/isholiday-0.1.tar.gz',
+             'tests/test_data/')
+        call([sys.executable, 'setup.py', 'sdist'],
              cwd='tests/test_data/utest')
         copy('tests/test_data/utest/dist/utest-0.1.0.tar.gz',
              'tests/test_data/')
