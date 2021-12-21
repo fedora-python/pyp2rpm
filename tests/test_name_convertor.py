@@ -58,12 +58,12 @@ class TestDandifiedNameConvertor(object):
         self.dnc = DandifiedNameConvertor('fedora')
 
     @pytest.mark.parametrize(('pypi_name', 'version', 'expected'), [
-        ('Babel', '2', 'python2-babel'),
-        ('Babel', '3', 'python3-babel'),
-        ('MarkupSafe', '2', 'python2-markupsafe'),
-        ('MarkupSafe', '3', 'python3-markupsafe'),
-        ('Jinja2', '2', 'python2-jinja2'),
-        ('Jinja2', '3', 'python3-jinja2'),
+        ('Babel', '2', 'babel'), # Bad result; Present in repo
+        ('Babel', '3', 'python3-babel'), # Present in repo
+        ('MarkupSafe', '2', 'python2-MarkupSafe'), # Not present in repo
+        ('MarkupSafe', '3', 'python3-markupsafe'), # Present in repo
+        ('Jinja2', '2', 'python2-Jinja2'), # Not present in repo
+        ('Jinja2', '3', 'python3-jinja2'), # Present in repo
         ('Sphinx', '3', 'python3-sphinx'),
         ('Cython', '2', 'python2-Cython'),
         ('Cython', '3', 'python3-Cython'),
