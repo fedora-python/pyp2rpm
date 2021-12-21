@@ -281,7 +281,6 @@ class TestSetupPyMetadataExtractor(object):
         self.e = []
         for archive in ('plumbum-0.9.0.tar.gz',
                         'pytest-2.2.3.zip',
-                        'simpleeval-0.8.7.tar.gz',
                         'coverage_pth-0.0.1.tar.gz',
                         'utest-0.1.0.tar.gz'):
             name, version = archive.split('-')
@@ -326,10 +325,9 @@ class TestSetupPyMetadataExtractor(object):
         (1, 'doc_license', ['LICENSE']),
         (1, 'sphinx_dir', 'doc'),
         (1, 'source0', 'pytest-2.2.3.zip'),
-        (2, 'py_modules', ['simpleeval']),
-        (3, 'runtime_deps', [['Requires', 'python-coverage', '{name}']]),
-        (3, 'python_versions', []),
-        (4, 'runtime_deps', [['Requires', 'python-pyp2rpm',
+        (2, 'runtime_deps', [['Requires', 'python-coverage', '{name}']]),
+        (2, 'python_versions', []),
+        (3, 'runtime_deps', [['Requires', 'python-pyp2rpm',
                               '({name} >= 3.3.1 with {name} < 3.4)']]),
     ])
     def test_extract(self, i, what, expected):
