@@ -67,6 +67,10 @@ class SubprocessModuleRunner(ModuleRunner):
             stream_data = [utils.console_to_str(s) for s in stream_data]
             if proc.returncode:
                 logger.error(
+                    "Subprocess failed, working dir: {}".format(os.getcwd()))
+                logger.error(
+                    "Subprocess failed, command: {}".format(command_list))
+                logger.error(
                     "Subprocess failed, stdout: {0[0]}, stderr: {0[1]}".format(
                         stream_data))
             self._result = json.loads(stream_data[0].split(
