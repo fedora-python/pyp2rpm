@@ -14,12 +14,12 @@ BuildArch:      noarch
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-babel >= 0.8
-BuildRequires:  python2-markupsafe
+BuildRequires:  python2-MarkupSafe
 BuildRequires:  python2-setuptools
 BuildRequires:  python2-sphinx
 
 Requires:       python2-babel >= 0.8
-Requires:       python2-markupsafe
+Requires:       python2-MarkupSafe
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
