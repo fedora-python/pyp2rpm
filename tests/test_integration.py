@@ -33,7 +33,7 @@ class TestSpec(object):
         ('Jinja2', '-v2.8 -p2', 'python-Jinja2_py23_autonc.spec'),
         ('Jinja2', '-v2.8 -b2', 'python-Jinja2_py2_autonc.spec'),
         ('Jinja2', '-v2.8 -b3', 'python-Jinja2_py3_autonc.spec'),
-        ('Jinja2', '-v2.8 -t epel7', 'python-Jinja2_epel7{0}.spec'),
+        ('Jinja2', '-v2.8 -b3 -p2 -t epel7', 'python-Jinja2_epel7{0}.spec'),
         ('Jinja2', '-v2.8 -t epel6', 'python-Jinja2_epel6{0}.spec'),
         ('Jinja2', '-v2.8 -p2 -t mageia', 'python-Jinja2_mageia_py23.spec'),
         ('Jinja2', '-v2.8 -p2 --no-autonc', 'python-Jinja2{0}.spec'),
