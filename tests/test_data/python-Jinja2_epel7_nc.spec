@@ -16,12 +16,12 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-Babel >= 0.8
 BuildRequires:  python2-MarkupSafe
 BuildRequires:  python2-setuptools
-BuildRequires:  python2-sphinx
 
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  python%{python3_pkgversion}-Babel >= 0.8
 BuildRequires:  python%{python3_pkgversion}-MarkupSafe
 BuildRequires:  python%{python3_pkgversion}-setuptools
+BuildRequires:  python%{python3_pkgversion}-sphinx
 
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
@@ -71,15 +71,15 @@ rm -rf %{pypi_name}.egg-info
 %{__python2} setup.py build
 %{__python3} setup.py build
 # generate html docs
-PYTHONPATH=${PWD} sphinx-build docs html
+PYTHONPATH=${PWD} sphinx-build-3 docs html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %install
 # Must do the default python version install last because
 # the scripts in /usr/bin are overwritten with every setup.py install.
-%{__python3} setup.py install --skip-build --root %{buildroot}
 %{__python2} setup.py install --skip-build --root %{buildroot}
+%{__python3} setup.py install --skip-build --root %{buildroot}
 
 %check
 %{__python2} setup.py test
