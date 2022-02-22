@@ -1,3 +1,6 @@
+3.3.8
+* Sync dependency conversion with pyreq2rpm
+
 3.3.7
 * Ensure that all tests pass under Python 3.10
 * Include rc/post/dev in version (issue #259)
