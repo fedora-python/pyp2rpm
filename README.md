@@ -4,25 +4,29 @@
 pyp2rpm
 =======
 
-A tool to convert a PyPI package to an RPM SPECFILE or to generate an SRPM.
+A tool to convert a PyPI package to an RPM `SPECFILE` or to generate an SRPM.
 Under heavy development, see the TODO file for a list of planned features.
 pyp2rpm currently ships with Fedora and Mageia specific templates.
 
 ## Usage
 
 The simplest use case is to run:
+```sh
+pyp2rpm package_name
+```
 
-    pyp2rpm package_name
-
-This downloads the package from PyPI and outputs the RPM SPECFILE.
+This downloads the package from PyPI and outputs the RPM `SPECFILE`.
 
 Or:
-
-    pyp2rpm package_name --srpm
+```sh
+pyp2rpm package_name --srpm
+```
 
 This downloads the package from PyPI and creates a SRPM file.
 
-All of the options are (print this by running pyp2rpm -h):
+All of the `pyp2rpm` options are:
+
+    $ pyp2rpm -h
 
     usage: pyp2rpm [-h] [-v VERSION] [-d SAVE_DIR] [-r RPM_NAME]
                    [-t TEMPLATE] [-o DISTRO] [-b BASE_PYTHON]
@@ -90,12 +94,14 @@ All of the options are (print this by running pyp2rpm -h):
 
 
 To run the unit tests, cd into the checked out directory and run:
-
-    PYTHONPATH=$(pwd) py.test
+```sh
+PYTHONPATH="$(pwd)" py.test
+```
 
 or run:
-
-    python setup.py test
+```sh
+python setup.py test
+```
 
 
 ## Example usage
@@ -108,8 +114,11 @@ or run:
 We will gladly accept any pull request or feature request.
 With complex pull requests, please include unit tests in *pytest* and use *flexmock* if you need mocking.
 
-Tests can be run locally using docker:
- docker build -t pyp2rpm-test .
- docker run -v $(pwd):$(pwd):z -w $(pwd) -it pyp2rpm-test
+Tests can be run in a local container:
+
+```sh
+docker build -t pyp2rpm-test .
+docker run -v "$(pwd):$(pwd):z" -w "$(pwd)" -it pyp2rpm-test
+```
 
 pyp2rpm is licensed under the MIT/Expat license.
