@@ -81,25 +81,10 @@ class Convertor(object):
 
     def merge_versions(self, data):
         """Merges python versions specified in command lines options with
-        extracted versions, checks if some of the versions is not > 2 if EPEL6
-        template will be used. attributes base_python_version and
+        extracted versions. Attributes base_python_version and
         python_versions contain values specified by command line options or
         default values, data.python_versions contains extracted data.
         """
-        if self.distro == "epel6":
-            # if user requested version greater than 2, writes error message
-            # and exits
-            requested_versions = self.python_versions
-            if self.base_python_version:
-                requested_versions += [self.base_python_version]
-            if any(int(ver[0]) > 2 for ver in requested_versions):
-                sys.stderr.write(
-                    "Invalid version, major number of python version for "
-                    "EPEL6 spec file must not be greater than 2.\n")
-                sys.exit(1)
-            # if version greater than 2 were extracted it is removed
-            data.python_versions = [
-                ver for ver in data.python_versions if not int(ver[0]) > 2]
 
         # Set python versions from default values in settings.
         base_version, additional_versions = (
