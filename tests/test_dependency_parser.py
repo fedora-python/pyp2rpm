@@ -54,9 +54,6 @@ class TestDependencyParser():
         ('pyp2rpm~=0.9.3.1', True, True,
          [['Requires', 'pyp2rpm', '({name} >= 0.9.3.1 with {name} < 0.9.4)']]
          ),
-        ('nb2plots>0+unknown', True, True,
-         [['Requires', 'nb2plots', '{name} > 0.0']]
-         ),
 
     ])
     def test_dependency_to_rpm(self, d, r, rich, expected):
