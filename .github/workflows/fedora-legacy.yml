@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          dnf install -y --setopt=install_weak_deps=false --setopt=tsflags=nodocs --setopt=deltarpm=false --disablerepo=\*modular gcc tox python27 python34 python2-setuptools python3-setuptools
+          dnf install -y --setopt=install_weak_deps=false --setopt=tsflags=nodocs --setopt=deltarpm=false --disablerepo=\*modular gcc tox python27 python34 python3-setuptools
 
       - name: Test older python releases
         run: |
