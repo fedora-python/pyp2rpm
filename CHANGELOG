@@ -1,3 +1,7 @@
+3.3.9
+* Fix tests when using setuptools >= 67 (issue #290)
+* Use sphinx-build-%{python3_version} on EPEL7 (issue #272)
+
 3.3.8
 * Sync dependency conversion with pyreq2rpm
 
