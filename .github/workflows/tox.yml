@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run Tox tests
-        uses: fedora-python/tox-github-action@master
+        uses: fedora-python/tox-github-action@main
         with:
           tox_env: ${{ matrix.tox_env }}
           dnf_install: python3-wheel ${{ matrix.dnf_install }}
