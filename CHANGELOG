@@ -1,3 +1,6 @@
+3.3.10
+* Fix tests on Python 3.12
+
 3.3.9
 * Fix tests when using setuptools >= 67 (issue #290)
 * Use sphinx-build-%{python3_version} on EPEL7 (issue #272)
