@@ -62,6 +62,7 @@ setup(
                    'iniconfig < 2.0;python_version=="3.6"',
                    'pytest;python_version>="3.7"', 'attrs < 21.1.0;python_version<"3.5"',
                    'attrs < 23.1.0;python_version=="3.6"',
+                   'pluggy < 1.0;python_version<"3.8"',
                    ],
     extras_require={
         'venv metadata': ['virtualenv-api'],
