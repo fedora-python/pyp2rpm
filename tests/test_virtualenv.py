@@ -82,6 +82,7 @@ class TestVirtualEnvGetData(object):
     ])
     @pytest.mark.skipif(sys.version_info[0] is 2 and
                         DEFAULT_PYTHON_VERSION is '3', reason="Can't extract virtualenv data")
+    @pytest.mark.webtest
     def test_get_data(self, file, expected):
         self.venv = VirtualEnv(name=file,
                                temp_dir=self.temp_dir,
