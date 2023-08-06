@@ -60,7 +60,9 @@ setup(
     tests_require=['packaging < 21;python_version<"3.5"', 'pytest < 5;python_version<"3.5"',
                    'pytest < 6.2;python_version=="3.5"', 'pytest < 7.1;python_version=="3.6"',
                    'iniconfig < 2.0;python_version=="3.6"',
-                   'pytest;python_version>="3.7"', 'attrs < 21.1.0;python_version<"3.5"',],
+                   'pytest;python_version>="3.7"', 'attrs < 21.1.0;python_version<"3.5"',
+                   'attrs < 23.1.0;python_version=="3.6"',
+                   ],
     extras_require={
         'venv metadata': ['virtualenv-api'],
         'sclize': ['spec2scl >= 1.2.0']
