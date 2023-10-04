@@ -150,7 +150,7 @@ class Convertor(object):
 
         jinja_env = jinja2.Environment(loader=jinja2.ChoiceLoader([
             jinja2.FileSystemLoader(['/']),
-            jinja2.PackageLoader('pyp2rpm', 'templates'), ]))
+            jinja2.PackageLoader('pyp2rpm', 'templates'), ]), autoescape=True)
 
         for filter in filters.__all__:
             jinja_env.filters[filter.__name__] = filter
