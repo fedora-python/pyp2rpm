@@ -25,12 +25,14 @@ class extract_dist(Command):
             self.metadata[attr] = to_list(getattr(self.distribution, attr, []))
 
         try:
+            self.metadata['setup_requires_extras'] = []
+            self.metadata['install_requires_extras'] = []
             for k, v in getattr(
                     self.distribution, 'extras_require', {}).items():
                 if k in ['test, docs', 'doc', 'dev']:
-                    attr = 'setup_requires'
+                    attr = 'setup_requires_extras'
                 else:
-                    attr = 'install_requires'
+                    attr = 'install_requires_extras'
                 self.metadata[attr] += to_list(v)
         except (AttributeError, ValueError):
             # extras require are skipped in case of wrong data format

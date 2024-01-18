@@ -132,6 +132,10 @@ class SclizeOption(click.Option):
               help='Enable / disable metadata extraction from virtualenv '
               '(default: enabled).',
               default=True)
+@click.option('--include-extras / --no-include-extras',
+              help='Enable / disable including extras_require as dependencies '
+              '(default: enabled).',
+              default=True)
 @click.option('--autonc/ --no-autonc',
               help='Enable / disable using automatic provides with '
               'a standardized name in dependencies declaration ('
@@ -172,7 +176,7 @@ class SclizeOption(click.Option):
               default=None,
               metavar='FILE_NAME')
 @click.argument('package', nargs=1)
-def main(package, v, prerelease, d, s, r, proxy, srpm, p, b, o, t, venv, autonc,
+def main(package, v, prerelease, d, s, r, proxy, srpm, p, b, o, t, venv, include_extras, autonc,
          sclize, **scl_kwargs):
     """Convert PyPI package to RPM specfile or SRPM.
 
@@ -209,7 +213,8 @@ def main(package, v, prerelease, d, s, r, proxy, srpm, p, b, o, t, venv, autonc,
                           rpm_name=r,
                           proxy=proxy,
                           venv=venv,
-                          autonc=autonc)
+                          autonc=autonc,
+                          include_extras=include_extras)
 
     logger.debug(
         'Convertor: {0} created. Trying to convert.'.format(convertor))
