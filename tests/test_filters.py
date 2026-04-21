@@ -2,7 +2,8 @@ import pytest
 
 from pyp2rpm.filters import (macroed_pkg_name,
                              name_for_python_version,
-                             script_name_for_python_version)
+                             script_name_for_python_version,
+                             rpm_escape)
 
 
 class TestFilters(object):
@@ -36,3 +37,47 @@ class TestFilters(object):
                                             default_number, expected):
         assert script_name_for_python_version(name, version, minor,
                                               default_number) == expected
+
+    @pytest.mark.parametrize(('text', 'expected'), [
+        # Basic RPM macro injection
+        ('%(touch /tmp/pwn)', '%%(touch /tmp/pwn)'),
+        ('%{evil}', '%%{evil}'),
+        # Directory traversal with macros
+        ('foo-1.0-M%(touch /tmp/pwn)', 'foo-1.0-M%%(touch /tmp/pwn)'),
+        # Multiple percent signs
+        ('%%already escaped', '%%%%already escaped'),
+        # Lua scriptlets
+        ('%{lua: os.execute("evil")}', '%%{lua: os.execute("evil")}'),
+        # Shell command injection
+        ('text%(echo pwned)more', 'text%%(echo pwned)more'),
+        # None and empty handling
+        (None, ''),
+        ('', ''),
+        # No percent signs (should pass through)
+        ('normal text', 'normal text'),
+        ('https://example.com', 'https://example.com'),
+        # Integer conversion
+        (123, '123'),
+    ])
+    def test_rpm_escape(self, text, expected):
+        """Test that rpm_escape properly escapes RPM macros and directives."""
+        assert rpm_escape(text) == expected
+
+    def test_rpm_escape_prevents_macro_expansion(self):
+        """Test that escaped text doesn't expand as an RPM macro."""
+        # If %{python3_version} were not escaped, RPM would try to expand it
+        malicious = '%{python3_version}'
+        escaped = rpm_escape(malicious)
+        # Should have doubled percent signs
+        assert escaped == '%%{python3_version}'
+        # Verify it contains %% not just %
+        assert '%%{' in escaped
+
+    def test_rpm_escape_wordwrap_boundary(self):
+        """Test that rpm_escape after wordwrap doesn't split %% pairs."""
+        # If wordwrap splits 'text%%more' at 4 chars into 'text' and '%%more',
+        # then rpm_escape would turn '%%more' into '%%%%more'
+        # This is correct - each % should be escaped
+        text = 'ab%cd'
+        escaped = rpm_escape(text)
+        assert escaped == 'ab%%cd'

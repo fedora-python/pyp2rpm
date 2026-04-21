@@ -40,19 +40,19 @@
 %bcond_without	python{{ pv }} # CPython {{ pv }}.x module
 {%- endfor %}
 
-%define 	module		{{ data.name }}
-%define 	egg_name	{{ data.underscored_name }}
-%define		pypi_name	{{ data.name }}
-%define         pypi_version    {{ data.version }}
-Summary:	{{ data.summary }}
+%define 	module		{{ data.name|rpm_escape }}
+%define 	egg_name	{{ data.underscored_name|rpm_escape }}
+%define		pypi_name	{{ data.name|rpm_escape }}
+%define         pypi_version    {{ data.version|rpm_escape }}
+Summary:	{{ data.summary|rpm_escape }}
 Name:		python-%{pypi_name}
 Version:	{{ data.version|rpm_version }}
 Release:	0.1
-License:	{{ data.license }}
+License:	{{ data.license|rpm_escape }}
 Group:		Libraries/Python
-Source0:	{{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{pypi_version}') }}
+Source0:	{{ data.source0|rpm_escape|replace(data.name|rpm_escape, '%{pypi_name}')|replace(data.version|rpm_escape, '%{pypi_version}') }}
 # Source0-md5:	-
-URL:		{{ data.home_page }}
+URL:		{{ data.home_page|rpm_escape }}
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
 {# build deps for each Python version #}
@@ -67,15 +67,15 @@ BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{pypi_version}-root-%(id -u -n)
 
 %description
-{{ data.description|truncate(400)|wordwrap }}
+{{ data.description|truncate(400)|wordwrap|rpm_escape }}
 
 {% call(pv) for_python_versions(data.python_versions, use_with=False) -%}
 %package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
-Summary:	{{ data.summary }}
+Summary:	{{ data.summary|rpm_escape }}
 Group:		Libraries/Python
 
 %description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
-{{ data.description|truncate(400)|wordwrap }}
+{{ data.description|truncate(400)|wordwrap|rpm_escape }}
 {%- endcall %}
 
 %prep
@@ -89,7 +89,7 @@ Group:		Libraries/Python
 {% call(pv) for_python_versions([data.base_python_version] + data.python_versions, data.base_python_version, use_with=False) -%}
 {%- if data.sphinx_dir %}
 # generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...) #}
-{% if pv != data.base_python_version %}python{{ pv }}-{% endif %}sphinx-build {{ data.sphinx_dir }} html
+{% if pv != data.base_python_version %}python{{ pv }}-{% endif %}sphinx-build {{ data.sphinx_dir|rpm_escape }} html
 # remove the sphinx-build leftovers
 %{__rm} -r html/.{doctrees,buildinfo}
 {%- endif %}
@@ -114,7 +114,7 @@ rm -rf $RPM_BUILD_ROOT
 
 {%- if data.scripts %}
 {%- for script in data.scripts %}
-mv $RPM_BUILD_ROOT%{_bindir}/{{ script }} $RPM_BUILD_ROOT%{_bindir}/{{ script|script_name_for_python_version(pv) }}
+mv $RPM_BUILD_ROOT%{_bindir}/{{ script|rpm_escape }} $RPM_BUILD_ROOT%{_bindir}/{{ script|script_name_for_python_version(pv)|rpm_escape }}
 {%- endfor %}
 {%- endif %}
 
@@ -127,11 +127,11 @@ rm -rf $RPM_BUILD_ROOT
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
 %defattr(644,root,root,755)
 
-%doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|join(' ') }}
+%doc {% if data.sphinx_dir %}html {% endif %}{{ data.doc_files|map('rpm_escape')|join(' ') }}
 
 {%- if data.scripts %}
 {%- for script in data.scripts %}
-%attr(755,root,root) %{_bindir}/{{ script|script_name_for_python_version(pv) }}
+%attr(755,root,root) %{_bindir}/{{ script|script_name_for_python_version(pv)|rpm_escape }}
 {%- endfor %}
 {%- endif %}
 

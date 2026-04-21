@@ -26,9 +26,9 @@ BuildRequires:  python%{python3_pkgversion}-sphinx
 %description
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
-sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
-extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
-content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
+sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%%
+extends 'base.html' %%} {%% block title %%}Memberlist{%% endblock %%} {%% block
+content %%} <ul> {%% for user in users %%} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
 %package -n     python2-%{pypi_name}
@@ -39,9 +39,9 @@ Requires:       python2-markupsafe
 %description -n python2-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
-sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
-extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
-content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
+sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%%
+extends 'base.html' %%} {%% block title %%}Memberlist{%% endblock %%} {%% block
+content %%} <ul> {%% for user in users %%} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
 %package -n     python%{python3_pkgversion}-%{pypi_name}
@@ -52,9 +52,9 @@ Requires:       python%{python3_pkgversion}-markupsafe
 %description -n python%{python3_pkgversion}-%{pypi_name}
 Jinja2 is a template engine written in pure Python. It provides a Django_
 inspired non-XML syntax but supports inline expressions and an optional
-sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%
-extends 'base.html' %} {% block title %}Memberlist{% endblock %} {% block
-content %} <ul> {% for user in users %} <li><a href"{{ user.url }}">{{
+sandboxed_ environment.Nutshell Here a small example of a Jinja template:: {%%
+extends 'base.html' %%} {%% block title %%}Memberlist{%% endblock %%} {%% block
+content %%} <ul> {%% for user in users %%} <li><a href"{{ user.url }}">{{
 user.username }}</a></li>...
 
 %package -n python-%{pypi_name}-doc

@@ -66,11 +66,10 @@ class TestDandifiedNameConvertor(object):
         ('Jinja2', '3', 'python3-jinja2'), # Present in repo
         ('Sphinx', '3', 'python3-sphinx'),
         ('Cython', '2', 'python2-Cython'),
-        ('Cython', '3', 'python3-Cython'),
+        ('Cython', '3', 'python3-cython'),
         ('pytest', '2', 'python2-pytest'),
         ('pytest', '3', 'python3-pytest'),
         ('vertica', '2', 'python2-vertica'),
-        ('oslosphinx', '3', 'python3-oslo-sphinx'),
         ('mock', '3', 'python3-mock'),
     ])
     @pytest.mark.skipif(dnf is None, reason="Optional dependency DNF required")

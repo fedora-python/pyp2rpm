@@ -52,7 +52,7 @@ def module_to_path(name, module):
     if name == module:
         return "%{pypi_name}"
     else:
-        return module
+        return rpm_escape(module)
 
 
 def package_to_path(package, module):
@@ -62,7 +62,7 @@ def package_to_path(package, module):
     if package == module:
         return "%{pypi_name}"
     else:
-        return package
+        return rpm_escape(package)
 
 
 def macroed_url(url):
@@ -126,6 +126,28 @@ def rpm_version(version, use_macro=True):
         return '{}~{}'.format(rpm_version, rpm_suffix)
 
 
+def rpm_escape(text):
+    """Escapes RPM directives and macros in text to prevent code injection.
+
+    RPM spec files interpret percent signs (%) as the start of macros,
+    directives, or Lua scriptlets. To prevent malicious package metadata
+    from injecting arbitrary commands, all percent signs must be escaped
+    by doubling them (%%).
+
+    Args:
+        text: String that may contain user-controlled content
+
+    Returns:
+        String with all percent signs escaped (% becomes %%)
+    """
+    if text is None:
+        return ''
+    if not isinstance(text, str):
+        text = str(text)
+    # Escape all percent signs by doubling them
+    return text.replace('%', '%%')
+
+
 __all__ = [name_for_python_version,
            script_name_for_python_version,
            sitedir_for_python_version,
@@ -135,4 +157,5 @@ __all__ = [name_for_python_version,
            package_to_path,
            macroed_url,
            rpm_version_410,
-           rpm_version]
+           rpm_version,
+           rpm_escape]

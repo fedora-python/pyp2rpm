@@ -1,6 +1,6 @@
 {# prints a single dependency for a specific python version #}
 {%- macro one_dep(dep, python_version) %}
-{{ dep[0] }}:{{ ' ' * (15 - dep[0]|length) }}{{ dep[2].format(name=dep[1]|name_for_python_version(python_version, True)) }}
+{{ dep[0] }}:{{ ' ' * (15 - dep[0]|length) }}{{ dep[2].format(name=dep[1]|rpm_escape|name_for_python_version(python_version, True)) }}
 {%- endmacro %}
 
 {# Prints given deps (runtime or buildtime for given python_version,
