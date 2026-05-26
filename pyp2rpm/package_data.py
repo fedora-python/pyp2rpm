@@ -5,6 +5,7 @@ import logging
 
 from pyp2rpm import version
 from pyp2rpm import utils
+from pyp2rpm import filters
 
 logger = logging.getLogger(__name__)
 

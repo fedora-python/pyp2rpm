@@ -1,9 +1,9 @@
 {{ data.credit_line }}
 {% from 'macros.spec' import dependencies, for_python_versions, underscored_or_pypi -%}
-%global pypi_name {{ data.name }}
-%global pypi_version {{ data.version }}
+%global pypi_name {{ data.name|rpm_escape }}
+%global pypi_version {{ data.version|rpm_escape }}
 {%- if data.srcname %}
-%global srcname {{ data.srcname }}
+%global srcname {{ data.srcname|rpm_escape }}
 {%- endif %}
 {%- for pv in data.python_versions %}
 %global with_python{{ pv }} 1
@@ -12,11 +12,11 @@
 Name:           {{ data.pkg_name|macroed_pkg_name(data.srcname) }}
 Version:        {{ data.version|rpm_version_410 }}
 Release:        1%{?dist}
-Summary:        {{ data.summary }}
+Summary:        {{ data.summary|rpm_escape }}
 
-License:        {{ data.license }}
-URL:            {{ data.home_page }}
-Source0:        {{ data.source0|replace(data.name, '%{pypi_name}')|replace(data.version, '%{pypi_version}') }}
+License:        {{ data.license|rpm_escape }}
+URL:            {{ data.home_page|rpm_escape }}
+Source0:        {{ data.source0|rpm_escape|replace(data.name|rpm_escape, '%{pypi_name}')|replace(data.version|rpm_escape, '%{pypi_version}') }}
 
 {%- if not data.has_extension %}
 BuildArch:      noarch
@@ -27,20 +27,20 @@ BuildArch:      noarch
 {{ dependencies(data.runtime_deps, True, data.base_python_version, data.base_python_version) }}
 
 %description
-{{ data.description|truncate(400)|wordwrap }}
+{{ data.description|truncate(400)|wordwrap|rpm_escape }}
 {% call(pv) for_python_versions(data.python_versions) -%}
 %package -n     {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
-Summary:        {{ data.summary }}
+Summary:        {{ data.summary|rpm_escape }}
 {{ dependencies(data.runtime_deps, True, pv, pv) }}
 
 %description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}
-{{ data.description|truncate(400)|wordwrap }}
+{{ data.description|truncate(400)|wordwrap|rpm_escape }}
 {%- endcall %}
 {%- if data.sphinx_dir %}
 %package -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
-Summary:        {{ data.name }} documentation
+Summary:        {{ data.name|rpm_escape }} documentation
 %description -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(None, True) }}-doc
-Documentation for {{ data.name }}
+Documentation for {{ data.name|rpm_escape }}
 {%- endif %}
 
 %prep
@@ -58,7 +58,7 @@ find python{{pv}} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python{{pv}}}|
 {%- if data.sphinx_dir %}
 # generate html docs {# TODO: generate properly for other versions (pushd/popd into their dirs...)
 # #}
-PYTHONPATH=${PWD} {{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, False) }} {{ data.sphinx_dir }} html
+PYTHONPATH=${PWD} {{ "sphinx-build"|script_name_for_python_version(data.base_python_version, False, False) }} {{ data.sphinx_dir|rpm_escape }} html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 {%- endif %}
@@ -109,11 +109,11 @@ popd
 {% call(pv) for_python_versions(data.sorted_python_versions, data.base_python_version) -%}
 %files{% if pv != data.base_python_version %} -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv) }}{% endif %}
 {%- if data.doc_files %}
-%doc {{ data.doc_files|join(' ') }}
+%doc {{ data.doc_files|map('rpm_escape')|join(' ') }}
 {%- endif %}
 {%- if pv == data.base_python_version %}
 {%- for script in data.scripts %}
-%{_bindir}/{{ script }}
+%{_bindir}/{{ script|rpm_escape }}
 {%- endfor %}
 {%- endif %}
 {%- if data.py_modules %}
@@ -151,7 +151,7 @@ popd
 %files -n {{ data.pkg_name|macroed_pkg_name(data.srcname)|name_for_python_version(pv, True) }}-doc
 %doc html
 {%- if data.doc_license %}
-%license {{data.doc_license|join(' ')}}
+%license {{data.doc_license|map('rpm_escape')|join(' ')}}
 {%- endif %}
 {% endif %}
 %changelog
